@@ -1,0 +1,54 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using BlogApp.Core.Security.Abstractions;
+using BlogApp.Core.Security.Constants;
+using BlogApp.Core.Security.Models;
+using BlogApp.Core.Security.Options;
+using BlogApp.Domain.Abstractions.Repositories;
+using BlogApp.Domain.Exceptions;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+
+namespace BlogApp.Infrastructure.Providers;
+
+public class JwtProvider(IUserRepository userRepository, IOptions<JwtOptions> jwtOptions) : IJwtProvider
+{
+    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
+
+    public async Task<string> GenerateTokenAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var user = await userRepository.GetByIdAsync(userId, false, cancellationToken);
+        if (user is null)
+            throw new UserNotFoundException();
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        List<Claim> claims =
+        [
+            new(ClaimTypes.NameIdentifier, userId.ToString()),
+            new(ClaimTypes.Email, user.Email)
+        ];
+
+        var userRoles = user.Roles.Select(x => x.Role).ToList();
+        var userPermissions = userRoles.SelectMany(x => x!.RolePermissions).Select(x => x.Permission);
+
+        claims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole!.ToString())));
+        claims.AddRange(userPermissions.Select(permission =>
+            new Claim(CustomClaimTypes.Permission, permission!.ToString())));
+
+        var token = new JwtSecurityToken(issuer: _jwtOptions.Issuer,
+            audience: _jwtOptions.Audience,
+            claims: claims,
+            expires: DateTimeOffset.Now.AddMinutes(_jwtOptions.ExpirationMinutes).DateTime,
+            signingCredentials: credentials);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public ClaimsPrincipal? ValidateToken(string token)
+    {
+        throw new NotImplementedException();
+    }
+}

@@ -1,0 +1,1 @@
+global using BlogApp.Core.Mediator.Abstractions;
