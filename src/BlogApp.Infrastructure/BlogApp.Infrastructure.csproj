@@ -4,17 +4,11 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-  </PropertyGroup>
+  </PropertyGroup> 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BlogApp.Core.EFCore\BlogApp.Core.EFCore.csproj" />
-    <ProjectReference Include="..\BlogApp.Core.Security\BlogApp.Core.Security.csproj" />
-    <ProjectReference Include="..\BlogApp.Domain\BlogApp.Domain.csproj" />
-  </ItemGroup>
+    <ProjectReference Include="..\BlogApp.Infrastructure.EFCore\BlogApp.Infrastructure.EFCore.csproj" />
+    <ProjectReference Include="..\BlogApp.Infrastructure.Security\BlogApp.Infrastructure.Security.csproj" />
+  </ItemGroup> 
 
 </Project>
