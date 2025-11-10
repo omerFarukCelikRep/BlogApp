@@ -21,5 +21,8 @@ public class CommentEntityConfiguration : BaseEntityConfiguration<Comment>
         builder.HasOne(x => x.Blog)
             .WithMany(x => x.Comments)
             .HasForeignKey(x => x.BlogId);
+        builder.HasOne(x => x.User)
+            .WithMany(x => x.Comments)
+            .HasForeignKey(x => x.UserId);
     }
 }

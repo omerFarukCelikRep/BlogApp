@@ -43,6 +43,17 @@ public class UserEntityConfiguration : SoftDeletableEntityConfiguration<User, Gu
         builder.Property(x => x.AccessFailedCount)
             .HasDefaultValue(0);
 
-        builder.HasMany(x => x.Roles);
+        builder.HasMany(x => x.Roles)
+            .WithOne(x => x.User)
+            .IsRequired(false);
+        builder.HasMany(x => x.Likes)
+            .WithOne(x => x.User)
+            .IsRequired(false);
+        builder.HasMany(x => x.RefreshTokens)
+            .WithOne(x => x.User)
+            .IsRequired(false);
+        builder.HasMany(x => x.Comments)
+            .WithOne(x => x.User)
+            .IsRequired(false);
     }
 }

@@ -16,4 +16,5 @@ public class User : SoftDeletableEntity<Guid>
     public virtual ICollection<Like> Likes { get; set; } = new HashSet<Like>();
     public virtual ICollection<UserRole> Roles { get; set; } = new HashSet<UserRole>();
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new HashSet<RefreshToken>();
+    public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
 }
