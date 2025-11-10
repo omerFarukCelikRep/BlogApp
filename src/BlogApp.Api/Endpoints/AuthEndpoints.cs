@@ -6,7 +6,8 @@ public static class AuthEndpoints
 {
     public static RouteGroupBuilder RegisterAuthEndpoints(this WebApplication app)
     {
-        var authGroup = app.MapGroup("auth");
+        var authGroup = app.MapGroup("/auth");
+        authGroup.RegisterEndpoints();
         authGroup.LoginEndpoints();
 
         return authGroup;

@@ -14,10 +14,9 @@ public static class ServiceCollectionExtensions
         {
             var handlerInterface = handler!.GetType().GetInterfaces().First();
             var messagingTypes = handlerInterface.GetGenericArguments();
-            typeof(Registry)
-                .GetMethod(nameof(Registry.AddHandler))?
-                .MakeGenericMethod(messagingTypes)
-                .Invoke(registry, [handler]);
+            typeof(Registry).GetMethods().FirstOrDefault(x =>
+                    x.Name == nameof(Registry.AddHandler) && x.GetGenericArguments().Length == messagingTypes.Length)?
+                .MakeGenericMethod(messagingTypes).Invoke(registry, [handler]);
         }
     }
 

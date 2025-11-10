@@ -30,7 +30,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>()
             .AddScoped<IRoleRepository, RoleRepository>()
             .AddScoped<ITagRepository, TagRepository>()
-            .AddScoped<IUserRepository, UserRepository>();
+            .AddScoped<IUserRepository, UserRepository>()
+            .AddScoped<ISigningKeyRepository, SigningKeyRepository>();
 
         return services;
     }

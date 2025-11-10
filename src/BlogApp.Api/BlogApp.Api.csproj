@@ -4,11 +4,13 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BlogApp.Application\BlogApp.Application.csproj" />
     <ProjectReference Include="..\BlogApp.Core.Logging\BlogApp.Core.Logging.csproj" />
+    <ProjectReference Include="..\BlogApp.Infrastructure\BlogApp.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +19,12 @@
 
   <ItemGroup>
     <Folder Include="Endpoints\Auth\Responses\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
   </ItemGroup>
 
 </Project>

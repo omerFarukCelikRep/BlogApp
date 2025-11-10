@@ -29,7 +29,8 @@ public static class HostBuilderExtensions
     private static void ConfigureElasticsearchSink(ElasticsearchSinkOptions opts, LogEventLevel minimumLevel)
     {
         opts.TextFormatting = new EcsTextFormatterConfiguration<LogEventEcsDocument>();
-        opts.DataStream = new DataStreamName("BlogApp-{0:yyyy.MM.dd}", "Logs");
+        opts.DataStream = new DataStreamName("logs", "BlogApp");
+        ;
         opts.BootstrapMethod = BootstrapMethod.Failure;
         opts.MinimumLevel = minimumLevel;
         opts.ConfigureChannel = channel => channel.BufferOptions = new BufferOptions() { ExportMaxConcurrency = 10 };
@@ -54,13 +55,13 @@ public static class HostBuilderExtensions
                         rollingInterval: Enum.Parse<RollingInterval>(fileOptions.RollingInterval),
                         outputTemplate: fileOptions.OutputTemplate,
                         rollOnFileSizeLimit: fileOptions.RollOnFileSizeLimit);
-                })
-                .WriteTo.Conditional(x => options.Elastic!.Enabled, opts =>
-                {
-                    var elasticOptions = options.Elastic;
-                    var uris = elasticOptions!.Urls.Select(uri => new Uri(uri)).ToList();
-                    opts.Elasticsearch(uris, opt => ConfigureElasticsearchSink(opt, GetMinimumLevel(options)));
                 });
+            // .WriteTo.Conditional(x => options.Elastic!.Enabled, opts =>
+            // {
+            //     var elasticOptions = options.Elastic;
+            //     var uris = elasticOptions!.Urls.Select(uri => new Uri(uri)).ToList();
+            //     opts.Elasticsearch(uris, opt => ConfigureElasticsearchSink(opt, GetMinimumLevel(options)));
+            // });
         });
 
         return hostBuilder;

@@ -1,14 +1,19 @@
 using BlogApp.Api.Extensions;
 using BlogApp.Api.Handlers;
+using BlogApp.Application.Extensions;
 using BlogApp.Core.Logging.Extensions;
-using BlogApp.Core.Logging.Options;
-using Microsoft.Extensions.Options;
+using BlogApp.Domain.Extensions;
+using BlogApp.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog();
 
-builder.Services.AddApiServices();
+builder.Services
+    .AddDomainServices()
+    .AddInfrastructureServices(builder.Configuration)
+    .AddApplicationServices()
+    .AddApiServices();
 
 var app = builder.Build();
 

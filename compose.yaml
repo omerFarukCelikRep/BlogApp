@@ -1,0 +1,71 @@
+﻿services:
+  blogapp.api:
+    container_name: blogapp.api
+    build:
+      context: .
+      dockerfile: src/BlogApp.Api/Dockerfile
+    image: blogapp.api
+    ports:
+      - "5180:5180"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:5180
+      - ConnectionStrings__DefaultConnection=Host=db;Database=BlogApp;Username=appuser;Password=apppassword
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+      - Elasticsearch__Uri=http://elasticsearch:9200
+    depends_on:
+      - db
+      - rabbitmq
+      - elasticsearch
+    networks:
+      - app-network
+  
+  db:
+    container_name: postgres
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppassword
+      POSTGRES_DB: appdb
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app-network
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.0
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    networks:
+      - app-network
+        
+volumes:
+  dbdata:
+  esdata:
+
+networks:
+  app-network:
+    driver: bridge

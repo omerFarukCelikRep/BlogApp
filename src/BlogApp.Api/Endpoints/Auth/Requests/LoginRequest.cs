@@ -1,4 +1,4 @@
-using BlogApp.Application.Auth.Login.Commands;
+using BlogApp.Application.Auth.Commands;
 
 namespace BlogApp.Api.Endpoints.Auth.Requests;
 

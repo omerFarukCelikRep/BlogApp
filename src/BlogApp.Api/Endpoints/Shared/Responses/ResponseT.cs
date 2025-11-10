@@ -7,16 +7,16 @@ using Microsoft.Extensions.Options;
 
 namespace BlogApp.Api.Endpoints.Shared.Responses;
 
-public sealed class Response : IResult, IEndpointMetadataProvider, IStatusCodeHttpResult, IValueHttpResult,
-    IValueHttpResult<Result>
+public sealed class Response<TResult> : IResult, IEndpointMetadataProvider, IStatusCodeHttpResult, IValueHttpResult,
+    IValueHttpResult<TResult>
 {
-    internal Response(Result result)
+    internal Response(Result<TResult> result)
     {
-        Value = result;
+        Value = result.Data;
         StatusCode = result.StatusCode;
     }
 
-    public Result? Value { get; }
+    public TResult? Value { get; }
 
     object? IValueHttpResult.Value => Value;
     public int StatusCode { get; }
@@ -33,7 +33,7 @@ public sealed class Response : IResult, IEndpointMetadataProvider, IStatusCodeHt
     {
         ArgumentNullException.ThrowIfNull(httpContext);
 
-        var logger = httpContext.RequestServices.GetRequiredService<ILogger<Response>>();
+        var logger = httpContext.RequestServices.GetRequiredService<ILogger<Response<TResult>>>();
         logger.Log(LogLevel.Information, message: "Setting Http status code {StatusCode}", StatusCode);
 
         httpContext.Response.StatusCode = StatusCode;
@@ -49,7 +49,7 @@ public sealed class Response : IResult, IEndpointMetadataProvider, IStatusCodeHt
         ArgumentNullException.ThrowIfNull(method);
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Metadata.Add(new ProducesResponseTypeMetadata(StatusCodes.Status200OK, typeof(Result),
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(StatusCodes.Status200OK, typeof(TResult),
             [MediaTypeNames.Application.Json]));
     }
 }

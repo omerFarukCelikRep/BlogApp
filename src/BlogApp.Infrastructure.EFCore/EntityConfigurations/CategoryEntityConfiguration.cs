@@ -16,8 +16,7 @@ public class CategoryEntityConfiguration : BaseEntityConfiguration<Category>
             .HasMaxLength(256)
             .IsRequired();
         builder.Property(x => x.Description)
-            .HasMaxLength(512)
-            .IsRequired();
+            .HasMaxLength(512);
         builder.Property(x => x.Thumbnail)
             .IsRequired();
     }

@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using BlogApp.Core.Security.Abstractions;
 using BlogApp.Core.Security.Constants;
@@ -11,7 +12,10 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BlogApp.Infrastructure.Security.Providers;
 
-public class JwtProvider(IUserRepository userRepository, IOptions<JwtOptions> jwtOptions) : IJwtProvider
+public class JwtProvider(
+    IUserRepository userRepository,
+    ISigningKeyRepository signingKeyRepository,
+    IOptions<JwtOptions> jwtOptions) : IJwtProvider
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
@@ -21,12 +25,27 @@ public class JwtProvider(IUserRepository userRepository, IOptions<JwtOptions> jw
         if (user is null)
             throw new UserNotFoundException();
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var signingKey =
+            await signingKeyRepository.GetAsync(x => x.IsActive, tracking: false, cancellationToken: cancellationToken);
+        if (signingKey is null)
+            throw new UnauthorizedAccessException();
 
+        var privateKeyBytes = Convert.FromBase64String(signingKey.PrivateKey);
+        var rsa = RSA.Create();
+        rsa.ImportRSAPrivateKey(privateKeyBytes, out _);
+        var rsaSecurityKey = new RsaSecurityKey(rsa)
+        {
+            KeyId = signingKey.KeyId
+        };
+
+        var credentials = new SigningCredentials(rsaSecurityKey, SecurityAlgorithms.HmacSha512);
         List<Claim> claims =
         [
+            new(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.CreateVersion7().ToString()),
             new(ClaimTypes.NameIdentifier, userId.ToString()),
+            new(ClaimTypes.GivenName, user.FirstName),
+            new(ClaimTypes.Surname, user.LastName),
             new(ClaimTypes.Email, user.Email)
         ];
 

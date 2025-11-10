@@ -2,12 +2,13 @@ namespace BlogApp.Domain.Entities;
 
 public class RefreshToken : BaseEntity
 {
-    public string Token { get; set; } = null!;
+    public required string Token { get; set; }
     public DateTime ExpireDate { get; set; }
     public bool IsRevoked { get; set; }
+    public DateTime? RevokedDate { get; set; }
     public bool IsUsed { get; set; }
     public string? CreatedIp { get; set; }
 
     public Guid UserId { get; set; }
-    public User? User { get; set; }
+    public virtual User? User { get; set; }
 }

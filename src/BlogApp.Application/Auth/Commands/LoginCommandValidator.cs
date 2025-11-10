@@ -1,6 +1,6 @@
 using BlogApp.Core.Mediator.Handlers;
 
-namespace BlogApp.Application.Auth.Login.Commands;
+namespace BlogApp.Application.Auth.Commands;
 
 public class LoginCommandValidator : Validator<LoginCommand>
 {

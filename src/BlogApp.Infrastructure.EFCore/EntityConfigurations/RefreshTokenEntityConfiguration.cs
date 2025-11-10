@@ -20,9 +20,14 @@ public class RefreshTokenEntityConfiguration : BaseEntityConfiguration<RefreshTo
             .IsRequired();
         builder.Property(x => x.IsRevoked)
             .IsRequired();
+        builder.Property(x => x.RevokedDate);
         builder.Property(x => x.IsUsed)
             .IsRequired();
         builder.Property(x => x.CreatedIp)
             .IsRequired();
+
+        builder.HasOne(x => x.User)
+            .WithMany(x => x.RefreshTokens)
+            .HasForeignKey(x => x.UserId);
     }
 }

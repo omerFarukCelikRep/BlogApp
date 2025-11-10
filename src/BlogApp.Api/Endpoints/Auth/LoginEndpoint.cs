@@ -1,6 +1,6 @@
 using BlogApp.Api.Endpoints.Auth.Requests;
 using BlogApp.Api.Endpoints.Shared.Responses;
-using BlogApp.Application.Auth.Login.Commands;
+using BlogApp.Application.Auth.Commands;
 using BlogApp.Core.Mediator.Abstractions;
 using BlogApp.Core.Results;
 using BlogApp.Domain.Models.Auth;

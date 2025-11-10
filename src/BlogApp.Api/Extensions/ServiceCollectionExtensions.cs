@@ -1,8 +1,9 @@
 using System.Text.Json.Serialization;
 using Asp.Versioning;
+using BlogApp.Api.BackgroundServices;
 using BlogApp.Api.Filters;
 using BlogApp.Api.Handlers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using BlogApp.Api.Options;
 
 namespace BlogApp.Api.Extensions;
 
@@ -36,10 +37,34 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    private static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
+    {
+        configuration.GetSection(KeyRotationOptions.SectionName).Bind(configuration);
+
+        return services;
+    }
+
+    private static IServiceCollection AddHostedServices(this IServiceCollection services)
+    {
+        services.AddHostedService<KeyRotationBackgroundService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCustomProblemDetails(this IServiceCollection services)
+    {
+        services.AddProblemDetails();
+
+        return services;
+    }
+
     public static IServiceCollection AddApiServices(this IServiceCollection services)
     {
         return services.AddExceptionHandler()
-            .AddControllersServices()
-            .AddApiVersioning();
+            .AddOptions()
+            .AddHostedServices()
+            // .AddControllersServices()
+            .AddApiVersioning()
+            .AddCustomProblemDetails();
     }
 }

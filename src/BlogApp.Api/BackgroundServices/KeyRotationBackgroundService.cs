@@ -13,7 +13,6 @@ public class KeyRotationBackgroundService(IOptions<KeyRotationOptions> options, 
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            //TODO : Son key tarihine göre delay düzenlenecek
             await mediator.Send(new RotateKeyCommand(), stoppingToken);
             await Task.Delay(_rotationPeriod, stoppingToken);
         }
