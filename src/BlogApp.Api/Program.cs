@@ -23,8 +23,6 @@ app.UseAuthorization();
 
 app.UseCustomExceptionHandler();
 
-app.MapControllers();
-
 app.MapEndpoints();
 
 app.Run();

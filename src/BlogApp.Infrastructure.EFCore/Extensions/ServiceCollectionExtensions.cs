@@ -1,4 +1,5 @@
 using BlogApp.Core.EFCore.Extensions;
+using BlogApp.Core.EFCore.Interceptors;
 using BlogApp.Domain.Abstractions.Repositories;
 using BlogApp.Infrastructure.EFCore.Contexts;
 using BlogApp.Infrastructure.EFCore.Repositories;
@@ -11,6 +12,10 @@ public static class ServiceCollectionExtensions
 {
     private static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton<QueryTimingInterceptor>();
+        services.AddSingleton<SaveAuditableChangesInterceptor>();
+        services.AddSingleton<SqlLoggingInterceptor>();
+
         services.AddDbContext<BlogAppDbContext>((serviceProvider, options) =>
         {
             options.UseNpgsql(configuration.GetConnectionString("Default"))
