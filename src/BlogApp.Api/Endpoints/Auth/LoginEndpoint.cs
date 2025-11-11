@@ -10,17 +10,20 @@ namespace BlogApp.Api.Endpoints.Auth;
 
 public static class LoginEndpoint
 {
-    public static RouteHandlerBuilder LoginEndpoints(this RouteGroupBuilder builder)
+    extension(RouteGroupBuilder builder)
     {
-        return builder.Map("login",
-                async (LoginRequest request, CancellationToken cancellationToken, [FromServices] IMediator mediator) =>
-                {
-                    var command = (LoginCommand)request;
-                    var result = await mediator.Send(command, cancellationToken);
+        public RouteHandlerBuilder LoginEndpoints()
+        {
+            return builder.Map("login",
+                    async (LoginRequest request, CancellationToken cancellationToken, [FromServices] IMediator mediator) =>
+                    {
+                        var command = (LoginCommand)request;
+                        var result = await mediator.Send(command, cancellationToken);
 
-                    return new Response<LoginResult>(result);
-                })
-            .HasApiVersion(1)
-            .AllowAnonymous();
+                        return new Response<LoginResult>(result);
+                    })
+                .HasApiVersion(1)
+                .AllowAnonymous();
+        }
     }
 }

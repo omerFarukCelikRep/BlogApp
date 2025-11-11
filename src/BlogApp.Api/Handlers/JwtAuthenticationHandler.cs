@@ -1,96 +1,295 @@
-using BlogApp.Domain.Options;
+using System.Globalization;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
-using BlogApp.Domain.Abstractions.Services;
+using Microsoft.Net.Http.Headers;
 
 namespace BlogApp.Api.Handlers;
 
 public class JwtAuthenticationHandler : JwtBearerHandler
 {
-    private const string AuthorizationHeaderName = "Authorization";
+    private const string JwtTokenStartsWith = "Bearer ";
+    private const string AuthenticationTokenName = "access_token";
+    private const string AuthenticationInvalidToken = "invalid_token";
 
     [Obsolete("Obsolete")]
-    public JwtAuthenticationHandler(IOptionsMonitor<JwtOptions> options, ILoggerFactory logger, UrlEncoder encoder,
-        ISystemClock clock) : base(options, logger, encoder, clock)
+    public JwtAuthenticationHandler(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger,
+        UrlEncoder encoder, ISystemClock clock)
+        : base(options, logger, encoder, clock)
     {
     }
 
-    public JwtAuthenticationHandler(IOptionsMonitor<JwtOptions> options, ILoggerFactory logger, UrlEncoder encoder) :
-        base(options, logger, encoder)
+    public JwtAuthenticationHandler(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger,
+        UrlEncoder encoder)
+        : base(options, logger, encoder)
     {
     }
 
-    private async Task<AuthenticateResult> ValidateAccessToken(string token)
+    private async Task<TokenValidationParameters> SetupValidationParametersAsync()
     {
-        var handlers = Options.TokenHandlers is { Count: > 0 }
-            ? Options.TokenHandlers
-            : [new JwtSecurityTokenHandler()];
-        foreach (var tokenHandler in handlers)
+        var tokenValidationParameters = Options.TokenValidationParameters.Clone();
+        if (Options.ConfigurationManager is BaseConfigurationManager baseConfigurationManager)
         {
-            var validationResult = await tokenHandler.ValidateTokenAsync(token, Options.TokenValidationParameters);
-            if (!validationResult.IsValid || validationResult.ClaimsIdentity == null)
-            {
-                return AuthenticateResult.Fail(string.Empty);
-            }
+            tokenValidationParameters.ConfigurationManager = baseConfigurationManager;
+        }
+        else
+        {
+            if (Options.ConfigurationManager is null)
+                return tokenValidationParameters;
 
-            var principal = new ClaimsPrincipal(validationResult.ClaimsIdentity);
-            return AuthenticateResult.Success(new(principal, Scheme.Name));
+            var configuration = await Options.ConfigurationManager.GetConfigurationAsync(Context.RequestAborted);
+            string[] issuers = [configuration.Issuer];
+            tokenValidationParameters.ValidIssuers = tokenValidationParameters.ValidIssuers is null
+                ? issuers
+                : tokenValidationParameters.ValidIssuers.Concat(issuers);
+            tokenValidationParameters.IssuerSigningKeys = tokenValidationParameters.IssuerSigningKeys is null
+                ? configuration.SigningKeys
+                : tokenValidationParameters.IssuerSigningKeys.Concat(configuration.SigningKeys);
         }
 
-        return AuthenticateResult.Fail(string.Empty);
+        return tokenValidationParameters;
     }
 
-    private async Task<AuthenticateResult> ValidateRefreshToken(string token)
+    private void RecordTokenValidationError(Exception? exception, List<Exception> exceptions)
     {
-        if (!Request.Headers.TryGetValue("X-Refresh-Token", out var refreshTokenHeader))
-            return AuthenticateResult.Fail("Access token is invalid or expired.");
-        var refreshToken = refreshTokenHeader.FirstOrDefault();
+        if (exception is not null)
+        {
+            Logger.LogError(exception, "Token validation failed.");
+            exceptions.Add(exception);
+        }
 
-        if (string.IsNullOrEmpty(refreshToken))
-            return AuthenticateResult.Fail("Access token is invalid or expired.");
-        var refreshTokenService = Context.RequestServices.GetRequiredService<IRefreshTokenService>();
+        if (Options is { RefreshOnIssuerKeyNotFound: true, ConfigurationManager: not null } &&
+            exception is SecurityTokenSignatureKeyNotFoundException)
+            Options.ConfigurationManager.RequestRefresh();
+    }
 
-        if (!await refreshTokenService.IsValidAsync(refreshToken))
-            return AuthenticateResult.Fail("Refresh token is invalid.");
-        var identity = await refreshTokenService.GetClaimsFromRefreshTokenAsync(refreshToken);
-        if (identity == null)
-            return AuthenticateResult.Fail("Refresh token is invalid.");
+    private static string CreateErrorDescription(Exception authFailure)
+    {
+        var exceptions = authFailure is AggregateException agEx
+            ? agEx.InnerExceptions
+            : [authFailure];
 
-        var principal = new ClaimsPrincipal(identity);
-        return AuthenticateResult.Success(new AuthenticationTicket(principal, Scheme.Name));
+        List<string> messages = new(exceptions.Count);
+
+        foreach (var ex in exceptions)
+        {
+            // Order sensitive, some of these exceptions derive from others
+            // and we want to display the most specific message possible.
+            var message = ex switch
+            {
+                SecurityTokenInvalidAudienceException stia =>
+                    $"The audience '{stia.InvalidAudience ?? "(null)"}' is invalid",
+                SecurityTokenInvalidIssuerException stii => $"The issuer '{stii.InvalidIssuer ?? "(null)"}' is invalid",
+                SecurityTokenNoExpirationException _ => "The token has no expiration",
+                SecurityTokenInvalidLifetimeException stil => "The token lifetime is invalid; NotBefore: "
+                                                              + $"'{stil.NotBefore?.ToString(CultureInfo.InvariantCulture) ?? "(null)"}'"
+                                                              + $", Expires: '{stil.Expires?.ToString(CultureInfo.InvariantCulture) ?? "(null)"}'",
+                SecurityTokenNotYetValidException stnyv =>
+                    $"The token is not valid before '{stnyv.NotBefore.ToString(CultureInfo.InvariantCulture)}'",
+                SecurityTokenExpiredException ste =>
+                    $"The token expired at '{ste.Expires.ToString(CultureInfo.InvariantCulture)}'",
+                SecurityTokenSignatureKeyNotFoundException _ => "The signature key was not found",
+                SecurityTokenInvalidSignatureException _ => "The signature is invalid",
+                _ => null,
+            };
+
+            if (message is not null)
+            {
+                messages.Add(message);
+            }
+        }
+
+        return string.Join("; ", messages);
     }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (!Request.Headers.TryGetValue(AuthorizationHeaderName, out var authorizationHeaderValues))
-            return AuthenticateResult.NoResult();
-
-        var authorizationHeader = authorizationHeaderValues.First();
-        if (string.IsNullOrWhiteSpace(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
-            return AuthenticateResult.NoResult();
-
-        var token = authorizationHeader["Bearer ".Length..].Trim();
         try
         {
-            var validationResult = await ValidateAccessToken(token);
-            if (validationResult.Succeeded)
-                return validationResult;
+            var messageReceivedContext = new MessageReceivedContext(Context, Scheme, Options);
+            await Events.MessageReceived(messageReceivedContext);
+            if (messageReceivedContext.Result is not null)
+                return messageReceivedContext.Result;
 
-            return await ValidateRefreshToken(token);
-        }
-        catch (SecurityTokenExpiredException)
-        {
-            return AuthenticateResult.Fail("Access token has expired.");
+            var token = messageReceivedContext.Token;
+            if (string.IsNullOrEmpty(token))
+            {
+                var authorization = Request.Headers.Authorization.ToString();
+                if (string.IsNullOrEmpty(authorization))
+                    return AuthenticateResult.NoResult();
+
+                if (authorization.StartsWith(JwtTokenStartsWith, StringComparison.OrdinalIgnoreCase))
+                    token = authorization[JwtTokenStartsWith.Length..].Trim();
+
+                if (string.IsNullOrEmpty(token))
+                    return AuthenticateResult.NoResult();
+            }
+
+            var tokenValidationParameters = await SetupValidationParametersAsync();
+            List<Exception> exceptions = [];
+            SecurityToken? validatedToken = null;
+            ClaimsPrincipal? principal = null;
+
+            if (!Options.UseSecurityTokenValidators)
+            {
+                try
+                {
+                    foreach (var tokenHandler in Options.TokenHandlers)
+                    {
+                        var tokenValidationResult =
+                            await tokenHandler.ValidateTokenAsync(token, tokenValidationParameters);
+                        if (tokenValidationResult.IsValid)
+                        {
+                            principal = new(tokenValidationResult.ClaimsIdentity);
+                            validatedToken = tokenValidationResult.SecurityToken;
+                            break;
+                        }
+
+                        RecordTokenValidationError(tokenValidationResult.Exception
+                                                   ?? new SecurityTokenValidationException(
+                                                       $"The TokenHandler: '{tokenHandler}', was unable to validate the Token."),
+                            exceptions);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    RecordTokenValidationError(ex, exceptions);
+                }
+            }
+
+            if (principal is not null && validatedToken is not null)
+            {
+                var tokenValidatedContext = new TokenValidatedContext(Context, Scheme, Options)
+                {
+                    Principal = principal,
+                    SecurityToken = validatedToken,
+                    Properties =
+                    {
+                        ExpiresUtc = validatedToken.ValidTo,
+                        IssuedUtc = validatedToken.ValidFrom
+                    }
+                };
+
+                await Events.TokenValidated(tokenValidatedContext);
+                if (tokenValidatedContext.Result is not null)
+                    return tokenValidatedContext.Result;
+
+                if (Options.SaveToken)
+                {
+                    tokenValidatedContext.Properties.StoreTokens([
+                        new AuthenticationToken
+                        {
+                            Name = AuthenticationTokenName,
+                            Value = token
+                        }
+                    ]);
+                }
+
+                tokenValidatedContext.Success();
+                return tokenValidatedContext.Result!;
+            }
+
+            if (exceptions is not { Count: > 0 })
+                return AuthenticateResult.Fail(!Options.UseSecurityTokenValidators
+                    ? "No TokenHandler was able to validate the token."
+                    : "No SecurityTokenValidator available for token.");
+
+            var authenticationFailedContext = new AuthenticationFailedContext(Context, Scheme, Options)
+            {
+                Exception = exceptions.Count > 1 ? new AggregateException(exceptions) : exceptions[0]
+            };
+
+            await Events.AuthenticationFailed(authenticationFailedContext);
+            return authenticationFailedContext.Result ??
+                   AuthenticateResult.Fail(authenticationFailedContext.Exception);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Token validation failed.");
-            return AuthenticateResult.Fail("Authentication failed.");
+
+            var authenticationFailedContext = new AuthenticationFailedContext(Context, Scheme, Options)
+            {
+                Exception = ex
+            };
+
+            await Events.AuthenticationFailed(authenticationFailedContext);
+            if (authenticationFailedContext.Result is not null)
+                return authenticationFailedContext.Result;
+
+            throw;
         }
+    }
+
+    protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
+    {
+        var authResult = await HandleAuthenticateOnceSafeAsync();
+        var eventContext = new JwtBearerChallengeContext(Context, Scheme, Options, properties)
+        {
+            AuthenticateFailure = authResult.Failure
+        };
+
+        if (Options.IncludeErrorDetails && eventContext.AuthenticateFailure is not null)
+        {
+            eventContext.Error = AuthenticationInvalidToken;
+            eventContext.ErrorDescription = CreateErrorDescription(eventContext.AuthenticateFailure);
+        }
+
+        await Events.Challenge(eventContext);
+        if (eventContext.Handled)
+            return;
+
+        Response.StatusCode = StatusCodes.Status401Unauthorized;
+
+        if (string.IsNullOrEmpty(eventContext.Error) && string.IsNullOrEmpty(eventContext.ErrorDescription) &&
+            string.IsNullOrEmpty(eventContext.ErrorUri))
+        {
+            Response.Headers.Append(HeaderNames.WWWAuthenticate, Options.Challenge);
+            return;
+        }
+
+        var builder = new StringBuilder(Options.Challenge);
+        if (Options.Challenge.IndexOf(' ') > 0)
+        {
+            // Only add a comma after the first param, if any
+            builder.Append(',');
+        }
+
+        if (!string.IsNullOrEmpty(eventContext.Error))
+        {
+            builder.Append(" error=\"");
+            builder.Append(eventContext.Error);
+            builder.Append('\"');
+        }
+
+        if (!string.IsNullOrEmpty(eventContext.ErrorDescription))
+        {
+            if (!string.IsNullOrEmpty(eventContext.Error))
+            {
+                builder.Append(',');
+            }
+
+            builder.Append(" error_description=\"");
+            builder.Append(eventContext.ErrorDescription);
+            builder.Append('\"');
+        }
+
+        if (!string.IsNullOrEmpty(eventContext.ErrorUri))
+        {
+            if (!string.IsNullOrEmpty(eventContext.Error) ||
+                !string.IsNullOrEmpty(eventContext.ErrorDescription))
+            {
+                builder.Append(',');
+            }
+
+            builder.Append(" error_uri=\"");
+            builder.Append(eventContext.ErrorUri);
+            builder.Append('\"');
+        }
+
+        Response.Headers.Append(HeaderNames.WWWAuthenticate, builder.ToString());
     }
 }

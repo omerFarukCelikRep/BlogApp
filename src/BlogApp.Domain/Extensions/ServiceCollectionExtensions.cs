@@ -6,16 +6,19 @@ namespace BlogApp.Domain.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    private static IServiceCollection AddServices(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddScoped<IAuthenticationService, AuthenticationService>();
-        return services;
-    }
+        private IServiceCollection AddServices()
+        {
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            return services;
+        }
 
-    public static IServiceCollection AddDomainServices(this IServiceCollection services)
-    {
-        services.AddServices();
+        public IServiceCollection AddDomainServices()
+        {
+            services.AddServices();
 
-        return services;
+            return services;
+        }
     }
 }

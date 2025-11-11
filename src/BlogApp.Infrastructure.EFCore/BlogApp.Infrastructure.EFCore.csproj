@@ -1,19 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BlogApp.Core.EFCore\BlogApp.Core.EFCore.csproj" />
-      <ProjectReference Include="..\BlogApp.Domain\BlogApp.Domain.csproj" />
+        <ProjectReference Include="..\BlogApp.Core.EFCore\BlogApp.Core.EFCore.csproj"/>
+        <ProjectReference Include="..\BlogApp.Domain\BlogApp.Domain.csproj"/>
     </ItemGroup>
 
 </Project>

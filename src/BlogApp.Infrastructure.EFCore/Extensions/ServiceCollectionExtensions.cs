@@ -1,4 +1,3 @@
-using BlogApp.Core.EFCore.Extensions;
 using BlogApp.Core.EFCore.Interceptors;
 using BlogApp.Domain.Abstractions.Repositories;
 using BlogApp.Infrastructure.EFCore.Contexts;
@@ -10,42 +9,45 @@ namespace BlogApp.Infrastructure.EFCore.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    private static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services.AddSingleton<QueryTimingInterceptor>();
-        services.AddSingleton<SaveAuditableChangesInterceptor>();
-        services.AddSingleton<SqlLoggingInterceptor>();
-
-        services.AddDbContext<BlogAppDbContext>((serviceProvider, options) =>
+        private IServiceCollection AddDbContext(IConfiguration configuration)
         {
-            options.UseNpgsql(configuration.GetConnectionString("Default"))
-                .AddInterceptors(serviceProvider);
-            options.UseLazyLoadingProxies();
-        });
+            services.AddSingleton<QueryTimingInterceptor>();
+            services.AddSingleton<SaveAuditableChangesInterceptor>();
+            services.AddSingleton<SqlLoggingInterceptor>();
 
-        return services;
-    }
+            services.AddDbContext<BlogAppDbContext>((serviceProvider, options) =>
+            {
+                options.UseNpgsql(configuration.GetConnectionString("Default"))
+                    .AddInterceptors(serviceProvider);
+                options.UseLazyLoadingProxies();
+            });
 
-    private static IServiceCollection AddRepositories(this IServiceCollection services)
-    {
-        services.AddScoped<IBlogRepository, BlogRepository>()
-            .AddScoped<ICategoryRepository, CategoryRepository>()
-            .AddScoped<ICommentRepository, CommentRepository>()
-            .AddScoped<ILikeRepository, LikeRepository>()
-            .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>()
-            .AddScoped<IRoleRepository, RoleRepository>()
-            .AddScoped<ITagRepository, TagRepository>()
-            .AddScoped<IUserRepository, UserRepository>()
-            .AddScoped<ISigningKeyRepository, SigningKeyRepository>();
+            return services;
+        }
 
-        return services;
-    }
+        private IServiceCollection AddRepositories()
+        {
+            services.AddScoped<IBlogRepository, BlogRepository>()
+                .AddScoped<ICategoryRepository, CategoryRepository>()
+                .AddScoped<ICommentRepository, CommentRepository>()
+                .AddScoped<ILikeRepository, LikeRepository>()
+                .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>()
+                .AddScoped<IRoleRepository, RoleRepository>()
+                .AddScoped<ITagRepository, TagRepository>()
+                .AddScoped<IUserRepository, UserRepository>()
+                .AddScoped<ISigningKeyRepository, SigningKeyRepository>();
 
-    public static IServiceCollection AddEFCoreServices(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddDbContext(configuration)
-            .AddRepositories();
+            return services;
+        }
 
-        return services;
+        public IServiceCollection AddEFCoreServices(IConfiguration configuration)
+        {
+            services.AddDbContext(configuration)
+                .AddRepositories();
+
+            return services;
+        }
     }
 }

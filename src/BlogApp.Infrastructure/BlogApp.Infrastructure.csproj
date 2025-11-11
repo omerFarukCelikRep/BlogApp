@@ -1,14 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup> 
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+  
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\BlogApp.Infrastructure.EFCore\BlogApp.Infrastructure.EFCore.csproj" />
-    <ProjectReference Include="..\BlogApp.Infrastructure.Security\BlogApp.Infrastructure.Security.csproj" />
-  </ItemGroup> 
+    <ItemGroup>
+        <ProjectReference Include="..\BlogApp.Infrastructure.EFCore\BlogApp.Infrastructure.EFCore.csproj"/>
+        <ProjectReference Include="..\BlogApp.Infrastructure.Security\BlogApp.Infrastructure.Security.csproj"/>
+    </ItemGroup>
 
 </Project>

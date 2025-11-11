@@ -6,13 +6,15 @@ namespace BlogApp.Infrastructure.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services,
-        IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services.AddHttpContextAccessor()
-            .AddEFCoreServices(configuration)
-            .AddAuthorization();
+        public IServiceCollection AddInfrastructureServices(IConfiguration configuration)
+        {
+            services.AddHttpContextAccessor()
+                .AddEFCoreServices(configuration)
+                .AddAuthorization();
 
-        return services;
+            return services;
+        }
     }
 }
