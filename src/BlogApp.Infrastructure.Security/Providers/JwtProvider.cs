@@ -21,7 +21,7 @@ public class JwtProvider(
 
     public async Task<string> GenerateTokenAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var user = await userRepository.GetByIdAsync(userId, false, cancellationToken);
+        var user = await userRepository.GetByIdAsync(userId, true, cancellationToken);
         if (user is null)
             throw new UserNotFoundException();
 
