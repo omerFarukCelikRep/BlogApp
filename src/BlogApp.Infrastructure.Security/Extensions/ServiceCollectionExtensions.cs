@@ -17,16 +17,16 @@ public static class ServiceCollectionExtensions
             services.ConfigureOptions<JwtBearerOptionsSetup>();
 
             services.AddScoped<IDomainPrincipal, DomainPrincipal>();
-            services.AddSingleton<IJwtProvider, JwtProvider>();
+            services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IRoleManager, RoleManager>();
-            services.AddSingleton<IAuthorizationManager, AuthorizationManager>();
+            services.AddScoped<IAuthorizationManager, AuthorizationManager>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme);
             return services;
         }
 
-        public IServiceCollection AddInfrastructureServices(IConfiguration configuration)
+        public IServiceCollection AddSecurityServices(IConfiguration configuration)
         {
             services.AddAuthorization();
 

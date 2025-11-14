@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BlogApp.Infrastructure.EFCore.Extensions;
+using BlogApp.Infrastructure.Security.Extensions;
 
 namespace BlogApp.Infrastructure.Extensions;
 
@@ -12,7 +13,7 @@ public static class ServiceCollectionExtensions
         {
             services.AddHttpContextAccessor()
                 .AddEFCoreServices(configuration)
-                .AddAuthorization();
+                .AddSecurityServices(configuration);
 
             return services;
         }
