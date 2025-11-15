@@ -4,67 +4,77 @@ using BlogApp.Api.BackgroundServices;
 using BlogApp.Api.Filters;
 using BlogApp.Api.Handlers;
 using BlogApp.Api.Options;
+using BlogApp.Core.Mediator.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace BlogApp.Api.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    private static IServiceCollection AddExceptionHandler(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        return services.AddExceptionHandler<ExceptionHandler>();
-    }
-
-    private static IServiceCollection AddControllersServices(this IServiceCollection services)
-    {
-        services.AddControllers(options => options.Filters.Add<TimingActionFilter>())
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
-            });
-        return services;
-    }
-
-    private static IServiceCollection AddApiVersioning(this IServiceCollection services)
-    {
-        services.AddApiVersioning(options =>
+        private IServiceCollection AddExceptionHandler()
         {
-            options.DefaultApiVersion = new ApiVersion(1, 0);
-            options.AssumeDefaultVersionWhenUnspecified = true;
-            options.ReportApiVersions = true;
-        });
+            return services.AddExceptionHandler<ExceptionHandler>();
+        }
 
-        return services;
-    }
+        private IServiceCollection AddControllersServices()
+        {
+            services.AddControllers(options => options.Filters.Add<TimingActionFilter>())
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
+                });
+            return services;
+        }
 
-    private static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
-    {
-        configuration.GetSection(KeyRotationOptions.SectionName).Bind(configuration);
+        private IServiceCollection AddApiVersioning()
+        {
+            services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = ApiVersionReader.Combine(
+                    new UrlSegmentApiVersionReader(),
+                    new HeaderApiVersionReader());
+            });
 
-        return services;
-    }
+            return services;
+        }
 
-    private static IServiceCollection AddHostedServices(this IServiceCollection services)
-    {
-        services.AddHostedService<KeyRotationBackgroundService>();
+        private IServiceCollection AddAppOptions()
+        {
+            services.ConfigureOptions<KeyRotationOptionsSetup>();
 
-        return services;
-    }
+            return services;
+        }
 
-    private static IServiceCollection AddCustomProblemDetails(this IServiceCollection services)
-    {
-        services.AddProblemDetails();
+        private IServiceCollection AddHostedServices()
+        {
+            services.AddHostedService<KeyRotationBackgroundService>();
 
-        return services;
-    }
+            return services;
+        }
 
-    public static IServiceCollection AddApiServices(this IServiceCollection services)
-    {
-        return services.AddExceptionHandler()
-            .AddOptions()
-            .AddHostedServices()
-            // .AddControllersServices()
-            .AddApiVersioning()
-            .AddCustomProblemDetails();
+        private IServiceCollection AddCustomProblemDetails()
+        {
+            services.AddProblemDetails();
+
+            return services;
+        }
+
+        public IServiceCollection AddApiServices()
+        {
+            return services
+                .AddHttpContextAccessor()
+                .AddExceptionHandler()
+                .AddAppOptions()
+                .AddHostedServices()
+                // .AddControllersServices()
+                .AddApiVersioning()
+                .AddCustomProblemDetails();
+        }
     }
 }

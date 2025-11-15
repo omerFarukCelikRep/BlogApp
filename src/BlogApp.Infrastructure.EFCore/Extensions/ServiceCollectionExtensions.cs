@@ -4,6 +4,7 @@ using BlogApp.Infrastructure.EFCore.Contexts;
 using BlogApp.Infrastructure.EFCore.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using BlogApp.Core.EFCore.Extensions;
 
 namespace BlogApp.Infrastructure.EFCore.Extensions;
 
@@ -17,10 +18,18 @@ public static class ServiceCollectionExtensions
             services.AddSingleton<SaveAuditableChangesInterceptor>();
             services.AddSingleton<SqlLoggingInterceptor>();
 
-            services.AddDbContext<BlogAppDbContext>((serviceProvider, options) =>
+            services.AddDbContextFactory<BlogAppDbContext>((serviceProvider, options) =>
             {
-                options.UseNpgsql(configuration.GetConnectionString("Default"))
-                    .AddInterceptors(serviceProvider);
+                options.UseSqlServer(configuration.GetConnectionString("Default"),
+                        builder =>
+                        {
+                            builder.MigrationsAssembly(typeof(BlogAppDbContext).Assembly.FullName);
+                            builder.EnableRetryOnFailure();
+                        })
+                    .AddInterceptors(serviceProvider)
+                    .UseLazyLoadingProxies();
+                // options.UseNpgsql(configuration.GetConnectionString("Default")) //TODO:PostgreSql paketi güncellenince düzeltilecek
+                //     .AddInterceptors(serviceProvider);
                 options.UseLazyLoadingProxies();
             });
 

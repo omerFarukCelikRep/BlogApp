@@ -1,3 +1,5 @@
+using Asp.Versioning;
+using Asp.Versioning.Builder;
 using BlogApp.Api.Endpoints.Auth.Requests;
 using BlogApp.Api.Endpoints.Shared.Responses;
 using BlogApp.Application.Auth.Commands;
@@ -19,7 +21,6 @@ public static class RegisterEndpoint
 
                     return new Response(result);
                 })
-            .HasApiVersion(1)
             .AllowAnonymous();
     }
 }

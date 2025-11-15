@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
-        private IServiceCollection AddAuthorization()
+        private IServiceCollection AddAuthentication()
         {
             services.ConfigureOptions<JwtOptionsSetup>();
             services.ConfigureOptions<JwtBearerOptionsSetup>();
@@ -23,12 +23,14 @@ public static class ServiceCollectionExtensions
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme);
+
+            services.AddAuthorization();
             return services;
         }
 
         public IServiceCollection AddSecurityServices(IConfiguration configuration)
         {
-            services.AddAuthorization();
+            services.AddAuthentication();
 
             return services;
         }
