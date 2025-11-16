@@ -18,11 +18,7 @@ public class SigningKeyService(ISigningKeyRepository signingKeyRepository, IOpti
         var activeKey = await signingKeyRepository.GetAsync(x => x.IsActive, true, cancellationToken);
         if (activeKey is null || activeKey.ExpireDate < DateTime.Now)
         {
-            if (activeKey is not null)
-            {
-                activeKey.IsActive = false;
-                await signingKeyRepository.UpdateAsync(activeKey, cancellationToken);
-            }
+            activeKey?.IsActive = false;
 
             using var rsa = RSA.Create(KeySizeInBits);
             var privateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());

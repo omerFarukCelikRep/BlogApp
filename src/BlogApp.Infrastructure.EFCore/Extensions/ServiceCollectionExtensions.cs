@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
             services.AddSingleton<SaveAuditableChangesInterceptor>();
             services.AddSingleton<SqlLoggingInterceptor>();
 
-            services.AddDbContext<BlogAppDbContext>((serviceProvider, options) =>
+            services.AddDbContextPool<BlogAppDbContext>((serviceProvider, options) =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("Default"),
                         builder =>
@@ -37,7 +37,8 @@ public static class ServiceCollectionExtensions
 
         private IServiceCollection AddRepositories()
         {
-            services.AddScoped<IBlogRepository, BlogRepository>()
+            services.AddScoped(typeof(EFBaseRepository<,>))
+                .AddScoped<IBlogRepository, BlogRepository>()
                 .AddScoped<ICategoryRepository, CategoryRepository>()
                 .AddScoped<ICommentRepository, CommentRepository>()
                 .AddScoped<ILikeRepository, LikeRepository>()

@@ -9,8 +9,7 @@ public static class ServiceCollectionExtensions
 {
     private static void RegisterHandlers(IServiceProvider provider, ServiceDescriptor service, Registry registry)
     {
-        using var scope = provider.CreateScope();
-        var handlers = scope.ServiceProvider.GetServices(service.ServiceType);
+        var handlers = provider.GetServices(service.ServiceType);
         foreach (var handler in handlers.Where(s => s is not null))
         {
             var handlerInterface = handler!.GetType().GetInterfaces().First();
@@ -26,7 +25,7 @@ public static class ServiceCollectionExtensions
         if (assemblies is not { Count: > 0 })
             assemblies = [Assembly.GetExecutingAssembly()];
 
-        services.AddSingleton<IMediator, Handlers.Mediator>();
+        services.AddScoped<IMediator, Handlers.Mediator>();
 
         foreach (var handlerType in assemblies.Select(assembly => assembly.ExportedTypes.Where(t =>
                          t.GetInterfaces()
@@ -38,7 +37,7 @@ public static class ServiceCollectionExtensions
             services.AddScoped(handlerType);
         }
 
-        services.AddSingleton<Registry>(provider =>
+        services.AddScoped<Registry>(provider =>
         {
             var registry = new Registry();
             foreach (var service in services)

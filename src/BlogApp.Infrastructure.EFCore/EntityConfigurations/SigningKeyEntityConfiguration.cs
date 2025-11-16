@@ -4,9 +4,13 @@ namespace BlogApp.Infrastructure.EFCore.EntityConfigurations;
 
 public class SigningKeyEntityConfiguration : SoftDeletableEntityConfiguration<SigningKey>
 {
+    private const string TableName = "SigningKeys";
+
     public override void Configure(EntityTypeBuilder<SigningKey> builder)
     {
         base.Configure(builder);
+
+        builder.ToTable(TableName);
 
         builder.Property(s => s.KeyId)
             .IsRequired();
