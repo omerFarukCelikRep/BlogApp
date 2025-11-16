@@ -1,9 +1,11 @@
+using BlogApp.Domain.Abstractions.Services;
+
 namespace BlogApp.Application.SingingKeys.Commands;
 
-public class RotateKeyCommandHandler : IRequestHandler<RotateKeyCommand>
+public class RotateKeyCommandHandler(ISigningKeyService signingKeyService) : IRequestHandler<RotateKeyCommand>
 {
-    public Task Handle(RotateKeyCommand request, CancellationToken cancellationToken = default)
+    public async Task Handle(RotateKeyCommand request, CancellationToken cancellationToken = default)
     {
-        return Task.CompletedTask;
+        await signingKeyService.RotateKeysAsync(cancellationToken);
     }
 }

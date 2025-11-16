@@ -11,6 +11,8 @@ public static class ServiceCollectionExtensions
         private IServiceCollection AddServices()
         {
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+            services.AddScoped<ISigningKeyService, SigningKeyService>();
             return services;
         }
 

@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
             services.AddSingleton<SaveAuditableChangesInterceptor>();
             services.AddSingleton<SqlLoggingInterceptor>();
 
-            services.AddDbContextFactory<BlogAppDbContext>((serviceProvider, options) =>
+            services.AddDbContext<BlogAppDbContext>((serviceProvider, options) =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("Default"),
                         builder =>
@@ -30,7 +30,6 @@ public static class ServiceCollectionExtensions
                     .UseLazyLoadingProxies();
                 // options.UseNpgsql(configuration.GetConnectionString("Default")) //TODO:PostgreSql paketi güncellenince düzeltilecek
                 //     .AddInterceptors(serviceProvider);
-                options.UseLazyLoadingProxies();
             });
 
             return services;

@@ -1,3 +1,4 @@
+using BlogApp.Domain.Options;
 using Microsoft.Extensions.Options;
 
 namespace BlogApp.Api.Options;

@@ -1,4 +1,4 @@
-namespace BlogApp.Api.Options;
+namespace BlogApp.Domain.Options;
 
 public class KeyRotationOptions
 {
