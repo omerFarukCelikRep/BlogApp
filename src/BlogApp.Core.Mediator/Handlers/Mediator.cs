@@ -1,4 +1,5 @@
 using BlogApp.Core.Mediator.Abstractions;
+using BlogApp.Core.Mediator.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlogApp.Core.Mediator.Handlers;
@@ -6,32 +7,22 @@ namespace BlogApp.Core.Mediator.Handlers;
 public class Mediator(IServiceProvider serviceProvider, Registry registry)
     : IMediator
 {
-    private void ValidateHandler<TRequest>()
-    {
-        if (!registry.HasHandler<TRequest>())
-            throw new InvalidOperationException($"No handler registered for {typeof(TRequest).Name}");
-    }
-
-    private IRequestHandler<TRequest>? ResolveHandlerFromProvider<TRequest>(IRequest request)
+    private IRequestHandler<TRequest>? ResolveHandlerFromProvider<TRequest>()
         where TRequest : IRequest
     {
-        var handlerType = typeof(IRequestHandler<>).MakeGenericType(request.GetType());
-        return serviceProvider.GetService(handlerType) as IRequestHandler<TRequest>;
+        return serviceProvider.GetService<IRequestHandler<TRequest>>();
     }
 
-    private IRequestHandler<TRequest, TResponse>? ResolveHandlerFromProvider<TRequest, TResponse>(
-        IRequest<TResponse> request)
+    private IRequestHandler<TRequest, TResponse>? ResolveHandlerFromProvider<TRequest, TResponse>()
         where TRequest : IRequest<TResponse>
     {
-        var handlerType = typeof(IRequestHandler<,>).MakeGenericType(request.GetType(), typeof(TResponse));
-        return serviceProvider.GetService(handlerType) as IRequestHandler<TRequest, TResponse>;
+        return serviceProvider.GetRequiredService<IRequestHandler<TRequest, TResponse>>();
     }
 
     public async Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : IRequest
     {
-        var handler = registry.GetHandler<TRequest>()
-                      ?? ResolveHandlerFromProvider<TRequest>(request);
+        var handler = ResolveHandlerFromProvider<TRequest>();
         if (handler is null)
             throw new InvalidOperationException($"No handler registered for {typeof(TRequest).Name}");
 
@@ -54,11 +45,10 @@ public class Mediator(IServiceProvider serviceProvider, Registry registry)
         await handlerDelegate();
     }
 
-    public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request,
-        CancellationToken cancellationToken = default)
+    public async Task<TResponse> Send<TRequest, TResponse>(TRequest request,
+        CancellationToken cancellationToken = default) where TRequest : IRequest<TResponse>
     {
-        var handler = registry.GetHandler<IRequest<TResponse>, TResponse>()
-                      ?? ResolveHandlerFromProvider<IRequest<TResponse>, TResponse>(request);
+        var handler = ResolveHandlerFromProvider<TRequest, TResponse>();
 
         if (handler is null)
             throw new InvalidOperationException($"No handler registered for {typeof(IRequest<TResponse>).Name}");

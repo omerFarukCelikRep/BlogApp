@@ -2,6 +2,7 @@ using System.Reflection;
 using BlogApp.Core.Mediator.Abstractions;
 using BlogApp.Core.Mediator.Handlers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace BlogApp.Core.Mediator.Extensions;
 
@@ -20,24 +21,31 @@ public static class ServiceCollectionExtensions
         }
     }
 
+    private static void AddHandlers(List<Assembly> assemblies, Type genericType, IServiceCollection services)
+    {
+        foreach (var handlerType in assemblies.Select(assembly => assembly.ExportedTypes.Where(t =>
+                         t.GetInterfaces()
+                             .Any(y => y.IsGenericType && (y.GetGenericTypeDefinition() == genericType))))
+                     .SelectMany(handlerTypes => handlerTypes))
+        {
+            var interfaces = handlerType.GetInterface(genericType.Name);
+            var interType = genericType.MakeGenericType(interfaces!.GetGenericArguments());
+
+            services.TryAddTransient(interType, handlerType);
+        }
+    }
+
     public static IServiceCollection AddMediator(this IServiceCollection services, params List<Assembly> assemblies)
     {
         if (assemblies is not { Count: > 0 })
             assemblies = [Assembly.GetExecutingAssembly()];
 
-        services.AddScoped<IMediator, Handlers.Mediator>();
+        services.AddTransient<IMediator, Handlers.Mediator>();
 
-        foreach (var handlerType in assemblies.Select(assembly => assembly.ExportedTypes.Where(t =>
-                         t.GetInterfaces()
-                             .Any(y => y.IsGenericType && (y.GetGenericTypeDefinition() == typeof(IRequestHandler<>) ||
-                                                           y.GetGenericTypeDefinition() ==
-                                                           typeof(IRequestHandler<,>)))))
-                     .SelectMany(handlerTypes => handlerTypes))
-        {
-            services.AddScoped(handlerType);
-        }
+        AddHandlers(assemblies, typeof(IRequestHandler<>), services);
+        AddHandlers(assemblies, typeof(IRequestHandler<,>), services);
 
-        services.AddScoped<Registry>(provider =>
+        services.AddSingleton<Registry>(provider =>
         {
             var registry = new Registry();
             foreach (var service in services)
@@ -69,39 +77,6 @@ public static class ServiceCollectionExtensions
 
             return registry;
         });
-
-        return services;
-    }
-
-
-    public static IServiceCollection AddMediatorAlt(this IServiceCollection services, params List<Assembly> assemblies)
-    {
-        if (assemblies is not { Count: > 0 })
-            assemblies = [Assembly.GetExecutingAssembly()];
-
-        services.AddSingleton<IMediator, Handlers.Mediator>();
-
-        var mediatorTypes = assemblies.SelectMany(x => x.GetTypes())
-            .Where(x => x is { IsAbstract: false, IsInterface: false })
-            .SelectMany(x => x.GetInterfaces(), (impl, iface) => new { impl, iface })
-            .Where(x => x.iface.IsGenericType && (x.iface.GetGenericTypeDefinition() == typeof(IRequestHandler<,>) ||
-                                                  x.iface.GetGenericTypeDefinition() == typeof(IPipelineBehavior<,>)))
-            .ToList();
-
-        var handlerTypes = mediatorTypes.Where(x => x.iface.GetGenericTypeDefinition() == typeof(IRequestHandler<,>));
-
-        foreach (var handlerType in handlerTypes)
-        {
-            services.AddScoped(handlerType.iface, handlerType.impl);
-        }
-
-        var behaviorTypes =
-            mediatorTypes.Where(x => x.iface.GetGenericTypeDefinition() == typeof(IPipelineBehavior<,>));
-
-        foreach (var behaviorType in behaviorTypes)
-        {
-            services.AddScoped(behaviorType.iface, behaviorType.impl);
-        }
 
         return services;
     }

@@ -1,4 +1,4 @@
-namespace BlogApp.Core.Mediator.Abstractions;
+namespace BlogApp.Core.Mediator.ValueObjects;
 
 public readonly record struct NonResponse
 {

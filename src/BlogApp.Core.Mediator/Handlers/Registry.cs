@@ -32,17 +32,16 @@ public class Registry
             typeList.Add(typeof(TBehavior));
     }
 
-    public bool HasHandler<TRequest>() => _handlers.ContainsKey(typeof(TRequest));
-
-    public IRequestHandler<TRequest>? GetHandler<TRequest>() where TRequest : IRequest
+    public IRequestHandler<TRequest>? GetHandler<TRequest>(Type requestType) where TRequest : IRequest
     {
-        _handlers.TryGetValue(typeof(TRequest), out var value);
+        _handlers.TryGetValue(requestType, out var value);
         return value as IRequestHandler<TRequest>;
     }
 
-    public IRequestHandler<TRequest, TResponse>? GetHandler<TRequest, TResponse>() where TRequest : IRequest<TResponse>
+    public IRequestHandler<TRequest, TResponse>? GetHandler<TRequest, TResponse>(Type requestType)
+        where TRequest : IRequest<TResponse>
     {
-        _handlers.TryGetValue(typeof(TRequest), out var value);
+        _handlers.TryGetValue(requestType, out var value);
         return value as IRequestHandler<TRequest, TResponse>;
     }
 
@@ -50,11 +49,12 @@ public class Registry
         IServiceProvider provider)
         where TRequest : IRequest<TResponse>
     {
+        using var scope = provider.CreateScope();
         if (!_behaviors.TryGetValue(typeof(TRequest), out var types))
             yield break;
 
         var behaviors = types as List<Type> ?? [];
-        foreach (var instance in behaviors.Select(provider.GetService))
+        foreach (var instance in behaviors.Select(scope.ServiceProvider.GetService))
         {
             if (instance is IPipelineBehavior<TRequest, TResponse> behavior)
                 yield return behavior;
