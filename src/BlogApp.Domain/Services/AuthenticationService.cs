@@ -36,14 +36,14 @@ public class AuthenticationService(
     public async Task<Result> RegisterAsync(RegisterArgs args, CancellationToken cancellationToken = default)
     {
         var userExist =
-            await userRepository.AnyAsync(x => x.Email.Equals(args.Email, StringComparison.OrdinalIgnoreCase),
+            await userRepository.AnyAsync(x => x.Email.ToLower().Equals(args.Email.ToLower()),
                 cancellationToken);
         if (userExist)
             return Result.Failed("Email already in user", 400); //TODO : Resource Magic string
 
         var hashedPassword = PasswordHasher.HashPassword(args.Password);
         var role = await roleRepository.GetAsync(
-            x => x.Name.Equals(nameof(Role.Author), StringComparison.OrdinalIgnoreCase), tracking: false,
+            x => x.Name.Equals(nameof(Role.Author)), tracking: false,
             cancellationToken);
         User user = new()
         {
@@ -57,7 +57,7 @@ public class AuthenticationService(
         user.Roles.Add(new()
         {
             User = user,
-            Role = role
+            RoleId = role!.Id
         });
 
         await userRepository.AddAsync(user, cancellationToken);

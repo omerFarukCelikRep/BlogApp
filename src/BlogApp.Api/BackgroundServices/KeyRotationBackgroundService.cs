@@ -1,4 +1,3 @@
-using BlogApp.Api.Options;
 using BlogApp.Application.SingingKeys.Commands;
 using BlogApp.Core.Mediator.Abstractions;
 using BlogApp.Domain.Options;

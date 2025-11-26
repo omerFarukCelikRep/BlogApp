@@ -15,14 +15,14 @@ public static class LoginEndpoint
         public RouteHandlerBuilder LoginEndpoints()
         {
             return builder.Map("login",
-                    async (LoginRequest request, CancellationToken cancellationToken, [FromServices] IMediator mediator) =>
+                    async (LoginRequest request, CancellationToken cancellationToken,
+                        [FromServices] IMediator mediator) =>
                     {
                         var command = (LoginCommand)request;
-                        var result = await mediator.Send(command, cancellationToken);
+                        var result = await mediator.Send<LoginCommand, Result<LoginResult>>(command, cancellationToken);
 
                         return new Response<LoginResult>(result);
                     })
-                .HasApiVersion(1)
                 .AllowAnonymous();
         }
     }

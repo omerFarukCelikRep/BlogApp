@@ -4,7 +4,7 @@ namespace BlogApp.Infrastructure.EFCore.EntityConfigurations;
 
 public class SigningKeyEntityConfiguration : SoftDeletableEntityConfiguration<SigningKey>
 {
-    private const string TableName = "SigningKeys";
+    private const string TableName = "signing_keys";
 
     public override void Configure(EntityTypeBuilder<SigningKey> builder)
     {

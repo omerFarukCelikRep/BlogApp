@@ -1,14 +1,19 @@
-namespace BlogApp.Api.Handlers;
+using BlogApp.Api.Handlers;
+
+namespace BlogApp.Api.Extensions;
 
 public static class ApplicationBuilderExtensions
 {
-    public static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder app)
+    extension(IApplicationBuilder app)
     {
-        return app.UseExceptionHandler();
-    }
+        public IApplicationBuilder UseCustomExceptionHandler()
+        {
+            return app.UseExceptionHandler();
+        }
 
-    public static IApplicationBuilder UseCorrelation(this IApplicationBuilder app)
-    {
-        return app.UseMiddleware<CorrelationHandler>();
+        public IApplicationBuilder UseCorrelation()
+        {
+            return app.UseMiddleware<CorrelationHandler>();
+        }
     }
 }

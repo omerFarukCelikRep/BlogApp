@@ -18,9 +18,7 @@ public static class ServiceCollectionExtensions
 
         public IServiceCollection AddDomainServices()
         {
-            services.AddServices();
-
-            return services;
+            return services.AddServices();
         }
     }
 }

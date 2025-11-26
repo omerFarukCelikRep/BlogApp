@@ -4,7 +4,7 @@ namespace BlogApp.Infrastructure.EFCore.EntityConfigurations;
 
 public class RefreshTokenEntityConfiguration : BaseEntityConfiguration<RefreshToken>
 {
-    private const string TableName = "RefreshTokens";
+    private const string TableName = "refresh_tokens";
 
     public override void Configure(EntityTypeBuilder<RefreshToken> builder)
     {

@@ -4,7 +4,7 @@ namespace BlogApp.Infrastructure.EFCore.EntityConfigurations;
 
 public class LikeEntityConfiguration : BaseEntityConfiguration<Like>
 {
-    private const string TableName = "Likes";
+    private const string TableName = "likes";
 
     public override void Configure(EntityTypeBuilder<Like> builder)
     {

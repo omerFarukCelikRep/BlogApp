@@ -4,7 +4,7 @@ namespace BlogApp.Infrastructure.EFCore.EntityConfigurations;
 
 public class UserRoleEntityConfiguration : BaseEntityConfiguration<UserRole>
 {
-    private const string TableName = "UserRoles";
+    private const string TableName = "user_roles";
 
     public override void Configure(EntityTypeBuilder<UserRole> builder)
     {

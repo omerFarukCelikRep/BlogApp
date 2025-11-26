@@ -5,7 +5,7 @@ namespace BlogApp.Infrastructure.EFCore.EntityConfigurations;
 
 public class UserEntityConfiguration : SoftDeletableEntityConfiguration<User, Guid>
 {
-    private const string TableName = "Users";
+    private const string TableName = "users";
 
     public override void Configure(EntityTypeBuilder<User> builder)
     {

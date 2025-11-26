@@ -5,14 +5,13 @@ namespace BlogApp.Infrastructure.EFCore.EntityConfigurations;
 
 public class BlogEntityConfiguration : SoftDeletableEntityConfiguration<Blog>
 {
-    private const string TableName = "Blogs";
+    private const string TableName = "blogs";
 
     public override void Configure(EntityTypeBuilder<Blog> builder)
     {
         base.Configure(builder);
 
         builder.ToTable(TableName);
-
 
         builder.Property(x => x.Title)
             .HasMaxLength(512)

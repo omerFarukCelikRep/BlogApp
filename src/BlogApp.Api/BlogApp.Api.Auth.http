@@ -1,0 +1,16 @@
+@BlogApp.Api.Auth_Address = http://localhost:5180/api/v1/auth
+
+POST {{BlogApp.Api.Auth_Address}}/register HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/12.0.0
+Host: localhost:5180
+Content-Length: 150
+
+{
+  "firstName": "Test 1",
+  "lastName": "Test1Soyad",
+  "email": "email@email.com",
+  "username": "test1",
+  "password": "pass",
+  "confirmedPassword": "pass"
+}

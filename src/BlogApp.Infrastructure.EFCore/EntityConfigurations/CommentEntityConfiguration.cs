@@ -4,7 +4,7 @@ namespace BlogApp.Infrastructure.EFCore.EntityConfigurations;
 
 public class CommentEntityConfiguration : BaseEntityConfiguration<Comment>
 {
-    private const string TableName = "Comments";
+    private const string TableName = "comments";
 
     public override void Configure(EntityTypeBuilder<Comment> builder)
     {

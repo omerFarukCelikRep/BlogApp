@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
 
             services.AddDbContextPool<BlogAppDbContext>((serviceProvider, options) =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("Default"),
+                options.UseNpgsql(configuration.GetConnectionString("Default"),
                         builder =>
                         {
                             builder.MigrationsAssembly(typeof(BlogAppDbContext).Assembly.FullName);
@@ -28,8 +28,6 @@ public static class ServiceCollectionExtensions
                         })
                     .AddInterceptors(serviceProvider)
                     .UseLazyLoadingProxies();
-                // options.UseNpgsql(configuration.GetConnectionString("Default")) //TODO:PostgreSql paketi güncellenince düzeltilecek
-                //     .AddInterceptors(serviceProvider);
             });
 
             return services;
@@ -53,10 +51,8 @@ public static class ServiceCollectionExtensions
 
         public IServiceCollection AddEFCoreServices(IConfiguration configuration)
         {
-            services.AddDbContext(configuration)
+            return services.AddDbContext(configuration)
                 .AddRepositories();
-
-            return services;
         }
     }
 }

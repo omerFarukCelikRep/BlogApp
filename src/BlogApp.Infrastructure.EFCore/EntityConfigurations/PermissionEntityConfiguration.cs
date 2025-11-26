@@ -4,7 +4,7 @@ namespace BlogApp.Infrastructure.EFCore.EntityConfigurations;
 
 public class PermissionEntityConfiguration : BaseEntityConfiguration<Permission>
 {
-    private const string TableName = "Permissions";
+    private const string TableName = "permissions";
 
     public override void Configure(EntityTypeBuilder<Permission> builder)
     {

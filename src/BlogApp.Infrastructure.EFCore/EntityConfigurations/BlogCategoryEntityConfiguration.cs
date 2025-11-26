@@ -4,7 +4,7 @@ namespace BlogApp.Infrastructure.EFCore.EntityConfigurations;
 
 public class BlogCategoryEntityConfiguration : BaseEntityConfiguration<BlogCategory>
 {
-    private const string TableName = "BlogCategory";
+    private const string TableName = "blog_categories";
 
     public override void Configure(EntityTypeBuilder<BlogCategory> builder)
     {

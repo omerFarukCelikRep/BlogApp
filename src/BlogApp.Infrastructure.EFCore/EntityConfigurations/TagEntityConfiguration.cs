@@ -4,7 +4,7 @@ namespace BlogApp.Infrastructure.EFCore.EntityConfigurations;
 
 public class TagEntityConfiguration : BaseEntityConfiguration<Tag>
 {
-    private const string TableName = "Tags";
+    private const string TableName = "tags";
 
     public override void Configure(EntityTypeBuilder<Tag> builder)
     {
