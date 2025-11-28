@@ -1,4 +1,5 @@
 using System.Reflection;
+using BlogApp.Core.Mediator.Behaviors;
 using BlogApp.Core.Mediator.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,7 +9,13 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddMediator(Assembly.GetExecutingAssembly());
+        services.AddMediator(Assembly.GetExecutingAssembly())
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestHandlerPreProcesserBehavior<,>))
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestHandlerPostProcesserBehavior<,>))
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizeBehavior<,>))
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+
         return services;
     }
 }

@@ -31,12 +31,13 @@ public class Mediator(IServiceProvider serviceProvider)
         return serviceProvider.GetServices<IPipelineBehavior<TRequest, NonResponse>>()
             .Reverse()
             .Aggregate((RequestHandlerDelegate<NonResponse>)Handler,
-                (next, pipeline) => ct => pipeline.Handle(request, next, ct == default ? cancellationToken : ct))(
+                (next, pipeline) => ct =>
+                    pipeline.Handle(request, next, ct == CancellationToken.None ? cancellationToken : ct))(
                 cancellationToken);
 
         async Task<NonResponse> Handler(CancellationToken ct = default)
         {
-            await handler.Handle(request, ct == default ? cancellationToken : ct);
+            await handler.Handle(request, ct == CancellationToken.None ? cancellationToken : ct);
             return NonResponse.Value;
         }
     }
@@ -51,10 +52,11 @@ public class Mediator(IServiceProvider serviceProvider)
         return serviceProvider.GetServices<IPipelineBehavior<TRequest, TResponse>>()
             .Reverse()
             .Aggregate((RequestHandlerDelegate<TResponse>)Handler,
-                (next, pipeline) => ct => pipeline.Handle(request, next, ct == default ? cancellationToken : ct))(
+                (next, pipeline) => ct =>
+                    pipeline.Handle(request, next, ct == CancellationToken.None ? cancellationToken : ct))(
                 cancellationToken);
 
         Task<TResponse> Handler(CancellationToken ct = default) =>
-            handler.Handle(request, ct == default ? cancellationToken : ct);
+            handler.Handle(request, ct == CancellationToken.None ? cancellationToken : ct);
     }
 }
