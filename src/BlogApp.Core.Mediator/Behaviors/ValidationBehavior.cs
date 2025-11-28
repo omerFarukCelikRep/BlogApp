@@ -12,7 +12,7 @@ public class ValidationBehavior<TRequest, TResponse>(
         CancellationToken cancellationToken = default)
     {
         if (!validators.Any())
-            return await next();
+            return await next(cancellationToken);
 
         List<string> errors = [];
         foreach (var validator in validators)
@@ -27,6 +27,6 @@ public class ValidationBehavior<TRequest, TResponse>(
                 string.Join(", ", errors));
         }
 
-        return await next();
+        return await next(cancellationToken);
     }
 }

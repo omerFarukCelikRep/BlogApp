@@ -13,7 +13,7 @@ public class CachingBehavior<TRequest, TResponse>(ICacheService cacheService)
     {
         var cacheAttribute = request.GetType().GetCustomAttribute<CacheableAttribute>();
         if (cacheAttribute is null)
-            return await next();
+            return await next(cancellationToken);
 
         var key = cacheAttribute.Key ?? $"{typeof(TRequest).FullName}";
 
@@ -21,7 +21,7 @@ public class CachingBehavior<TRequest, TResponse>(ICacheService cacheService)
         if (cachedResponse is not null)
             return cachedResponse;
 
-        var response = await next();
+        var response = await next(cancellationToken);
 
         await cacheService.SetAsync(key, response, TimeSpan.FromSeconds(cacheAttribute.DurationSeconds),
             cancellationToken);

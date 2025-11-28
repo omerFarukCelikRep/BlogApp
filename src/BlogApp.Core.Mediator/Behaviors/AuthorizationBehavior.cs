@@ -39,7 +39,7 @@ public sealed class AuthorizeBehavior<TRequest, TResponse>(
     {
         var attributes = request.GetType().GetCustomAttributes<AuthorizeAttribute>().ToArray();
         if (attributes is not { Length: > 0 })
-            return await next();
+            return await next(cancellationToken);
 
         if (!principal.IsAuthenticated)
         {
@@ -67,6 +67,6 @@ public sealed class AuthorizeBehavior<TRequest, TResponse>(
                 CreateUnauthorizedResponse("User is not authorized");
         }
 
-        return await next();
+        return await next(cancellationToken);
     }
 }

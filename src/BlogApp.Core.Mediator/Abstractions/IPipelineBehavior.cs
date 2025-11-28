@@ -7,4 +7,4 @@ public interface IPipelineBehavior<in TRequest, TResponse>
         CancellationToken cancellationToken = default);
 }
 
-public delegate Task<TResponse> RequestHandlerDelegate<TResponse>();
+public delegate Task<TResponse> RequestHandlerDelegate<TResponse>(CancellationToken cancellationToken = default);

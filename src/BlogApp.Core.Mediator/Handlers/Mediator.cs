@@ -1,10 +1,11 @@
+using System.Reflection.Metadata;
 using BlogApp.Core.Mediator.Abstractions;
 using BlogApp.Core.Mediator.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlogApp.Core.Mediator.Handlers;
 
-public class Mediator(IServiceProvider serviceProvider, Registry registry)
+public class Mediator(IServiceProvider serviceProvider)
     : IMediator
 {
     private IRequestHandler<TRequest>? ResolveHandlerFromProvider<TRequest>()
@@ -19,52 +20,41 @@ public class Mediator(IServiceProvider serviceProvider, Registry registry)
         return serviceProvider.GetRequiredService<IRequestHandler<TRequest, TResponse>>();
     }
 
-    public async Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+    public Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : IRequest
     {
-        var handler = ResolveHandlerFromProvider<TRequest>();
-        if (handler is null)
-            throw new InvalidOperationException($"No handler registered for {typeof(TRequest).Name}");
+        ArgumentNullException.ThrowIfNull(request);
 
-        var behaviors = registry.ResolveBehaviors<IRequest<NonResponse>, NonResponse>(serviceProvider)
+        var handler = ResolveHandlerFromProvider<TRequest>()
+                      ?? throw new InvalidOperationException($"No handler registered for {typeof(TRequest).Name}");
+
+        return serviceProvider.GetServices<IPipelineBehavior<TRequest, NonResponse>>()
             .Reverse()
-            .ToList();
+            .Aggregate((RequestHandlerDelegate<NonResponse>)Handler,
+                (next, pipeline) => ct => pipeline.Handle(request, next, ct == default ? cancellationToken : ct))(
+                cancellationToken);
 
-        RequestHandlerDelegate<NonResponse> handlerDelegate = async () =>
+        async Task<NonResponse> Handler(CancellationToken ct = default)
         {
-            await handler.Handle(request, cancellationToken);
+            await handler.Handle(request, ct == default ? cancellationToken : ct);
             return NonResponse.Value;
-        };
-
-        foreach (var pipelineBehavior in behaviors)
-        {
-            var next = handlerDelegate;
-            handlerDelegate = () => pipelineBehavior.Handle((dynamic)request, next, cancellationToken);
         }
-
-        await handlerDelegate();
     }
 
-    public async Task<TResponse> Send<TRequest, TResponse>(TRequest request,
+    public Task<TResponse> Send<TRequest, TResponse>(TRequest request,
         CancellationToken cancellationToken = default) where TRequest : IRequest<TResponse>
     {
-        var handler = ResolveHandlerFromProvider<TRequest, TResponse>();
+        var handler = ResolveHandlerFromProvider<TRequest, TResponse>()
+                      ?? throw new InvalidOperationException(
+                          $"No handler registered for {typeof(IRequest<TResponse>).Name}");
 
-        if (handler is null)
-            throw new InvalidOperationException($"No handler registered for {typeof(IRequest<TResponse>).Name}");
-
-        var behaviors = registry.ResolveBehaviors<IRequest<TResponse>, TResponse>(serviceProvider)
+        return serviceProvider.GetServices<IPipelineBehavior<TRequest, TResponse>>()
             .Reverse()
-            .ToList();
+            .Aggregate((RequestHandlerDelegate<TResponse>)Handler,
+                (next, pipeline) => ct => pipeline.Handle(request, next, ct == default ? cancellationToken : ct))(
+                cancellationToken);
 
-        RequestHandlerDelegate<TResponse> handlerDelegate = () => handler.Handle(request, cancellationToken);
-
-        foreach (var pipelineBehavior in behaviors)
-        {
-            var next = handlerDelegate;
-            handlerDelegate = () => pipelineBehavior.Handle(request, next, cancellationToken);
-        }
-
-        return await handlerDelegate();
+        Task<TResponse> Handler(CancellationToken ct = default) =>
+            handler.Handle(request, ct == default ? cancellationToken : ct);
     }
 }
