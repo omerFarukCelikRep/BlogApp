@@ -16,10 +16,11 @@ public static class ServiceCollectionExtensions
             services.ConfigureOptions<JwtOptionsSetup>();
             services.ConfigureOptions<JwtBearerOptionsSetup>();
 
-            services.AddScoped<IDomainPrincipal, DomainPrincipal>();
-            services.AddScoped<IJwtProvider, JwtProvider>();
-            services.AddScoped<IRoleManager, RoleManager>();
-            services.AddScoped<IAuthorizationManager, AuthorizationManager>();
+            services.AddScoped<IDomainPrincipal, DomainPrincipal>()
+                .AddScoped<IJwtProvider, JwtProvider>()
+                .AddScoped<IRoleManager, RoleManager>()
+                .AddScoped<IAuthorizationManager, AuthorizationManager>()
+                .AddScoped<IRefreshTokenProvider, RefreshTokenProvider>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme);

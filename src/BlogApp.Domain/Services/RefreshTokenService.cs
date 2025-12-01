@@ -1,35 +1,44 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using BlogApp.Core.Results;
+using BlogApp.Core.Security.Abstractions;
 using BlogApp.Domain.Abstractions.Repositories;
 using BlogApp.Domain.Abstractions.Services;
+using BlogApp.Domain.Models.RefreshTokens;
 
 namespace BlogApp.Domain.Services;
 
-public class RefreshTokenService(IRefreshTokenRepository refreshTokenRepository, IUserRepository userRepository)
+public class RefreshTokenService(
+    IRefreshTokenRepository refreshTokenRepository,
+    IUserRepository userRepository,
+    IJwtProvider jwtProvider,
+    IRefreshTokenProvider refreshTokenProvider)
     : IRefreshTokenService
 {
-    public async Task<string> GenerateRefreshTokenAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<Result<RefreshTokenResult>> RefreshTokenAsync(string refreshToken,
+        CancellationToken cancellationToken = default)
     {
-        using var randomNumberGenerator = RandomNumberGenerator.Create();
-        var randomNumber = new byte[64];
-        randomNumberGenerator.GetBytes(randomNumber);
+        var hashedBytes = SHA512.HashData(Encoding.UTF8.GetBytes(refreshToken));
+        var hashedToken = Convert.ToBase64String(hashedBytes);
 
-        var generatedRefreshToken = Convert.ToBase64String(randomNumber);
-        var hashedTokenBytes = SHA512.HashData(Encoding.UTF8.GetBytes(generatedRefreshToken));
-        var hashedToken = Convert.ToBase64String(hashedTokenBytes);
+        var storedRefreshToken = await refreshTokenRepository.GetByTokenAsync(hashedToken, cancellationToken);
+        if (storedRefreshToken is null || storedRefreshToken.IsRevoked || storedRefreshToken.ExpireDate < DateTime.Now)
+            return Result<RefreshTokenResult>.Failed(null, string.Empty, 401);
 
-        RefreshToken refreshToken = new()
+        var user = storedRefreshToken.User;
+        storedRefreshToken.IsRevoked = true;
+        storedRefreshToken.RevokedDate = DateTime.Now;
+
+        var newRefreshToken = await refreshTokenProvider.GenerateRefreshTokenAsync(user!.Id, cancellationToken);
+        var newJwtToken = await jwtProvider.GenerateTokenAsync(user.Id, cancellationToken);
+
+        var result = new RefreshTokenResult()
         {
-            Token = generatedRefreshToken,
-            UserId = userId,
-            ExpireDate = DateTime.UtcNow.AddDays(7),
-            IsRevoked = false
+            Token = newJwtToken,
+            RefreshToken = newRefreshToken
         };
-
-        await refreshTokenRepository.AddAsync(refreshToken, cancellationToken);
-        await refreshTokenRepository.SaveChangesAsync(cancellationToken);
-        return hashedToken;
+        return Result<RefreshTokenResult>.Success(result, "Success", 200); //TODO: Resource magic string
     }
 
     public async Task<bool> IsValidAsync(string refreshToken, CancellationToken cancellationToken = default)

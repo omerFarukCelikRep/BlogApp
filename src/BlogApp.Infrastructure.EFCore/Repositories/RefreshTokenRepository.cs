@@ -8,7 +8,7 @@ public class RefreshTokenRepository(BlogAppDbContext context)
 {
     public async Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken cancellationToken = default)
     {
-        return await GetAsync(rt => rt.Token == token, false, cancellationToken);
+        return await GetAsync(rt => rt.Token == token, true, cancellationToken);
     }
 
     public async Task RevokeAllAsync(Guid userId, CancellationToken cancellationToken = default)

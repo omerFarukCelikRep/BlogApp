@@ -11,7 +11,8 @@ namespace BlogApp.Domain.Services;
 public class AuthenticationService(
     IUserRepository userRepository,
     IRoleRepository roleRepository,
-    IJwtProvider jwtProvider)
+    IJwtProvider jwtProvider,
+    IRefreshTokenProvider refreshTokenProvider)
     : IAuthenticationService
 {
     public async Task<Result<LoginResult>> LoginAsync(LoginArgs args, CancellationToken cancellationToken = default)
@@ -26,9 +27,11 @@ public class AuthenticationService(
             return Result<LoginResult>.Failed(null, string.Empty, 401);
 
         var token = await jwtProvider.GenerateTokenAsync(user.Id, cancellationToken);
+        var refreshToken = await refreshTokenProvider.GenerateRefreshTokenAsync(user.Id, cancellationToken);
         LoginResult result = new()
         {
-            Token = token
+            Token = token,
+            RefreshToken = refreshToken
         };
         return Result<LoginResult>.Success(result, "Success", 200); //TODO: Resource magic string
     }
