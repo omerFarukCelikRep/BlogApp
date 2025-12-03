@@ -72,7 +72,6 @@ public static class ServiceCollectionExtensions
                 .AddExceptionHandler()
                 .AddAppOptions()
                 .AddHostedServices()
-                // .AddControllersServices()
                 .AddApiVersioning()
                 .AddCustomProblemDetails();
         }

@@ -8,6 +8,12 @@ namespace BlogApp.Infrastructure.Security.Providers;
 
 public class RefreshTokenProvider(IRefreshTokenRepository refreshTokenRepository) : IRefreshTokenProvider
 {
+    public string HashToken(string token)
+    {
+        var hashedTokenBytes = SHA512.HashData(Encoding.UTF8.GetBytes(token));
+        return Convert.ToBase64String(hashedTokenBytes);
+    }
+
     public async Task<string> GenerateRefreshTokenAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         using var randomNumberGenerator = RandomNumberGenerator.Create();
@@ -15,8 +21,7 @@ public class RefreshTokenProvider(IRefreshTokenRepository refreshTokenRepository
         randomNumberGenerator.GetBytes(randomNumber);
 
         var generatedRefreshToken = Convert.ToBase64String(randomNumber);
-        var hashedTokenBytes = SHA512.HashData(Encoding.UTF8.GetBytes(generatedRefreshToken));
-        var hashedToken = Convert.ToBase64String(hashedTokenBytes);
+        var hashedToken = HashToken(generatedRefreshToken);
 
         RefreshToken refreshToken = new()
         {

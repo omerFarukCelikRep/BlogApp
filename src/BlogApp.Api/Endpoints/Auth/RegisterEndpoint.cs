@@ -9,17 +9,20 @@ namespace BlogApp.Api.Endpoints.Auth;
 
 public static class RegisterEndpoint
 {
-    public static RouteHandlerBuilder RegisterEndpoints(this RouteGroupBuilder builder)
+    extension(RouteGroupBuilder builder)
     {
-        return builder.Map("/register",
-                async (RegisterRequest request, CancellationToken cancellationToken,
-                    [FromServices] IMediator mediator) =>
-                {
-                    var command = (RegisterCommand)request;
-                    var result = await mediator.Send<RegisterCommand, Result>(command, cancellationToken);
+        public RouteHandlerBuilder RegisterEndpoints()
+        {
+            return builder.Map("/register",
+                    async (RegisterRequest request, CancellationToken cancellationToken,
+                        [FromServices] IMediator mediator) =>
+                    {
+                        var command = (RegisterCommand)request;
+                        var result = await mediator.Send<RegisterCommand, Result>(command, cancellationToken);
 
-                    return new Response(result);
-                })
-            .AllowAnonymous();
+                        return new Response(result);
+                    })
+                .AllowAnonymous();
+        }
     }
 }

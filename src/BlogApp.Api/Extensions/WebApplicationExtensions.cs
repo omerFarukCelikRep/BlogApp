@@ -4,8 +4,11 @@ namespace BlogApp.Api.Extensions;
 
 public static class WebApplicationExtensions
 {
-    public static RouteGroupBuilder MapEndpoints(this WebApplication app)
+    extension(WebApplication app)
     {
-        return app.RegisterAuthEndpoints();
+        public RouteGroupBuilder MapEndpoints()
+        {
+            return app.RegisterAuthEndpoints();
+        }
     }
 }

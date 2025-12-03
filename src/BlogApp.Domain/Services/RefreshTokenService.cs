@@ -16,11 +16,10 @@ public class RefreshTokenService(
     IRefreshTokenProvider refreshTokenProvider)
     : IRefreshTokenService
 {
-    public async Task<Result<RefreshTokenResult>> RefreshTokenAsync(string refreshToken,
+    public async Task<Result<RefreshTokenResult>> RefreshTokenAsync(RefreshTokenArgs args,
         CancellationToken cancellationToken = default)
     {
-        var hashedBytes = SHA512.HashData(Encoding.UTF8.GetBytes(refreshToken));
-        var hashedToken = Convert.ToBase64String(hashedBytes);
+        var hashedToken = refreshTokenProvider.HashToken(args.Token);
 
         var storedRefreshToken = await refreshTokenRepository.GetByTokenAsync(hashedToken, cancellationToken);
         if (storedRefreshToken is null || storedRefreshToken.IsRevoked || storedRefreshToken.ExpireDate < DateTime.Now)
