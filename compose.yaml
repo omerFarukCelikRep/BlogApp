@@ -23,19 +23,19 @@
       - app-network
   
   db:
-    container_name: postgres
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: appuser
-      POSTGRES_PASSWORD: apppassword
-      POSTGRES_DB: appdb
-    volumes:
-      - dbdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - app-network
+        container_name: postgres
+        image: postgres:15
+        restart: always
+        environment:
+          POSTGRES_USER: appuser
+          POSTGRES_PASSWORD: apppassword
+          POSTGRES_DB: appdb
+        volumes:
+          - dbdata:/var/lib/postgresql/data
+        ports:
+          - "5432:5432"
+        networks:
+          - app-network
 
   rabbitmq:
     container_name: rabbitmq
@@ -61,7 +61,7 @@
       - esdata:/usr/share/elasticsearch/data
     networks:
       - app-network
-        
+
 volumes:
   dbdata:
   esdata:

@@ -7,12 +7,9 @@ public class LoginCommandValidator : Validator<LoginCommand>
     public override Task<IEnumerable<string>> ValidateAsync(LoginCommand request,
         CancellationToken cancellationToken = default)
     {
-        List<string> errors = [];
-        if (string.IsNullOrEmpty(request.Email))
-        {
-            errors.Add(CreateError(nameof(request.Email)));
-        }
+        IfEmpty(nameof(request.Email), request.Email);
+        IfEmpty(nameof(request.Password), request.Password);
 
-        return Task.FromResult<IEnumerable<string>>(errors);
+        return Task.FromResult<IEnumerable<string>>(Errors);
     }
 }

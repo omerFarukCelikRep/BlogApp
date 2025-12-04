@@ -1,3 +1,4 @@
+using BlogApp.Core.Exceptions;
 using BlogApp.Core.Mediator.Abstractions;
 using Microsoft.Extensions.Logging;
 
@@ -21,12 +22,13 @@ public class ValidationBehavior<TRequest, TResponse>(
             errors.AddRange(validationErrors);
         }
 
-        if (errors is { Count: > 0 })
-        {
-            logger.LogWarning("Validation failed for {RequestName}: {Errors}", typeof(TRequest).FullName,
-                string.Join(", ", errors));
-        }
+        if (errors is not { Count: > 0 }) 
+            return await next(cancellationToken);
+        
+        logger.LogWarning("Validation failed for {RequestName}: {Errors}", typeof(TRequest).FullName,
+            string.Join(", ", errors));
 
-        return await next(cancellationToken);
+        throw new ValidationException();
+
     }
 }
