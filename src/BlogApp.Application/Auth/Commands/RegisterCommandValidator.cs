@@ -1,9 +1,11 @@
+using BlogApp.Core.Exceptions;
+using BlogApp.Core.Validations;
+
 namespace BlogApp.Application.Auth.Commands;
 
-public class RegisterCommandValidator : IValidator<RegisterCommand>
+public class RegisterCommandValidator : Validator<RegisterCommand>
 {
-    public Task<IEnumerable<string>> ValidateAsync(RegisterCommand request, CancellationToken cancellationToken = default)
+    public RegisterCommandValidator()
     {
-        throw new NotImplementedException();
     }
 }

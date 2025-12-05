@@ -1,15 +1,16 @@
+using BlogApp.Core.Exceptions;
 using BlogApp.Core.Mediator.Handlers;
+using BlogApp.Core.Validations;
 
 namespace BlogApp.Application.Auth.Commands;
 
 public class LoginCommandValidator : Validator<LoginCommand>
 {
-    public override Task<IEnumerable<string>> ValidateAsync(LoginCommand request,
-        CancellationToken cancellationToken = default)
+    public LoginCommandValidator()
     {
-        IfEmpty(nameof(request.Email), request.Email);
-        IfEmpty(nameof(request.Password), request.Password);
-
-        return Task.FromResult<IEnumerable<string>>(Errors);
+        RuleFor(nameof(LoginCommand.Email), x => x.Email)
+            .Must(x => !string.IsNullOrWhiteSpace(x), "Email cannot be empty");
+        RuleFor(nameof(LoginCommand.Password), x => x.Password)
+            .Must(x => !string.IsNullOrWhiteSpace(x), "Password cannot be empty");
     }
 }
