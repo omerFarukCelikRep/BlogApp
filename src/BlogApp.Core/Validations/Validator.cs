@@ -4,9 +4,9 @@ public class Validator<T> : IValidator<T>
 {
     private readonly List<object> _rules = [];
 
-    protected ValidationRule<T, TProperty> RuleFor<TProperty>(string name, Func<T, TProperty> func)
+    protected ValidationRule<T, TProperty?> RuleFor<TProperty>(string name, Func<T, TProperty?> func)
     {
-        var rule = new ValidationRule<T, TProperty>(name, func);
+        var rule = new ValidationRule<T, TProperty?>(name, func);
         _rules.Add(rule);
         return rule;
     }

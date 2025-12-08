@@ -21,7 +21,7 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
         for (int i = 0; i < _rules.Count; i++)
         {
             if(!_rules[i](value))
-                yield return new ValidationError(PropertyName, _errors[i]);
+                yield return new(PropertyName, _errors[i]);
         }
     }
 }

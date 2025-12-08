@@ -1,6 +1,5 @@
 using System.Reflection;
 using BlogApp.Core.Mediator.Abstractions;
-using BlogApp.Core.Mediator.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -22,16 +21,19 @@ public static class ServiceCollectionExtensions
         }
     }
 
-    public static IServiceCollection AddMediator(this IServiceCollection services, params List<Assembly> assemblies)
+    extension(IServiceCollection services)
     {
-        if (assemblies is not { Count: > 0 })
-            assemblies = [Assembly.GetExecutingAssembly()];
+        public IServiceCollection AddMediator(params List<Assembly> assemblies)
+        {
+            if (assemblies is not { Count: > 0 })
+                assemblies = [Assembly.GetExecutingAssembly()];
 
-        services.AddTransient<IMediator, Handlers.Mediator>();
+            services.AddTransient<IMediator, Handlers.Mediator>();
 
-        AddHandlers(assemblies, typeof(IRequestHandler<>), services);
-        AddHandlers(assemblies, typeof(IRequestHandler<,>), services);
+            AddHandlers(assemblies, typeof(IRequestHandler<>), services);
+            AddHandlers(assemblies, typeof(IRequestHandler<,>), services);
 
-        return services;
+            return services;
+        }
     }
 }
