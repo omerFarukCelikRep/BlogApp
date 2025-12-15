@@ -18,7 +18,7 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
         return this;
     }
 
-    public ValidationRule<T, TProperty> Must(Func<TProperty, CancellationToken, Task<bool>> condition, string message)
+    public ValidationRule<T, TProperty> MustAsync(Func<TProperty, CancellationToken, Task<bool>> condition, string message)
     {
         _asyncRules.Add(condition);
         _asyncErrors.Add(message);
