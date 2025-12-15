@@ -8,12 +8,21 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
     private readonly List<Func<TProperty, CancellationToken, Task<bool>>> _asyncRules = [];
     private readonly List<string> _asyncErrors = [];
 
-    private Func<T, bool>? _condition;
+    private Func<T, bool>? _ruleCondition;
+    private Func<T, bool>? _sharedCondition;
 
-    public Func<T, TProperty> PropertyFunc { get; } = propertyFunc;
+    private Func<T, TProperty> PropertyFunc { get; } = propertyFunc;
     public string PropertyName { get; } = propertyName;
 
-    internal bool CanExecute(T instance) => _condition?.Invoke(instance) ?? true;
+    internal void AddSharedCondition(Func<T, bool> condition) => _sharedCondition = condition;
+
+    private bool CanExecute(T instance)
+    {
+        if (_sharedCondition != null && !_sharedCondition(instance))
+            return false;
+
+        return _ruleCondition == null || _ruleCondition(instance);
+    }
 
     internal async Task<IEnumerable<ValidationError>> ValidateAsync(T instance,
         CancellationToken cancellationToken = default)
@@ -56,7 +65,7 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
 
     public ValidationRule<T, TProperty> When(Func<T, bool> predicate)
     {
-        _condition = predicate;
+        _ruleCondition = predicate;
         return this;
     }
 }
