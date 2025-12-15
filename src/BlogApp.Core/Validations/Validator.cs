@@ -11,17 +11,19 @@ public class Validator<T> : IValidator<T>
         return rule;
     }
 
-    public Task<ValidationResult> ValidateAsync(T arg, CancellationToken cancellationToken = default)
+    public async Task<ValidationResult> ValidateAsync(T arg, CancellationToken cancellationToken = default)
     {
         var result = new ValidationResult();
         foreach (var rule in _rules)
         {
-            var method = rule.GetType().GetMethod("Validate");
-            var errors = (IEnumerable<ValidationError>?)method?.Invoke(rule, [arg]) ?? [];
+            var method = rule.GetType().GetMethod("ValidateAsync");
+            var errors = await (Task<IEnumerable<ValidationError>>)(method?.Invoke(rule, [arg]) ??
+                                                                    Task.FromResult(
+                                                                        Enumerable.Empty<ValidationError>()));
 
             result.Errors.AddRange(errors);
         }
 
-        return Task.FromResult(result);
+        return result;
     }
 }

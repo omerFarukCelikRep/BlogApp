@@ -24,6 +24,17 @@ public static class ValidationRuleExtensions
             return rule.Must(value => value is not null, message ?? $"{rule.PropertyName}  must not be null.");
         }
 
+        public ValidationRule<T, TProperty> Equal(TProperty expected, string propertyName, string? message = null)
+        {
+            return rule.Must(value => value?.Equals(expected) is true,
+                message ?? $"{rule.PropertyName} must be equal to {expected}");
+        }
+
+        public ValidationRule<T, TProperty> NotEqual(TProperty expected, TProperty actual, string? message = null)
+        {
+            return rule.Must(value => value?.Equals(expected) is false, message ??  $"{rule.PropertyName} must not be equal to {expected}");
+        }
+
         public ValidationRule<T, TProperty> IsMatchRegex(string pattern,
             RegexOptions regexOptions = RegexOptions.IgnoreCase,
             string? message = null)
