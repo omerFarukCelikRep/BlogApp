@@ -11,10 +11,10 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
     private Func<T, bool>? _ruleCondition;
     private Func<T, bool>? _sharedCondition;
 
+    private IValidator<TProperty>? _childValidator;
+
     private Func<T, TProperty> PropertyFunc { get; } = propertyFunc;
     public string PropertyName { get; } = propertyName;
-
-    internal void AddSharedCondition(Func<T, bool> condition) => _sharedCondition = condition;
 
     private bool CanExecute(T instance)
     {
@@ -24,14 +24,23 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
         return _ruleCondition == null || _ruleCondition(instance);
     }
 
-    internal async Task<IEnumerable<ValidationError>> ValidateAsync(T instance,
+    internal void AddSharedCondition(Func<T, bool> condition) => _sharedCondition = condition;
+
+    public async Task<IEnumerable<ValidationError>> ValidateAsync(T instance,
         CancellationToken cancellationToken = default)
     {
-        var value = PropertyFunc(instance);
         List<ValidationError> validationErrors = [];
 
         if (!CanExecute(instance))
             return validationErrors;
+
+        var value = PropertyFunc(instance);
+        if (_childValidator is not null && value is not null)
+        {
+            var childResult = await _childValidator.ValidateAsync(value, cancellationToken);
+            validationErrors.AddRange(childResult.Errors.Select(error =>
+                error with { PropertyName = $"{PropertyName}.{error.PropertyName}" }));
+        }
 
         for (int i = 0; i < _rules.Count; i++)
         {
@@ -66,6 +75,12 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
     public ValidationRule<T, TProperty> When(Func<T, bool> predicate)
     {
         _ruleCondition = predicate;
+        return this;
+    }
+
+    public ValidationRule<T, TProperty> SetValidator(IValidator<TProperty> validator)
+    {
+        _childValidator = validator;
         return this;
     }
 }

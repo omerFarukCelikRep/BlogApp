@@ -12,7 +12,7 @@ public static class RefreshTokenEndpoint
 {
     extension(RouteGroupBuilder builder)
     {
-        public RouteHandlerBuilder RefreshTokenEndpoint()
+        public RouteHandlerBuilder RefreshTokenEndpoints()
         {
             return builder.Map("/refresh-token",
                 async (RefreshTokenRequest request, CancellationToken cancellationToken,

@@ -34,7 +34,7 @@ public class Validator<T> : IValidator<T>
         foreach (var rule in _rules)
         {
             var method = rule.GetType().GetMethod("ValidateAsync");
-            var errors = await (Task<IEnumerable<ValidationError>>)(method?.Invoke(rule, [arg]) ??
+            var errors = await (Task<IEnumerable<ValidationError>>)(method?.Invoke(rule, [arg, cancellationToken]) ??
                                                                     Task.FromResult(
                                                                         Enumerable.Empty<ValidationError>()));
 

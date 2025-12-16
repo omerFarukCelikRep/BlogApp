@@ -17,7 +17,7 @@ public static class AuthEndpoints
             .WithApiVersionSet(apiVersionSet);
         authGroup.RegisterEndpoints();
         authGroup.LoginEndpoints();
-        authGroup.RefreshTokenEndpoint();
+        authGroup.RefreshTokenEndpoints();
 
         return authGroup;
     }

@@ -13,8 +13,9 @@ public static class ServiceCollectionExtensions
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestHandlerPreProcesserBehavior<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestHandlerPostProcesserBehavior<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizeBehavior<,>))
-            .AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
-            .AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>))
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+        // .AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>)); //TODO
 
         return services;
     }

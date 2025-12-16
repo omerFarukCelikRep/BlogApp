@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace BlogApp.Core.Mediator.Behaviors;
 
 public class ValidationBehavior<TRequest, TResponse>(
-    IEnumerable<Validations.IValidator<TRequest>> validators,
+    IEnumerable<IValidator<TRequest>> validators,
     ILogger<ValidationBehavior<TRequest, TResponse>> logger)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
