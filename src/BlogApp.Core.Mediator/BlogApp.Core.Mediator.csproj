@@ -13,6 +13,7 @@
     <ItemGroup>
       <ProjectReference Include="..\BlogApp.Core.Caching\BlogApp.Core.Caching.csproj" />
       <ProjectReference Include="..\BlogApp.Core.Security\BlogApp.Core.Security.csproj" />
+      <ProjectReference Include="..\BlogApp.Core.Validations\BlogApp.Core.Validations.csproj" />
       <ProjectReference Include="..\BlogApp.Core\BlogApp.Core.csproj" />
     </ItemGroup>
 

@@ -1,4 +1,5 @@
 using BlogApp.Core.Validations;
+using BlogApp.Core.Validations.Extensions;
 
 namespace BlogApp.Application.Auth.Commands;
 

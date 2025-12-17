@@ -1,3 +1,6 @@
+using BlogApp.Core.Validations.Abstractions;
+using BlogApp.Core.Validations.Results;
+
 namespace BlogApp.Core.Validations;
 
 public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty> propertyFunc)

@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace BlogApp.Core.Validations;
+namespace BlogApp.Core.Validations.Extensions;
 
 public static class ValidationRuleExtensions
 {

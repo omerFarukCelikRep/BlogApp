@@ -1,6 +1,7 @@
 using System.Reflection;
 using BlogApp.Core.Mediator.Behaviors;
 using BlogApp.Core.Mediator.Extensions;
+using BlogApp.Core.Validations.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlogApp.Application.Extensions;
@@ -10,6 +11,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddMediator(Assembly.GetExecutingAssembly())
+            .AddValidators()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestHandlerPreProcesserBehavior<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestHandlerPostProcesserBehavior<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizeBehavior<,>))

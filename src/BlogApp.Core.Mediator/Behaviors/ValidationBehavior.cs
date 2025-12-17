@@ -1,6 +1,7 @@
-using BlogApp.Core.Exceptions;
 using BlogApp.Core.Mediator.Abstractions;
-using BlogApp.Core.Validations;
+using BlogApp.Core.Validations.Abstractions;
+using BlogApp.Core.Validations.Exceptions;
+using BlogApp.Core.Validations.Results;
 using Microsoft.Extensions.Logging;
 
 namespace BlogApp.Core.Mediator.Behaviors;

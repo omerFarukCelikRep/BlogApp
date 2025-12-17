@@ -1,4 +1,4 @@
-namespace BlogApp.Core.Validations;
+namespace BlogApp.Core.Validations.Results;
 
 public class ValidationResult
 {

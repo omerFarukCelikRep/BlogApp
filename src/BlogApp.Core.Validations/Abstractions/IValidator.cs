@@ -1,4 +1,6 @@
-namespace BlogApp.Core.Validations;
+using BlogApp.Core.Validations.Results;
+
+namespace BlogApp.Core.Validations.Abstractions;
 
 public interface IValidator<in T>
 {

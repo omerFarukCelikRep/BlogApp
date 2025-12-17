@@ -1,3 +1,6 @@
+using BlogApp.Core.Validations.Abstractions;
+using BlogApp.Core.Validations.Results;
+
 namespace BlogApp.Core.Validations;
 
 public class Validator<T> : IValidator<T>

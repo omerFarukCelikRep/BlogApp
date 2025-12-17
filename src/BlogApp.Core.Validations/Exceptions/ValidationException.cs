@@ -1,6 +1,6 @@
-using BlogApp.Core.Validations;
+using BlogApp.Core.Validations.Results;
 
-namespace BlogApp.Core.Exceptions;
+namespace BlogApp.Core.Validations.Exceptions;
 
 public class ValidationException(List<ValidationError> exceptions) : Exception
 {

@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="compose.yaml" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/BlogApp.Api/BlogApp.Api.csproj" />
+    <Project Path="src/BlogApp.Application/BlogApp.Application.csproj" />
+    <Project Path="src/BlogApp.Core.Caching/BlogApp.Core.Caching.csproj" />
+    <Project Path="src/BlogApp.Core.EFCore/BlogApp.Core.EFCore.csproj" />
+    <Project Path="src/BlogApp.Core.Logging/BlogApp.Core.Logging.csproj" />
+    <Project Path="src/BlogApp.Core.Mediator/BlogApp.Core.Mediator.csproj" />
+    <Project Path="src/BlogApp.Core.Security/BlogApp.Core.Security.csproj" />
+    <Project Path="src/BlogApp.Core.Validations/BlogApp.Core.Validations.csproj" />
+    <Project Path="src/BlogApp.Core/BlogApp.Core.csproj" />
+    <Project Path="src/BlogApp.Domain/BlogApp.Domain.csproj" />
+    <Project Path="src/BlogApp.Infrastructure.EFCore/BlogApp.Infrastructure.EFCore.csproj" />
+    <Project Path="src/BlogApp.Infrastructure.Security/BlogApp.Infrastructure.Security.csproj" />
+    <Project Path="src/BlogApp.Infrastructure/BlogApp.Infrastructure.csproj" />
+  </Folder>
+</Solution>

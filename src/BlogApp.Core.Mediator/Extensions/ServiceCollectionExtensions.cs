@@ -1,6 +1,5 @@
 using System.Reflection;
 using BlogApp.Core.Mediator.Abstractions;
-using BlogApp.Core.Validations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -31,7 +30,6 @@ public static class ServiceCollectionExtensions
 
         AddHandlers(assemblies, typeof(IRequestHandler<>), services);
         AddHandlers(assemblies, typeof(IRequestHandler<,>), services);
-        AddHandlers(assemblies, typeof(IValidator<>), services);
 
         return services;
     }
