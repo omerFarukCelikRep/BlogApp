@@ -11,6 +11,9 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
     private readonly List<Func<TProperty, CancellationToken, Task<bool>>> _asyncRules = [];
     private readonly List<string> _asyncErrors = [];
 
+    private readonly List<string?> _errorCodes = [];
+    private readonly List<IReadOnlyDictionary<string, string>?> _messageArgs = [];
+
     private Func<T, bool>? _ruleCondition;
     private Func<T, bool>? _sharedCondition;
 
@@ -28,6 +31,12 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
     }
 
     internal void AddSharedCondition(Func<T, bool> condition) => _sharedCondition = condition;
+
+    internal void SetErrorCode(string errorCode, IReadOnlyDictionary<string, string>? args)
+    {
+        _errorCodes[^1] = errorCode;
+        _messageArgs[^1] = args;
+    }
 
     public async Task<IEnumerable<ValidationError>> ValidateAsync(T instance,
         CancellationToken cancellationToken = default)
@@ -48,30 +57,36 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
         for (int i = 0; i < _rules.Count; i++)
         {
             if (!_rules[i](value))
-                validationErrors.Add(new(PropertyName, _errors[i]));
+                validationErrors.Add(new(PropertyName, _errors[i], _errorCodes[i], _messageArgs[i]));
         }
 
         for (int i = 0; i < _asyncRules.Count; i++)
         {
             if (!await _asyncRules[i](value, cancellationToken))
-                validationErrors.Add(new(PropertyName, _asyncErrors[i]));
+                validationErrors.Add(new(PropertyName, _asyncErrors[i], _errorCodes[i], _messageArgs[i]));
         }
 
         return validationErrors;
     }
 
-    public ValidationRule<T, TProperty> Must(Func<TProperty, bool> condition, string message)
+    public ValidationRule<T, TProperty> Must(Func<TProperty, bool> condition, string message,
+        string? errorCode = null, IReadOnlyDictionary<string, string>? args = null)
     {
         _rules.Add(condition);
         _errors.Add(message);
+        _errorCodes.Add(errorCode);
+        _messageArgs.Add(args);
         return this;
     }
 
     public ValidationRule<T, TProperty> MustAsync(Func<TProperty, CancellationToken, Task<bool>> condition,
-        string message)
+        string message,
+        string? errorCode = null, IReadOnlyDictionary<string, string>? args = null)
     {
         _asyncRules.Add(condition);
         _asyncErrors.Add(message);
+        _errorCodes.Add(errorCode);
+        _messageArgs.Add(args);
         return this;
     }
 

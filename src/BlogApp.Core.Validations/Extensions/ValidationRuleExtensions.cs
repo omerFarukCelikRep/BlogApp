@@ -7,6 +7,13 @@ public static class ValidationRuleExtensions
     //TODO:Resource magic string
     extension<T, TProperty>(ValidationRule<T, TProperty> rule)
     {
+        public ValidationRule<T, TProperty> WithMessage(string errorCode,
+            IReadOnlyDictionary<string, string>? args = null)
+        {
+            rule.SetErrorCode(errorCode, args);
+            return rule;
+        }
+
         public ValidationRule<T, TProperty> NotEmpty(string? message = null)
         {
             return rule.Must(value => value switch
@@ -32,7 +39,8 @@ public static class ValidationRuleExtensions
 
         public ValidationRule<T, TProperty> NotEqual(TProperty expected, TProperty actual, string? message = null)
         {
-            return rule.Must(value => value?.Equals(expected) is false, message ??  $"{rule.PropertyName} must not be equal to {expected}");
+            return rule.Must(value => value?.Equals(expected) is false,
+                message ?? $"{rule.PropertyName} must not be equal to {expected}");
         }
 
         public ValidationRule<T, TProperty> IsMatchRegex(string pattern,

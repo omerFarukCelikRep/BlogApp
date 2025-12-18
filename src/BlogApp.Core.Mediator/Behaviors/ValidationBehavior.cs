@@ -6,8 +6,9 @@ using Microsoft.Extensions.Logging;
 
 namespace BlogApp.Core.Mediator.Behaviors;
 
-public class ValidationBehavior<TRequest, TResponse>(
+public partial class ValidationBehavior<TRequest, TResponse>(
     IEnumerable<IValidator<TRequest>> validators,
+    IValidationMessageLocalizer localizer,
     ILogger<ValidationBehavior<TRequest, TResponse>> logger)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
@@ -29,9 +30,14 @@ public class ValidationBehavior<TRequest, TResponse>(
         if (errors is not { Count: > 0 })
             return await next(cancellationToken);
 
-        logger.LogError("Validation failed for {RequestName}: {Errors}", typeof(TRequest).FullName,
-            string.Join(", ", errors));
-
-        throw new ValidationException(errors);
+        var localized = errors.Select(x => x with
+        {
+            ErrorMessage = localizer.Get(x.ErrorCode ?? string.Empty, x.ErrorMessage, x.Args)
+        }).ToList();
+        LogValidationErrors(logger, typeof(TRequest).FullName!, string.Join(", ", localized));
+        throw new ValidationException(localized);
     }
+
+    [LoggerMessage(LogLevel.Error, "Validation failed for {requestName}: {errors}")]
+    static partial void LogValidationErrors(ILogger<ValidationBehavior<TRequest, TResponse>> logger, string requestName, string errors);
 }
