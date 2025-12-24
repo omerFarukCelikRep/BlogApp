@@ -1,0 +1,19 @@
+{
+  "NotEmpty": "'{PropertyName}' must not be empty!",
+  "NotNull": "'{PropertyName}' must not be null!",
+  "Equal": "'{PropertyName}' must be equal to '{Expected}'!",
+  "NotEqual": "'{PropertyName}' must not be equal to '{Expected}'!",
+  "IsMatchRegex": "'{PropertyName}' is not a valid!",
+  "GreaterThan": "'{PropertyName}' must be greater than '{Limit}'!",
+  "GreaterThanOrEqual": "'{PropertyName}' must be greater than or equal '{Limit}'!",
+  "LessThan": "'{PropertyName}' must be less than '{Limit}'!",
+  "LessThanOrEqual": "'{PropertyName}' must be less than or equal '{Limit}'!",
+  "Email": "'{PropertyName}' is not a valid email format",
+  "MinLength": "'{PropertyName}' length must be at least '{MinLength}' character!",
+  "MaxLength": "'{PropertyName}' length cannot exceed '{MaxLength}' character!",
+  "DateTimeGreaterThan": "'{PropertyName}' must be after '{Date}'!",
+  "DateTimeGreaterThanOrEqual": "'{PropertyName}' must be after or same as '{Date}'!",
+  "DateTimeLessThan": "'{PropertyName}' must be before '{Date}'!",
+  "DateTimeLessThanOrEqual": "'{PropertyName}' must be before or same as '{Date}'!",
+  "Count": "Collection count must be between '{Min}' and '{Max}'!"
+}

@@ -55,6 +55,27 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
+        private IServiceCollection AddLocalization()
+        {
+            services.AddLocalization(options => options.ResourcesPath = "Resources")
+                .AddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>(sp =>
+                {
+                    var logger = sp.GetService<ILogger>();
+                    return new(logger!);
+                })
+                .AddScoped<IValidationMessageLocalizer, ValidationMessageLocalizer>();
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                List<CultureInfo> supportedCultures = [new("tr"), new("en")]; //TODO:appsettings
+                options.DefaultRequestCulture = new("tr"); //TODO:appsettings
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
+
+            return services;
+        }
+
         public IServiceCollection AddApiServices()
         {
             return services
@@ -63,7 +84,8 @@ public static class ServiceCollectionExtensions
                 .AddAppOptions()
                 .AddHostedServices()
                 .AddApiVersioning()
-                .AddCustomProblemDetails();
+                .AddCustomProblemDetails()
+                .AddLocalization();
         }
     }
 }

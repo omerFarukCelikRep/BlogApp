@@ -1,0 +1,19 @@
+{
+  "NotEmpty": "'{PropertyName}' boş olmamalıdır!",
+  "NotNull" : "'{PropertyName}' boş olmamalıdır!",
+  "Equal": "'{PropertyName}', '{Expected}' değerine eşit olmalıdır!",
+  "NotEqual": "'{PropertyName}', '{Expected}' değerine eşit olmamalıdır!",
+  "IsMatchRegex": "'{PropertyName}' değerinin formatı doğru değil!",
+  "GreaterThan": "'{PropertyName}' değeri '{Limit}' değerinden büyük olmalıdır!",
+  "GreaterThanOrEqual": "'{PropertyName}' değeri '{Limit}' değerinden büyük veya eşit olmalıdır!",
+  "LessThan": "'{PropertyName}' değeri '{Limit}' değerinden küçük olmalıdır!",
+  "LessThanOrEqual": "'{PropertyName}' değeri '{Limit}' değerinden küçük veya eşit olmalıdır!",
+  "Email": "'{PropertyName}' geçerli bir e-posta adresi değil!",
+  "MinLength": "'{PropertyName}' en az '{MinLength}' uzunlukta olmalıdır!",
+  "MaxLength": "'{PropertyName}' en çok '{MaxLength}' uzunlukta olmalıdır!",
+  "DateTimeGreaterThan": "'{PropertyName}', '{Date}' tarihinden sonra olmalıdır!",
+  "DateTimeGreaterThanOrEqual": "'{PropertyName}', '{Date}' tarihinden sonra veya aynı olmalıdır!",
+  "DateTimeLessThan": "'{PropertyName}', '{Date}' tarihinden önce olmalıdır!",
+  "DateTimeLessThanOrEqual": "'{PropertyName}', '{Date}' tarihinden önce veya aynı olmalıdır!",
+  "Count": "Listede en az '{Min}', en fazla '{Max}' eleman olmalıdır!"
+}

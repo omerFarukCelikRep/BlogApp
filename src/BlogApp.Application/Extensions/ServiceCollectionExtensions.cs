@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddMediator(Assembly.GetExecutingAssembly())
-            .AddValidators()
+            .AddValidators(Assembly.GetExecutingAssembly())
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestHandlerPreProcesserBehavior<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestHandlerPostProcesserBehavior<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizeBehavior<,>))

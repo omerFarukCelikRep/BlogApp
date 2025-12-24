@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BlogApp.Core.Mediator.Behaviors;
 
-public partial class ValidationBehavior<TRequest, TResponse>(
+public class ValidationBehavior<TRequest, TResponse>(
     IEnumerable<IValidator<TRequest>> validators,
     IValidationMessageLocalizer localizer,
     ILogger<ValidationBehavior<TRequest, TResponse>> logger)
@@ -34,10 +34,8 @@ public partial class ValidationBehavior<TRequest, TResponse>(
         {
             ErrorMessage = localizer.Get(x.ErrorCode ?? string.Empty, x.ErrorMessage, x.Args)
         }).ToList();
-        LogValidationErrors(logger, typeof(TRequest).FullName!, string.Join(", ", localized));
+        logger.LogError("Validation failed for {RequestName}: {Errors}", typeof(TRequest).FullName,
+            string.Join(", ", localized));
         throw new ValidationException(localized);
     }
-
-    [LoggerMessage(LogLevel.Error, "Validation failed for {requestName}: {errors}")]
-    static partial void LogValidationErrors(ILogger<ValidationBehavior<TRequest, TResponse>> logger, string requestName, string errors);
 }

@@ -1,4 +1,7 @@
 using System.Text.RegularExpressions;
+using Rules = BlogApp.Core.Validations.Utils.Constants.Rules;
+using Fields = BlogApp.Core.Validations.Utils.Constants.Fields;
+using Pattern = BlogApp.Core.Validations.Utils.Constants.Pattern;
 
 namespace BlogApp.Core.Validations.Extensions;
 
@@ -16,6 +19,10 @@ public static class ValidationRuleExtensions
 
         public ValidationRule<T, TProperty> NotEmpty(string? message = null)
         {
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName }
+            };
             return rule.Must(value => value switch
                 {
                     string s => !string.IsNullOrWhiteSpace(s),
@@ -23,49 +30,82 @@ public static class ValidationRuleExtensions
                     DateTime d => d != default,
                     IEnumerable<TProperty> collection => collection.Any(),
                     _ => value is not null
-                }, message ?? $"{rule.PropertyName}  must not be empty.");
+                }, message ?? Rules.GetDefaultErrorMessage(Rules.NotEmpty, args), Rules.NotEmpty,
+                args);
         }
 
         public ValidationRule<T, TProperty> NotNull(string? message = null)
         {
-            return rule.Must(value => value is not null, message ?? $"{rule.PropertyName}  must not be null.");
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName }
+            };
+            return rule.Must(value => value is not null, message ?? Rules.GetDefaultErrorMessage(Rules.NotNull, args),
+                Rules.NotNull, args);
         }
 
-        public ValidationRule<T, TProperty> Equal(TProperty expected, string propertyName, string? message = null)
+        public ValidationRule<T, TProperty> Equal(TProperty expected, string? message = null)
         {
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.Expected, expected?.ToString() ?? string.Empty }
+            };
             return rule.Must(value => value?.Equals(expected) is true,
-                message ?? $"{rule.PropertyName} must be equal to {expected}");
+                message ?? Rules.GetDefaultErrorMessage(Rules.Equal, args), Rules.Equal, args);
         }
 
-        public ValidationRule<T, TProperty> NotEqual(TProperty expected, TProperty actual, string? message = null)
+        public ValidationRule<T, TProperty> NotEqual(TProperty expected, string? message = null)
         {
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.Expected, expected?.ToString() ?? string.Empty }
+            };
             return rule.Must(value => value?.Equals(expected) is false,
-                message ?? $"{rule.PropertyName} must not be equal to {expected}");
+                message ?? Rules.GetDefaultErrorMessage(Rules.NotEqual, args), Rules.NotEqual, args);
         }
 
         public ValidationRule<T, TProperty> IsMatchRegex(string pattern,
             RegexOptions regexOptions = RegexOptions.IgnoreCase,
-            string? message = null)
+            string? message = null,
+            string? errorCode = null,
+            IReadOnlyDictionary<string, string>? args = null)
         {
+            errorCode ??= Rules.IsMatchRegex;
+            args ??= new Dictionary<string, string>()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+            };
             return rule.Must(value => Regex.IsMatch(value?.ToString() ?? string.Empty, pattern, regexOptions),
-                message ?? $"{rule.PropertyName} is not a valid regular expression");
+                message ?? Rules.GetDefaultErrorMessage(Rules.IsMatchRegex, args), errorCode, args);
         }
 
 
         public ValidationRule<T, TProperty> GreaterThan(int limit, string? message = null)
         {
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.Limit, limit.ToString() },
+            };
             return rule.Must(value => value switch
-                {
-                    int intValue => intValue > limit,
-                    double doubleValue => doubleValue > limit,
-                    decimal decimalValue => decimalValue > limit,
-                    float floatValue => floatValue > limit,
-                    _ => false
-                }, message ?? $"{rule.PropertyName} must be greater than {limit}");
+            {
+                int intValue => intValue > limit,
+                double doubleValue => doubleValue > limit,
+                decimal decimalValue => decimalValue > limit,
+                float floatValue => floatValue > limit,
+                _ => false
+            }, message ?? Rules.GetDefaultErrorMessage(Rules.GreaterThan, args), Rules.GreaterThan, args);
         }
 
         public ValidationRule<T, TProperty> GreaterThanOrEqual(int limit, string? message = null)
         {
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.Limit, limit.ToString() },
+            };
             return rule.Must(value => value switch
                 {
                     int intValue => intValue >= limit,
@@ -73,31 +113,42 @@ public static class ValidationRuleExtensions
                     decimal decimalValue => decimalValue >= limit,
                     float floatValue => floatValue >= limit,
                     _ => false
-                }, message ?? $"{rule.PropertyName} must be greater than or equal {limit}");
+                }, message ?? Rules.GetDefaultErrorMessage(Rules.GreaterThanOrEqual, args), Rules.GreaterThanOrEqual,
+                args);
         }
 
         public ValidationRule<T, TProperty> LessThan(int limit, string? message = null)
         {
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.Limit, limit.ToString() },
+            };
             return rule.Must(value => value switch
-                {
-                    int intValue => intValue < limit,
-                    double doubleValue => doubleValue < limit,
-                    decimal decimalValue => decimalValue < limit,
-                    float floatValue => floatValue < limit,
-                    _ => false
-                }, message ?? $"{rule.PropertyName} must be less than {limit}");
+            {
+                int intValue => intValue < limit,
+                double doubleValue => doubleValue < limit,
+                decimal decimalValue => decimalValue < limit,
+                float floatValue => floatValue < limit,
+                _ => false
+            }, message ?? Rules.GetDefaultErrorMessage(Rules.LessThan, args), Rules.LessThan, args);
         }
 
         public ValidationRule<T, TProperty> LessThanOrEqual(int limit, string? message = null)
         {
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.Limit, limit.ToString() },
+            };
             return rule.Must(value => value switch
-                {
-                    int intValue => intValue <= limit,
-                    double doubleValue => doubleValue <= limit,
-                    decimal decimalValue => decimalValue <= limit,
-                    float floatValue => floatValue <= limit,
-                    _ => false
-                }, message ?? $"{rule.PropertyName} must be less than or equal {limit}");
+            {
+                int intValue => intValue <= limit,
+                double doubleValue => doubleValue <= limit,
+                decimal decimalValue => decimalValue <= limit,
+                float floatValue => floatValue <= limit,
+                _ => false
+            }, message ?? Rules.GetDefaultErrorMessage(Rules.LessThanOrEqual, args), Rules.LessThanOrEqual, args);
         }
 
         public ValidationRule<T, TProperty> Between(int min, int max, string? message = null)
@@ -110,20 +161,34 @@ public static class ValidationRuleExtensions
     {
         public ValidationRule<T, string?> MinLength(int min, string? message = null)
         {
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.MinLength, min.ToString() },
+            };
             return rule.Must(value => value?.Length > min,
-                message ?? $"{rule.PropertyName} length must be at least {min}");
+                message ?? Rules.GetDefaultErrorMessage(Rules.MinLength, args), Rules.MinLength, args);
         }
 
         public ValidationRule<T, string?> MaxLength(int max, string? message = null)
         {
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.MaxLength, max.ToString() },
+            };
             return rule.Must(value => value?.Length <= max,
-                message ?? $"{rule.PropertyName} length cannot exceed {max}");
+                message ?? Rules.GetDefaultErrorMessage(Rules.MaxLength, args), Rules.MaxLength, args);
         }
 
         public ValidationRule<T, string?> Email(string? message = null)
         {
-            return IsMatchRegex(rule, @"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase,
-                message ?? $"{rule.PropertyName} is not a valid email format");
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName }
+            };
+            return rule.IsMatchRegex(Pattern.Email, RegexOptions.IgnoreCase,
+                message ?? Rules.GetDefaultErrorMessage(Rules.Email, args), Rules.Email, args);
         }
     }
 
@@ -131,22 +196,52 @@ public static class ValidationRuleExtensions
     {
         public ValidationRule<T, DateTime> GreaterThan(DateTime date, string? message = null)
         {
-            return rule.Must(value => value > date, message ?? $"Date must be before {date}");
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.Date, date.ToString("g") }
+            };
+            return rule.Must(value => value > date,
+                message ?? Rules.GetDefaultErrorMessage(Rules.DateTimeGreaterThan, args), Rules.DateTimeGreaterThan,
+                args);
         }
 
         public ValidationRule<T, DateTime> GreaterThanOrEqual(DateTime date, string? message = null)
         {
-            return rule.Must(value => value >= date, message ?? $"Date must be before {date}");
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.Date, date.ToString("g") }
+            };
+            return rule.Must(value => value >= date,
+                message ?? Rules.GetDefaultErrorMessage(Rules.DateTimeGreaterThanOrEqual, args),
+                Rules.DateTimeGreaterThanOrEqual,
+                args);
         }
 
         public ValidationRule<T, DateTime> LessThan(DateTime date, string? message = null)
         {
-            return rule.Must(value => value < date, message ?? $"Date must be after {date}");
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.Date, date.ToString("g") }
+            };
+            return rule.Must(value => value < date,
+                message ?? Rules.GetDefaultErrorMessage(Rules.DateTimeLessThan, args), Rules.DateTimeLessThan,
+                args);
         }
 
         public ValidationRule<T, DateTime> LessThanOrEqual(DateTime date, string? message = null)
         {
-            return rule.Must(value => value <= date, message ?? $"Date must be after {date}");
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.Date, date.ToString("g") }
+            };
+            return rule.Must(value => value <= date,
+                message ?? Rules.GetDefaultErrorMessage(Rules.DateTimeLessThanOrEqual, args),
+                Rules.DateTimeLessThanOrEqual,
+                args);
         }
     }
 
@@ -154,8 +249,14 @@ public static class ValidationRuleExtensions
     {
         public ValidationRule<T, IEnumerable<TProperty>> Count(int max, int min = 0, string? message = null)
         {
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.Max, max.ToString() },
+                { Fields.Min, min.ToString() }
+            };
             return rule.Must(value => value.Count() <= max,
-                message ?? $"Collection count must be between {min} and {max}");
+                message ?? Rules.GetDefaultErrorMessage(Rules.Count, args), Rules.Count, args);
         }
     }
 }
