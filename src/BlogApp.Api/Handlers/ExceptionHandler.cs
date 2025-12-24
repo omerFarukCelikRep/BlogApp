@@ -31,12 +31,14 @@ public sealed class ExceptionHandler(ILogger<ExceptionHandler> logger, IProblemD
             Type = exceptionType,
             Instance = path,
             Detail = message,
+            Extensions =
+            {
+                ["traceId"] = httpContext.TraceIdentifier,
+                ["timeStamp"] = DateTimeOffset.UtcNow
+            }
         };
 
-        problemDetails.Extensions["traceId"] = httpContext.TraceIdentifier;
-        problemDetails.Extensions["timeStamp"] = DateTimeOffset.UtcNow;
-
-        await problemDetailsService.WriteAsync(new ProblemDetailsContext
+        await problemDetailsService.WriteAsync(new()
         {
             HttpContext = httpContext,
             Exception = exception,

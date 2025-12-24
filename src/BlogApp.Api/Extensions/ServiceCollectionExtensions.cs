@@ -1,11 +1,11 @@
-using System.Text.Json.Serialization;
+using System.Globalization;
 using Asp.Versioning;
 using BlogApp.Api.BackgroundServices;
-using BlogApp.Api.Filters;
 using BlogApp.Api.Handlers;
+using BlogApp.Api.Localization;
 using BlogApp.Api.Options;
-using BlogApp.Core.Mediator.Abstractions;
-using Microsoft.Extensions.Options;
+using BlogApp.Core.Validations.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace BlogApp.Api.Extensions;
 
@@ -47,6 +47,7 @@ public static class ServiceCollectionExtensions
         private IServiceCollection AddAppOptions()
         {
             services.ConfigureOptions<KeyRotationOptionsSetup>();
+            services.ConfigureOptions<CultureOptionsSetup>();
 
             return services;
         }
