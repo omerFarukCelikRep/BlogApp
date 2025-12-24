@@ -18,17 +18,6 @@ public static class ServiceCollectionExtensions
             return services.AddExceptionHandler<ExceptionHandler>();
         }
 
-        private IServiceCollection AddControllersServices()
-        {
-            services.AddControllers(options => options.Filters.Add<TimingActionFilter>())
-                .AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
-                });
-            return services;
-        }
-
         private IServiceCollection AddApiVersioning()
         {
             services.AddApiVersioning(options =>
