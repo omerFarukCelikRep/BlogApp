@@ -10,6 +10,7 @@ WORKDIR /src
 COPY ["src/BlogApp.Api/BlogApp.Api.csproj", "src/BlogApp.Api/"]
 COPY ["src/BlogApp.Application/BlogApp.Application.csproj", "src/BlogApp.Application/"]
 COPY ["src/BlogApp.Core.Mediator/BlogApp.Core.Mediator.csproj", "src/BlogApp.Core.Mediator/"]
+COPY ["src/BlogApp.Core.Validations/BlogApp.Core.Validations.csproj", "src/BlogApp.Core.Validations/"]
 COPY ["src/BlogApp.Core.Caching/BlogApp.Core.Caching.csproj", "src/BlogApp.Core.Caching/"]
 COPY ["src/BlogApp.Core.Security/BlogApp.Core.Security.csproj", "src/BlogApp.Core.Security/"]
 COPY ["src/BlogApp.Core/BlogApp.Core.csproj", "src/BlogApp.Core/"]
