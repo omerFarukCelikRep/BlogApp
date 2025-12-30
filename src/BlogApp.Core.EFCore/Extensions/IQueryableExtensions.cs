@@ -1,4 +1,5 @@
 using BlogApp.Core.DataAccess.Models;
+using BlogApp.Core.DataAccess.Specifications;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApp.Core.EFCore.Extensions;
@@ -11,32 +12,66 @@ public static class IQueryableExtensions
         ArgumentOutOfRangeException.ThrowIfNegative(size);
     }
 
-    public static async Task<IPaginate<T>> ToPaginateAsync<T>(this IQueryable<T> source, int index, int size,
-        CancellationToken cancellationToken = default)
+    private static IQueryable<T> GetAll<T>(IQueryable<T> query, Specification<T> specification) where T : class
     {
-        ArgumentNullException.ThrowIfNull(source);
-        EnsureInRange(index, size);
+        if (specification.Criteria is not null)
+            query = query.Where(specification.Criteria);
 
-        var count = await source.CountAsync(cancellationToken)
-            .ConfigureAwait(false);
+        if (specification.OrderBy is not null)
+            query = query.OrderBy(specification.OrderBy);
 
-        var items = await source.Skip(index * size)
-            .Take(index)
-            .ToListAsync(cancellationToken: cancellationToken);
+        if (specification.OrderByDesc is not null)
+            query = query.OrderByDescending(specification.OrderByDesc);
 
-        return new Paginate<T>(items, index, size, count);
+        return specification.Includes.Aggregate(query, (current, include) => current.Include(include));
     }
 
-    public static IPaginate<T> ToPaginate<T>(this IQueryable<T> source, int index = 0, int size = 10)
+    extension<T>(IQueryable<T> query) where T : class
     {
-        ArgumentNullException.ThrowIfNull(source);
-        EnsureInRange(index, size);
+        public async Task<IPaginate<T>> ToPaginateAsync(int index, int size,
+        CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(query);
+            EnsureInRange(index, size);
 
-        var count = source.Count();
-        var items = source.Skip(index * size)
-            .Take(index)
-            .ToList();
+            var count = await query.CountAsync(cancellationToken)
+                .ConfigureAwait(false);
 
-        return new Paginate<T>(items, index, size, count);
+            var items = await query.Skip(index * size)
+                .Take(index)
+                .ToListAsync(cancellationToken: cancellationToken);
+
+            return new Paginate<T>(items, index, size, count);
+        }
+
+        public IPaginate<T> ToPaginate(int index = 0, int size = 10)
+        {
+            ArgumentNullException.ThrowIfNull(query);
+            EnsureInRange(index, size);
+
+            var count = query.Count();
+            var items = query.Skip(index * size)
+                .Take(index)
+                .ToList();
+
+            return new Paginate<T>(items, index, size, count);
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync(Specification<T> specification, CancellationToken cancellationToken = default)
+        {
+            query = GetAll(query, specification);
+
+            return await query.ToListAsync(cancellationToken);
+        }
+    }
+
+    extension<T>(IQueryable<T> query) where T : class
+    {
+        public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Specification<T, TResult> specification, CancellationToken cancellationToken)
+        {
+            query = GetAll(query, specification);
+
+            return await query.Select(specification.Selector).ToListAsync(cancellationToken);
+        }
     }
 }
