@@ -3,16 +3,22 @@ using BlogApp.Core.Validations.Results;
 
 namespace BlogApp.Core.Validations;
 
-public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty> propertyFunc)
+public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty> propertyFunc) : IValidationRule<T>
 {
-    private readonly List<Func<TProperty, bool>> _rules = [];
-    private readonly List<string> _errors = [];
+    private record SyncRule(
+        Func<TProperty, bool> Predicate,
+        string Message,
+        string? ErrorCode,
+        IReadOnlyDictionary<string, string>? Args);
 
-    private readonly List<Func<TProperty, CancellationToken, Task<bool>>> _asyncRules = [];
-    private readonly List<string> _asyncErrors = [];
+    private record AsyncRule(
+        Func<TProperty, CancellationToken, Task<bool>> Predicate,
+        string Message,
+        string? ErrorCode,
+        IReadOnlyDictionary<string, string>? Args);
 
-    private readonly List<string?> _errorCodes = [];
-    private readonly List<IReadOnlyDictionary<string, string>?> _messageArgs = [];
+    private readonly List<SyncRule> _rules = [];
+    private readonly List<AsyncRule> _asyncRules = [];
 
     private Func<T, bool>? _ruleCondition;
     private Func<T, bool>? _sharedCondition;
@@ -34,8 +40,12 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
 
     internal void SetErrorCode(string errorCode, IReadOnlyDictionary<string, string>? args)
     {
-        _errorCodes[^1] = errorCode;
-        _messageArgs[^1] = args;
+        if (_rules is { Count: > 0 })
+            _rules[^1] = _rules[^1] with { ErrorCode = errorCode, Args = args };
+        else if (_asyncRules is { Count: > 0 })
+            _asyncRules[^1] = _asyncRules[^1] with { ErrorCode = errorCode, Args = args };
+        else
+            throw new InvalidOperationException($"WithMessage() called on '{PropertyName}' before any rule was added.");
     }
 
     public async Task<IEnumerable<ValidationError>> ValidateAsync(T instance,
@@ -54,16 +64,19 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
                 error with { PropertyName = $"{PropertyName}.{error.PropertyName}" }));
         }
 
-        for (int i = 0; i < _rules.Count; i++)
+        foreach (var syncRule in _rules)
         {
-            if (!_rules[i](value))
-                validationErrors.Add(new(PropertyName, _errors[i], _errorCodes[i], _messageArgs[i]));
+            if (!syncRule.Predicate(value))
+                validationErrors.Add(new(PropertyName, syncRule.Message, syncRule.ErrorCode, syncRule.Args));
         }
 
-        for (int i = 0; i < _asyncRules.Count; i++)
+        if (validationErrors.Count == 0)
         {
-            if (!await _asyncRules[i](value, cancellationToken))
-                validationErrors.Add(new(PropertyName, _asyncErrors[i], _errorCodes[i], _messageArgs[i]));
+            foreach (var asyncRule in _asyncRules)
+            {
+                if (!await asyncRule.Predicate(value, cancellationToken))
+                    validationErrors.Add(new(PropertyName, asyncRule.Message, asyncRule.ErrorCode, asyncRule.Args));
+            }
         }
 
         return validationErrors;
@@ -72,10 +85,7 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
     public ValidationRule<T, TProperty> Must(Func<TProperty, bool> condition, string message,
         string? errorCode = null, IReadOnlyDictionary<string, string>? args = null)
     {
-        _rules.Add(condition);
-        _errors.Add(message);
-        _errorCodes.Add(errorCode);
-        _messageArgs.Add(args);
+        _rules.Add(new SyncRule(condition, message, errorCode, args));
         return this;
     }
 
@@ -83,10 +93,7 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
         string message,
         string? errorCode = null, IReadOnlyDictionary<string, string>? args = null)
     {
-        _asyncRules.Add(condition);
-        _asyncErrors.Add(message);
-        _errorCodes.Add(errorCode);
-        _messageArgs.Add(args);
+        _asyncRules.Add(new AsyncRule(condition, message, errorCode, args));
         return this;
     }
 

@@ -153,7 +153,7 @@ public static class ValidationRuleExtensions
 
         public ValidationRule<T, TProperty> Between(int min, int max, string? message = null)
         {
-            return rule.GreaterThanOrEqual(max, message).LessThanOrEqual(min, message);
+            return rule.GreaterThanOrEqual(min, message).LessThanOrEqual(max, message);
         }
     }
 
@@ -166,7 +166,7 @@ public static class ValidationRuleExtensions
                 { Fields.PropertyName, rule.PropertyName },
                 { Fields.MinLength, min.ToString() },
             };
-            return rule.Must(value => value?.Length > min,
+            return rule.Must(value => value?.Length >= min,
                 message ?? Rules.GetDefaultErrorMessage(Rules.MinLength, args), Rules.MinLength, args);
         }
 
@@ -255,7 +255,11 @@ public static class ValidationRuleExtensions
                 { Fields.Max, max.ToString() },
                 { Fields.Min, min.ToString() }
             };
-            return rule.Must(value => value.Count() <= max,
+            return rule.Must(value =>
+                {
+                    var count = value.Count();
+                    return count >= min && count <= max;
+                },
                 message ?? Rules.GetDefaultErrorMessage(Rules.Count, args), Rules.Count, args);
         }
     }

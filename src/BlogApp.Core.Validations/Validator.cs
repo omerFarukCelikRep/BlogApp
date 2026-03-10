@@ -5,7 +5,7 @@ namespace BlogApp.Core.Validations;
 
 public class Validator<T> : IValidator<T>
 {
-    private readonly List<object> _rules = [];
+    private readonly List<IValidationRule<T>> _rules = [];
     private readonly Stack<Func<T, bool>> _conditionStack = [];
 
     protected ValidationRule<T, TProperty?> RuleFor<TProperty>(string name, Func<T, TProperty?> func)
@@ -36,11 +36,7 @@ public class Validator<T> : IValidator<T>
         var result = new ValidationResult();
         foreach (var rule in _rules)
         {
-            var method = rule.GetType().GetMethod("ValidateAsync");
-            var errors = await (Task<IEnumerable<ValidationError>>)(method?.Invoke(rule, [arg, cancellationToken]) ??
-                                                                    Task.FromResult(
-                                                                        Enumerable.Empty<ValidationError>()));
-
+            var errors = await rule.ValidateAsync(arg, cancellationToken);
             result.Errors.AddRange(errors);
         }
 
