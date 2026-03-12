@@ -3,22 +3,27 @@ namespace BlogApp.Core.Logging.Models;
 /// <summary>
 /// Represents the log data for an incoming API request.
 /// </summary>
-public class HttpLog
+public class HttpLog(string traceId, string path, string method)
 {
+    private static readonly HashSet<string> _safeHeaders = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Content-Type", "Accept", "X-Correlation-Id", "User-Agent"
+    };
+
     /// <summary>
     /// Unique trace identifier for correlating logs.
     /// </summary>
-    public string TraceId { get; set; } = null!;
+    public string TraceId { get; set; } = traceId;
 
     /// <summary>
     /// The full request path (e.g., /api/posts/1).
     /// </summary>
-    public string Path { get; set; } = null!;
+    public string Path { get; set; } = path;
 
     /// <summary>
     /// The HTTP method (GET, POST, etc.).
     /// </summary>
-    public string Method { get; set; } = null!;
+    public string Method { get; set; } = method;
 
     /// <summary>
     /// The body of the request, if applicable.
@@ -33,7 +38,11 @@ public class HttpLog
     /// <summary>
     /// The HTTP request headers.
     /// </summary>
-    public IDictionary<string, string> RequestHeaders { get; set; } = new Dictionary<string, string>();
+    public IDictionary<string, string> RequestHeaders
+    {
+        get => field ?? new Dictionary<string, string>();
+        set => field = value.Where(kvp => _safeHeaders.Contains(kvp.Key)).ToDictionary();
+    }
 
     /// <summary>
     /// The timestamp when the request was received (UTC).
@@ -48,5 +57,5 @@ public class HttpLog
     /// <summary>
     /// The total duration of the HTTP transaction in milliseconds.
     /// </summary>
-    public long DurationMs { get; set; }
+    public double DurationMs { get; set; }
 }

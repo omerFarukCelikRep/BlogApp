@@ -15,6 +15,17 @@ public static class LoggerExtensions
     /// <param name="log">The complete log entry for the transaction.</param>
     public static void LogHttpTransaction(this ILogger logger, HttpLog log)
     {
-        logger.Information("HTTP Transaction {@HttpLog}", log);
+        switch (log.StatusCode)
+        {
+            case >= 500:
+                logger.Error("HTTP Transaction {@HttpLog}", log);
+                break;
+            case >= 400:
+                logger.Warning("HTTP Transaction {@HttpLog}", log);
+                break;
+            default:
+                logger.Information("HTTP Transaction {@HttpLog}", log);
+                break;
+        }
     }
 }

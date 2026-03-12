@@ -1,3 +1,5 @@
+using Serilog;
+
 namespace BlogApp.Core.Logging.Options;
 
 /// <summary>
@@ -11,9 +13,9 @@ public class SerilogFileOptions
     /// </summary>
     public bool Enabled { get; set; }
 
-    public string Path { get; set; } = null!;
-    public string Formatter { get; set; } = null!;
-    public string RollingInterval { get; set; } = null!;
-    public bool RollOnFileSizeLimit { get; set; }
-    public string OutputTemplate { get; set; } = null!;
+    public string Path { get; set; } = "logs/app-.log";
+    public string? Formatter { get; set; }
+    public RollingInterval RollingInterval { get; set; } = RollingInterval.Day;
+    public bool RollOnFileSizeLimit { get; set; } = true;
+    public string OutputTemplate { get; set; } = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
 }

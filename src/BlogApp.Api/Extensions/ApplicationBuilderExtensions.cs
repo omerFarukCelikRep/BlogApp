@@ -1,4 +1,4 @@
-using BlogApp.Api.Handlers;
+using BlogApp.Api.Middlewares;
 
 namespace BlogApp.Api.Extensions;
 
@@ -13,7 +13,7 @@ public static class ApplicationBuilderExtensions
 
         public IApplicationBuilder UseCorrelation()
         {
-            return app.UseMiddleware<CorrelationHandler>();
+            return app.UseMiddleware<CorrelationMiddleware>();
         }
     }
 }

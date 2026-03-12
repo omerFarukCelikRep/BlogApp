@@ -1,8 +1,8 @@
 using BlogApp.Core.Logging.Contexts;
 
-namespace BlogApp.Api.Handlers;
+namespace BlogApp.Api.Middlewares;
 
-public class CorrelationHandler(RequestDelegate next)
+public class CorrelationMiddleware(RequestDelegate next)
 {
     private const string CorrelationHeaderName = "X-Correlation-Id";
 

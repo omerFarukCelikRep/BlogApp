@@ -5,7 +5,6 @@ using Elastic.CommonSchema.Serilog;
 using Elastic.Ingest.Elasticsearch;
 using Elastic.Ingest.Elasticsearch.DataStreams;
 using Elastic.Serilog.Sinks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -15,22 +14,10 @@ namespace BlogApp.Core.Logging.Extensions;
 
 public static class HostBuilderExtensions
 {
-    private static LogEventLevel GetMinimumLevel(SerilogOptions options)
-    {
-        return options.MinimumLevel.Default.ToLower() switch
-        {
-            "debug" => LogEventLevel.Debug,
-            "warning" => LogEventLevel.Warning,
-            "error" => LogEventLevel.Error,
-            _ => LogEventLevel.Information
-        };
-    }
-
     private static void ConfigureElasticsearchSink(ElasticsearchSinkOptions opts, LogEventLevel minimumLevel)
     {
         opts.TextFormatting = new EcsTextFormatterConfiguration<LogEventEcsDocument>();
         opts.DataStream = new DataStreamName("logs", "BlogApp");
-        ;
         opts.BootstrapMethod = BootstrapMethod.Failure;
         opts.MinimumLevel = minimumLevel;
         opts.ConfigureChannel = channel => channel.BufferOptions = new BufferOptions() { ExportMaxConcurrency = 10 };
@@ -43,25 +30,30 @@ public static class HostBuilderExtensions
             var options = context.Configuration.GetSection(SerilogOptions.Section).Get<SerilogOptions>();
             ArgumentNullException.ThrowIfNull(options);
 
+            var logEventLevel = (LogEventLevel)(int)options.MinimumLevel.Default;
+            foreach (var (ns, level) in options.MinimumLevel.Override)
+            {
+                configuration.MinimumLevel.Override(ns, (LogEventLevel)(int)level);
+            }
+
             configuration.ReadFrom.Configuration(context.Configuration)
-                .MinimumLevel
-                .Override("Serilog.AspNetCore.RequestLoggingMiddleware", GetMinimumLevel(options))
                 .Enrich.WithProperty(CorrelationContext.CorrelationPropertyName, CorrelationContext.CurrentId)
                 //TODO: .Enrich.WithEcsHttpContext(context.Configuration.Get<IHttpContextAccessor>()) 
-                .WriteTo.Conditional(x => options.File!.Enabled == true, opts =>
+                .WriteTo.Conditional(_ => options.File?.Enabled == true, opts =>
                 {
                     var fileOptions = options.File!;
                     opts.File(path: fileOptions.Path,
-                        rollingInterval: Enum.Parse<RollingInterval>(fileOptions.RollingInterval),
+                        rollingInterval: fileOptions.RollingInterval,
                         outputTemplate: fileOptions.OutputTemplate,
                         rollOnFileSizeLimit: fileOptions.RollOnFileSizeLimit);
+                })
+                .WriteTo.Conditional(_ => options.Elastic is { Enabled: true, Urls.Length: > 0 }, opts =>
+                {
+                    var elasticOptions = options.Elastic;
+                    var uris = elasticOptions!.Urls.Select(uri => new Uri(uri)).ToList();
+                    opts.Elasticsearch(uris,
+                        opt => ConfigureElasticsearchSink(opt, logEventLevel));
                 });
-            // .WriteTo.Conditional(x => options.Elastic!.Enabled, opts =>
-            // {
-            //     var elasticOptions = options.Elastic;
-            //     var uris = elasticOptions!.Urls.Select(uri => new Uri(uri)).ToList();
-            //     opts.Elasticsearch(uris, opt => ConfigureElasticsearchSink(opt, GetMinimumLevel(options)));
-            // });
         });
 
         return hostBuilder;

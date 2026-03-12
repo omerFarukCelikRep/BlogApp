@@ -6,8 +6,13 @@ public static class CorrelationContext
     
     internal const string CorrelationPropertyName = "CorrelationId";
     
-    public static string? CurrentId => _currentId?.Value;
+    public static string? CurrentId => _currentId.Value;
     
-    public static void Set(string id) => _currentId.Value = id;
+    public static void Set(string id)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(id);
+        _currentId.Value = id;
+    }
+
     public static void Clear() => _currentId.Value = null;
 }

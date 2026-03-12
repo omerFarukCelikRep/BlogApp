@@ -11,7 +11,7 @@ public class SerilogOptions
     /// <summary>
     /// The minimum log level (e.g., Debug, Information, Warning).
     /// </summary>
-    public SerilogMinimumLevelOptions MinimumLevel { get; set; } = null!;
+    public SerilogMinimumLevelOptions MinimumLevel { get; set; } = new()!;
 
     /// <summary>
     /// Represents the Serilog-related file log configuration settings.
