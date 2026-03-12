@@ -9,15 +9,15 @@ public static class ServiceCollectionExtensions
 {
     private static void AddHandlers(Assembly[] assemblies, Type genericType, IServiceCollection services)
     {
-        foreach (var handlerType in assemblies.Select(assembly => assembly!.ExportedTypes.Where(t =>
-                         t.GetInterfaces()
-                             .Any(y => y.IsGenericType && (y.GetGenericTypeDefinition() == genericType))))
-                     .SelectMany(handlerTypes => handlerTypes))
+        var handlerTypes = assemblies.SelectMany(x => x.ExportedTypes)
+            .Where(x => x.GetInterfaces().Any(i =>  i.IsGenericType && i.GetGenericTypeDefinition() == genericType));
+        foreach (var handlerType in handlerTypes)
         {
-            var interfaces = handlerType.GetInterface(genericType.Name);
-            var interType = genericType.MakeGenericType(interfaces!.GetGenericArguments());
-
-            services.TryAddTransient(interType, handlerType);
+            var interfaceType = handlerType.GetInterfaces()
+                .First(x => x.IsGenericType && x.GetGenericTypeDefinition() == genericType);
+            
+            var serviceType = genericType.MakeGenericType(interfaceType.GetGenericArguments());
+            services.TryAddTransient(serviceType, handlerType);
         }
     }
 

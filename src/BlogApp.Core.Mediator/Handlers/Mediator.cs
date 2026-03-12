@@ -1,4 +1,3 @@
-using System.Reflection.Metadata;
 using BlogApp.Core.Mediator.Abstractions;
 using BlogApp.Core.Mediator.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +16,7 @@ public class Mediator(IServiceProvider serviceProvider)
     private IRequestHandler<TRequest, TResponse>? ResolveHandlerFromProvider<TRequest, TResponse>()
         where TRequest : IRequest<TResponse>
     {
-        return serviceProvider.GetRequiredService<IRequestHandler<TRequest, TResponse>>();
+        return serviceProvider.GetService<IRequestHandler<TRequest, TResponse>>();
     }
 
     public Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default)
