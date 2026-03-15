@@ -9,7 +9,7 @@ public static class IQueryableExtensions
     private static void EnsureInRange(int index, int size)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(index);
-        ArgumentOutOfRangeException.ThrowIfNegative(size);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(size);
     }
 
     private static IQueryable<T> GetAll<T>(IQueryable<T> query, Specification<T> specification) where T : class
@@ -29,19 +29,20 @@ public static class IQueryableExtensions
     extension<T>(IQueryable<T> query) where T : class
     {
         public async Task<IPaginate<T>> ToPaginateAsync(int index, int size,
-        CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(query);
             EnsureInRange(index, size);
 
-            var count = await query.CountAsync(cancellationToken)
-                .ConfigureAwait(false);
+            var countTask = query.CountAsync(cancellationToken);
 
-            var items = await query.Skip(index * size)
-                .Take(index)
+            var itemsTask = query.Skip(index * size)
+                .Take(size)
                 .ToListAsync(cancellationToken: cancellationToken);
 
-            return new Paginate<T>(items, index, size, count);
+            await Task.WhenAll(countTask, itemsTask);
+
+            return new Paginate<T>(await itemsTask, index, size, await countTask);
         }
 
         public IPaginate<T> ToPaginate(int index = 0, int size = 10)
@@ -51,23 +52,22 @@ public static class IQueryableExtensions
 
             var count = query.Count();
             var items = query.Skip(index * size)
-                .Take(index)
+                .Take(size)
                 .ToList();
 
             return new Paginate<T>(items, index, size, count);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(Specification<T> specification, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<T>> GetAllAsync(Specification<T> specification,
+            CancellationToken cancellationToken = default)
         {
             query = GetAll(query, specification);
 
             return await query.ToListAsync(cancellationToken);
         }
-    }
 
-    extension<T>(IQueryable<T> query) where T : class
-    {
-        public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Specification<T, TResult> specification, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Specification<T, TResult> specification,
+            CancellationToken cancellationToken = default)
         {
             query = GetAll(query, specification);
 

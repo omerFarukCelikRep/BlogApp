@@ -1,5 +1,4 @@
 using System.Data.Common;
-using System.Diagnostics;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 
@@ -10,23 +9,39 @@ public class QueryTimingInterceptor(ILogger<QueryTimingInterceptor> logger)
 {
     private readonly TimeSpan _threshold = TimeSpan.FromMilliseconds(500);
 
+    private void LogIfSlow(DbCommand command, TimeSpan duration)
+    {
+        if (duration > _threshold)
+            logger.LogWarning("Slow Query Detected ({DurationMs}ms): {CommandText}", duration.TotalMilliseconds,
+                command.CommandText);
+    }
+
     public override DbDataReader ReaderExecuted(DbCommand command, CommandExecutedEventData eventData,
         DbDataReader result)
     {
-        var stopwatch = Stopwatch.StartNew();
-        try
-        {
-            return base.ReaderExecuted(command, eventData, result);
-        }
-        finally
-        {
-            stopwatch.Stop();
-            if (stopwatch.Elapsed > _threshold)
-            {
-                logger.LogInformation(
-                    "Slow Query Detected: {CommandCommandText} took {StopwatchElapsedMilliseconds} ms",
-                    command.CommandText, stopwatch.ElapsedMilliseconds);
-            }
-        }
+        LogIfSlow(command, eventData.Duration);
+        return base.ReaderExecuted(command, eventData, result);
+    }
+
+    public override ValueTask<DbDataReader> ReaderExecutedAsync(DbCommand command, CommandExecutedEventData eventData,
+        DbDataReader result,
+        CancellationToken cancellationToken = default)
+    {
+        LogIfSlow(command, eventData.Duration);
+        return base.ReaderExecutedAsync(command, eventData, result, cancellationToken);
+    }
+
+    public override int NonQueryExecuted(DbCommand command, CommandExecutedEventData eventData, int result)
+    {
+        LogIfSlow(command, eventData.Duration);
+        return base.NonQueryExecuted(command, eventData, result);
+    }
+
+    public override ValueTask<int> NonQueryExecutedAsync(DbCommand command, CommandExecutedEventData eventData,
+        int result,
+        CancellationToken cancellationToken = default)
+    {
+        LogIfSlow(command, eventData.Duration);
+        return base.NonQueryExecutedAsync(command, eventData, result, cancellationToken);
     }
 }

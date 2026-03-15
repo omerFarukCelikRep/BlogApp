@@ -18,7 +18,8 @@ public class BaseEntityConfiguration<TEntity, TId> : IEntityTypeConfiguration<TE
         builder.Property(x => x.Id)
             .ValueGeneratedOnAdd();
         builder.Property(x => x.Status)
-            .IsRequired();
+            .IsRequired()
+            .HasConversion<string>();
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(128)
             .IsRequired();

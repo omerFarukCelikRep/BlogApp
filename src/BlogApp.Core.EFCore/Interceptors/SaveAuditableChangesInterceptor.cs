@@ -1,4 +1,3 @@
-using System.Xml.Schema;
 using BlogApp.Core.DataAccess.Entities;
 using BlogApp.Core.DataAccess.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +6,9 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace BlogApp.Core.EFCore.Interceptors;
 
-public class SaveAuditableChangesInterceptor : SaveChangesInterceptor
+public class SaveAuditableChangesInterceptor() : SaveChangesInterceptor
 {
-    private static void AssignBaseProperties(DbContext context)
+    private static void AssignBaseProperties(DbContext context) // TODO : static check
     {
         var entries = context.ChangeTracker.Entries<IBaseEntity>();
         var user = "User"; //TODO:Domain principal ile alınacak
@@ -50,7 +49,7 @@ public class SaveAuditableChangesInterceptor : SaveChangesInterceptor
 
     private static void SetIfModified(EntityEntry<IBaseEntity> entry, string user)
     {
-        if (entry.State == EntityState.Modified)
+        if (entry.State != EntityState.Modified)
             return;
 
         entry.Property(x => x.ModifiedBy).CurrentValue = user;
@@ -74,22 +73,5 @@ public class SaveAuditableChangesInterceptor : SaveChangesInterceptor
             AssignBaseProperties(eventData.Context);
 
         return base.SavingChangesAsync(eventData, result, cancellationToken);
-    }
-
-    public override int SavedChanges(SaveChangesCompletedEventData eventData, int result)
-    {
-        if (eventData.Context is not null)
-            AssignBaseProperties(eventData.Context);
-
-        return base.SavedChanges(eventData, result);
-    }
-
-    public override ValueTask<int> SavedChangesAsync(SaveChangesCompletedEventData eventData, int result,
-        CancellationToken cancellationToken = new CancellationToken())
-    {
-        if (eventData.Context is not null)
-            AssignBaseProperties(eventData.Context);
-
-        return base.SavedChangesAsync(eventData, result, cancellationToken);
     }
 }

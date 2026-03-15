@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using BlogApp.Core.EFCore.Extensions;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Logging;
 
 namespace BlogApp.Core.EFCore.Repositories;
 
@@ -13,7 +12,7 @@ public class EFBaseRepository<TEntity, TId>(DbContext context)
     : IAsyncPaginateRepository<TEntity, TId>, IAsyncFindableRepository<TEntity, TId>,
         IAsyncOrderableRepository<TEntity, TId>, IAsyncQueryableRepository<TEntity, TId>,
         IAsyncInsertableRepository<TEntity, TId>, IAsyncUpdateableRepository<TEntity, TId>,
-        IAsyncDeletableRepository<TEntity, TId>
+        IAsyncDeletableRepository<TEntity, TId>, IAsyncRepository
     where TEntity : BaseEntity<TId>
     where TId : struct
 {
@@ -73,6 +72,10 @@ public class EFBaseRepository<TEntity, TId>(DbContext context)
         _currentTransaction ??= await context.Database.BeginTransactionAsync(cancellationToken);
     }
 
+    /// <summary>
+    /// Saves pending changes and commits the transaction.
+    /// Automatically rolls back if save or commit fails.
+    /// </summary>
     public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(_currentTransaction);
@@ -123,6 +126,9 @@ public class EFBaseRepository<TEntity, TId>(DbContext context)
     public async Task<TEntity?> GetByIdAsync(TId id, bool tracking = true,
         CancellationToken cancellationToken = default)
     {
+        if (tracking)
+            return await _table.FindAsync([id], cancellationToken);
+
         return await GetAll(tracking).FirstOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
     }
 
@@ -151,7 +157,12 @@ public class EFBaseRepository<TEntity, TId>(DbContext context)
         var orderedQuery = orderDesc
             ? query.OrderByDescending(orderby)
             : query.OrderBy(orderby);
-        return await orderedQuery.Take(takeCount).ToListAsync(cancellationToken);
+
+        var result = takeCount > 0
+            ? orderedQuery.Take(takeCount)
+            : orderedQuery.AsQueryable();
+
+        return await result.ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync<TKey>(Expression<Func<TEntity, bool>> expression,
@@ -162,6 +173,7 @@ public class EFBaseRepository<TEntity, TId>(DbContext context)
         var orderedQuery = orderDesc
             ? query.OrderByDescending(orderby)
             : query.OrderBy(orderby);
+
         return await orderedQuery.ToListAsync(cancellationToken);
     }
 
@@ -173,7 +185,12 @@ public class EFBaseRepository<TEntity, TId>(DbContext context)
         var orderedQuery = orderDesc
             ? query.OrderByDescending(orderby)
             : query.OrderBy(orderby);
-        return await orderedQuery.Take(takeCount).ToListAsync(cancellationToken);
+
+        var result = takeCount > 0
+            ? orderedQuery.Take(takeCount)
+            : orderedQuery.AsQueryable();
+
+        return await result.ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync(bool tracking = true,
@@ -185,6 +202,6 @@ public class EFBaseRepository<TEntity, TId>(DbContext context)
     public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> expression,
         bool tracking = true, CancellationToken cancellationToken = default)
     {
-        return await GetAll().Where(expression).ToListAsync(cancellationToken);
+        return await GetAll(tracking).Where(expression).ToListAsync(cancellationToken);
     }
 }

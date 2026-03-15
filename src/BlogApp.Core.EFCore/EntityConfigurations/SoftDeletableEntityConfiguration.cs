@@ -11,7 +11,7 @@ public class SoftDeletableEntityConfiguration<TEntity, TId> : BaseEntityConfigur
     {
         base.Configure(builder);
 
-        builder.Property(x => x.DeletedDate)
+        builder.Property(x => x.DeletedBy)
                .HasMaxLength(128)
                .IsRequired(false);
         builder.Property(x => x.DeletedDate)
