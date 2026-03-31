@@ -13,6 +13,7 @@
     <Project Path="src/BlogApp.Core.Validations/BlogApp.Core.Validations.csproj" />
     <Project Path="src/BlogApp.Core/BlogApp.Core.csproj" />
     <Project Path="src/BlogApp.Domain/BlogApp.Domain.csproj" />
+    <Project Path="src/BlogApp.Infrastructure.Caching/BlogApp.Infrastructure.Caching.csproj" />
     <Project Path="src/BlogApp.Infrastructure.EFCore/BlogApp.Infrastructure.EFCore.csproj" />
     <Project Path="src/BlogApp.Infrastructure.Security/BlogApp.Infrastructure.Security.csproj" />
     <Project Path="src/BlogApp.Infrastructure/BlogApp.Infrastructure.csproj" />

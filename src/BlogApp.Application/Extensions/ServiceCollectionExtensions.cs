@@ -1,6 +1,8 @@
 using System.Reflection;
 using BlogApp.Core.Mediator.Behaviors;
 using BlogApp.Core.Mediator.Extensions;
+using BlogApp.Core.Security.Behaviors;
+using BlogApp.Core.Validations.Behaviors;
 using BlogApp.Core.Validations.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 

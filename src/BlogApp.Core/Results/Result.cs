@@ -8,8 +8,8 @@ public record Result(bool IsSuccess, string Message, int StatusCode, Error Error
     public static Result Failed(string message, int statusCode) =>
         new(false, message, statusCode, new Error(string.Empty, message));
 
-    public static Result Failed(string message, int statusCode, Error error) =>
-        new(false, message, statusCode, error);
+    public static Result Failed(int statusCode, Error error) =>
+        new(false, error.ErrorMessage, statusCode, error);
 }
 
 public record Result<T>(T? Data, bool IsSuccess, string Message, int StatusCode, Error Error)
@@ -21,6 +21,6 @@ public record Result<T>(T? Data, bool IsSuccess, string Message, int StatusCode,
     public static Result<T> Failed(T? data, string message, int statusCode) =>
         new(data, false, message, statusCode, new Error(string.Empty, message));
 
-    public static Result<T> Failed(T? data, string message, int statusCode, Error error) =>
-        new(data, false, message, statusCode, error);
+    public static Result<T> Failed(T? data, int statusCode, Error error) =>
+        new(data, false, error.ErrorMessage, statusCode, error);
 }

@@ -1,5 +1,4 @@
 using BlogApp.Api.Extensions;
-using BlogApp.Api.Handlers;
 using BlogApp.Application.Extensions;
 using BlogApp.Core.Logging.Extensions;
 using BlogApp.Domain.Extensions;

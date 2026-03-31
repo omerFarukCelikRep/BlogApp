@@ -1,25 +1,38 @@
-using Microsoft.Extensions.Caching.Hybrid;
+using BlogApp.Core.Caching.Enums;
+using BlogApp.Core.Caching.Options;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlogApp.Core.Caching.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddHybridCache(this IServiceCollection services)
+    private static void ValidateSettings(CacheOptions options)
     {
-        services.AddHybridCache(options =>
-        {
-            options.MaximumPayloadBytes = 1024 * 10 * 10;
-            options.MaximumKeyLength = 256;
-            options.DefaultEntryOptions = new HybridCacheEntryOptions()
-            {
-                Expiration = TimeSpan.FromMinutes(10),
-                LocalCacheExpiration = TimeSpan.FromMinutes(10)
-            };
-            options.ReportTagMetrics = true;
-            options.DisableCompression = false;
-        });
+        if (options.Provider != CacheProvider.Memory && options.Redis is null)
+            throw new InvalidOperationException(
+                "Redis settings must be configured when Provider is Redis or Hybrid.");
 
-        return services;
+        if (options.Provider != CacheProvider.Memory && string.IsNullOrWhiteSpace(options.Redis?.ConnectionString))
+            throw new InvalidOperationException("Redis ConnectionString cannot be empty.");
+    }
+
+    extension(IServiceCollection services)
+    {
+        public IServiceCollection AddCoreCaching(IConfiguration configuration,
+            Action<CacheOptions> configure)
+        {
+            var section = configuration.GetSection(CacheOptions.SectionName);
+            var options = section.Get<CacheOptions>()
+                          ?? new CacheOptions();
+
+            services.Configure<CacheOptions>(section);
+
+            ValidateSettings(options);
+
+            configure(options);
+
+            return services;
+        }
     }
 }
