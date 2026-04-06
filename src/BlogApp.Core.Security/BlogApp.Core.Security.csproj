@@ -5,13 +5,14 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
+    
     <ItemGroup>
-      <ProjectReference Include="..\BlogApp.Core\BlogApp.Core.csproj" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Helpers\" />
+      <ProjectReference Include="..\BlogApp.Core.Mediator\BlogApp.Core.Mediator.csproj" />
+      <ProjectReference Include="..\BlogApp.Core\BlogApp.Core.csproj" />
     </ItemGroup>
 
 </Project>

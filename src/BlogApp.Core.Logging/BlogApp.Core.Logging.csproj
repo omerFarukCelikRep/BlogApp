@@ -19,4 +19,8 @@
         <PackageReference Include="Serilog.Sinks.File"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\BlogApp.Core.Mediator\BlogApp.Core.Mediator.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -4,7 +4,7 @@ using BlogApp.Core.Validations.Exceptions;
 using BlogApp.Core.Validations.Results;
 using Microsoft.Extensions.Logging;
 
-namespace BlogApp.Core.Mediator.Behaviors;
+namespace BlogApp.Core.Validations.Behaviors;
 
 public class ValidationBehavior<TRequest, TResponse>(
     IEnumerable<IValidator<TRequest>> validators,

@@ -1,7 +1,7 @@
 using BlogApp.Core.Mediator.Abstractions;
 using Microsoft.Extensions.Logging;
 
-namespace BlogApp.Core.Mediator.Behaviors;
+namespace BlogApp.Core.Logging.Behaviors;
 
 public class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TRequest, TResponse>> logger)
     : IPipelineBehavior<TRequest, TResponse>
