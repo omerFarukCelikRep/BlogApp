@@ -16,13 +16,17 @@ public class RefreshTokenEntityConfiguration : BaseEntityConfiguration<RefreshTo
             .IsRequired();
         builder.Property(x => x.UserId)
             .IsRequired();
-        builder.Property(x => x.ExpireDate)
+        builder.Property(x => x.ExpiresAt)
             .IsRequired();
         builder.Property(x => x.IsRevoked)
             .IsRequired();
-        builder.Property(x => x.RevokedDate);
+        builder.Property(x => x.RevokedAt);
+        builder.Property(x => x.RevokedIp)
+            .IsRequired(false);
         builder.Property(x => x.IsUsed)
             .IsRequired();
+        builder.Property(x => x.ReplacedByToken)
+            .IsRequired(false);
         builder.Property(x => x.CreatedIp)
             .IsRequired();
 

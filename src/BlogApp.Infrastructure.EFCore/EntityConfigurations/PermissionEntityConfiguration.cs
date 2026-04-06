@@ -19,5 +19,7 @@ public class PermissionEntityConfiguration : BaseEntityConfiguration<Permission>
             .IsRequired();
         builder.Property(x => x.Type)
             .IsRequired();
+        builder.Property(x => x.Description)
+            .IsRequired(false);
     }
 }

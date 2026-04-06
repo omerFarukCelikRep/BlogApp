@@ -17,9 +17,11 @@ public class LikeEntityConfiguration : BaseEntityConfiguration<Like>
 
         builder.HasOne(x => x.Blog)
             .WithMany(x => x.Likes)
-            .HasForeignKey(x => x.BlogId);
+            .HasForeignKey(x => x.BlogId)
+            .OnDelete(DeleteBehavior.Cascade);
         builder.HasOne(x => x.User)
             .WithMany(x => x.Likes)
-            .HasForeignKey(x => x.UserId);
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -13,6 +13,9 @@ public class RoleEntityConfiguration : BaseEntityConfiguration<Role>
 
         builder.ToTable(TableName);
 
+        builder.HasIndex(x => x.Name)
+            .IsUnique();
+
         builder.Property(x => x.Name)
             .HasMaxLength(256)
             .IsRequired();

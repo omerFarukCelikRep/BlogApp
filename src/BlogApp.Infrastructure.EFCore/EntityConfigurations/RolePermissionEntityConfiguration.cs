@@ -11,6 +11,9 @@ public class RolePermissionEntityConfiguration : BaseEntityConfiguration<RolePer
         base.Configure(builder);
 
         builder.ToTable(TableName);
+        
+        builder.Ignore(x => x.ModifiedBy);
+        builder.Ignore(x => x.ModifiedDate);
 
         builder.HasIndex(x => new { x.RoleId, x.PermissionId })
             .IsUnique();

@@ -14,6 +14,12 @@ public class TagEntityConfiguration : BaseEntityConfiguration<Tag>
 
         builder.Property(x => x.Name)
             .IsRequired();
+        builder.Property(x => x.Slug)
+            .IsRequired(true);
+        builder.HasIndex(x => x.Slug)
+            .IsUnique();
+        builder.Property(x => x.Description)
+            .IsRequired(false);
 
         builder.HasMany(x => x.BlogTags)
             .WithOne(x => x.Tag)

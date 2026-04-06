@@ -27,6 +27,7 @@ public class UserEntityConfiguration : SoftDeletableEntityConfiguration<User, Gu
         builder.Property(x => x.LastName)
             .HasMaxLength(256)
             .IsRequired();
+        builder.Ignore(x => x.FullName);
         builder.Property(x => x.Username)
             .HasMaxLength(256)
             .IsRequired();
@@ -38,12 +39,18 @@ public class UserEntityConfiguration : SoftDeletableEntityConfiguration<User, Gu
         builder.Property(x => x.Password)
             .HasMaxLength(256)
             .IsRequired();
+        builder.Property(x => x.Bio)
+            .IsRequired(false);
+        builder.Property(x => x.ProfilePicture)
+            .IsRequired(false);
         builder.Property(x => x.TwoFactorEnabled)
             .HasDefaultValue(false);
+        builder.Property(x => x.LockoutEnd)
+            .IsRequired(false);
         builder.Property(x => x.AccessFailedCount)
             .HasDefaultValue(0);
 
-        builder.HasMany(x => x.Roles)
+        builder.HasMany(x => x.UserRoles)
             .WithOne(x => x.User)
             .IsRequired(false);
         builder.HasMany(x => x.Likes)

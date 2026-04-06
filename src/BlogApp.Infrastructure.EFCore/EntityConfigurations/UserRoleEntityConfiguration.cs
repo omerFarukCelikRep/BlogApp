@@ -12,6 +12,9 @@ public class UserRoleEntityConfiguration : BaseEntityConfiguration<UserRole>
 
         builder.ToTable(TableName);
 
+        builder.Ignore(x => x.ModifiedBy);
+        builder.Ignore(x => x.ModifiedDate);
+
         builder.HasIndex(x => new
         {
             x.UserId,
@@ -19,7 +22,7 @@ public class UserRoleEntityConfiguration : BaseEntityConfiguration<UserRole>
         }).IsUnique();
 
         builder.HasOne(x => x.User)
-            .WithMany(x => x.Roles)
+            .WithMany(x => x.UserRoles)
             .HasForeignKey(x => x.UserId);
 
         builder.HasOne(x => x.Role)
