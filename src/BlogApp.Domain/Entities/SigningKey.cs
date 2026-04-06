@@ -6,5 +6,5 @@ public class SigningKey : SoftDeletableEntity
     public required string PrivateKey { get; set; }
     public required string PublicKey { get; set; }
     public bool IsActive { get; set; }
-    public DateTime ExpireDate { get; set; }
+    public DateTimeOffset ExpireDate { get; set; }
 }

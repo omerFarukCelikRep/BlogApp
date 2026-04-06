@@ -4,8 +4,9 @@ public class Permission : BaseEntity
 {
     public required string Action { get; set; }
     public required string Type { get; set; }
+    public string? Description { get; set; }
 
     public virtual ICollection<RolePermission> RolePermissions { get; set; } = new HashSet<RolePermission>();
 
-    public override string ToString() => Action + Type;
+    public override string ToString() => $"{Action}.{Type}";
 }
