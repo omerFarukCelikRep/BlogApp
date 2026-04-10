@@ -23,4 +23,7 @@ public record Result<T>(T? Data, bool IsSuccess, string Message, int StatusCode,
 
     public static Result<T> Failed(T? data, int statusCode, Error error) =>
         new(data, false, error.ErrorMessage, statusCode, error);
+
+    public static Result<T> Failed(int statusCode, string errorCode) =>
+        new(default, false, errorCode, statusCode, new Error(errorCode, errorCode));
 }
