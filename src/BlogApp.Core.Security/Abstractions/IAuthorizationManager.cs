@@ -4,8 +4,8 @@ namespace BlogApp.Core.Security.Abstractions;
 
 public interface IAuthorizationManager
 {
-    Task<bool> AuthorizeByRoleAsync(Guid userId, Role requiredRole, CancellationToken cancellationToken = default);
+    Task<bool> AuthorizeByRoleAsync(Role requiredRole, CancellationToken cancellationToken = default);
 
-    Task<bool> AuthorizeByPermissionAsync(Guid userId, Permission requiredPermission,
+    Task<bool> AuthorizeByPermissionAsync(IReadOnlyList<string> requiredPermissions, bool isRequireAll = false,
         CancellationToken cancellationToken = default);
 }
