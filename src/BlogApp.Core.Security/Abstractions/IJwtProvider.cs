@@ -5,6 +5,6 @@ namespace BlogApp.Core.Security.Abstractions;
 
 public interface IJwtProvider
 {
-    Task<string> GenerateTokenAsync(Guid userId, CancellationToken cancellationToken = default);
-    ClaimsPrincipal? ValidateToken(string token);
+    Task<string> GenerateTokenAsync(TokenArgs args, CancellationToken cancellationToken = default);
+    Task<ClaimsPrincipal?> ValidateTokenAsync(string token, CancellationToken cancellationToken = default);
 }

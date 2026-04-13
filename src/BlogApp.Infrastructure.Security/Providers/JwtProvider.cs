@@ -1,72 +1,116 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
 using BlogApp.Core.Security.Abstractions;
 using BlogApp.Core.Security.Constants;
+using BlogApp.Core.Security.Models;
 using BlogApp.Core.Security.Options;
 using BlogApp.Domain.Abstractions.Repositories;
-using BlogApp.Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BlogApp.Infrastructure.Security.Providers;
 
-public class JwtProvider(
-    IUserRepository userRepository,
+public partial class JwtProvider(
     ISigningKeyRepository signingKeyRepository,
-    IOptions<JwtOptions> jwtOptions) : IJwtProvider
+    IOptions<JwtOptions> jwtOptions,
+    ILogger<JwtProvider> logger) : IJwtProvider
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
-    public async Task<string> GenerateTokenAsync(Guid userId, CancellationToken cancellationToken = default)
+    private static List<Claim> BuildClaims(TokenArgs args)
     {
-        var user = await userRepository.GetByIdAsync(userId, true, cancellationToken);
-        if (user is null)
-            throw new UserNotFoundException();
+        List<Claim> claims =
+        [
+            new(JwtRegisteredClaimNames.Sub, args.UserId.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.CreateVersion7().ToString()),
+            new(ClaimTypes.NameIdentifier, args.UserId.ToString()),
+            new(ClaimTypes.GivenName, args.FirstName),
+            new(ClaimTypes.Surname, args.LastName),
+            new(ClaimTypes.Email, args.Email),
+            new(ClaimTypes.Name, args.Username)
+        ];
 
-        var signingKey =
-            await signingKeyRepository.GetAsync(x => x.IsActive, tracking: false, cancellationToken: cancellationToken);
-        if (signingKey is null)
-            throw new UnauthorizedAccessException();
+        claims.AddRange(args.Roles.Select(userRole => new Claim(ClaimTypes.Role, userRole!.ToString())));
+        claims.AddRange(args.Permissions.Select(permission =>
+            new Claim(CustomClaimTypes.Permissions, permission!.ToString())));
 
-        var privateKeyBytes = Convert.FromBase64String(signingKey.PrivateKey);
+        return claims;
+    }
+
+    public async Task<string> GenerateTokenAsync(TokenArgs args, CancellationToken cancellationToken = default)
+    {
+        var signingKey = await signingKeyRepository.GetAsync(x => x.IsActive, false, cancellationToken)
+                         ?? throw new UnauthorizedAccessException();
+
         var rsa = RSA.Create();
-        rsa.ImportRSAPrivateKey(privateKeyBytes, out _);
+        rsa.ImportFromPem(signingKey.PrivateKey);
+
         var rsaSecurityKey = new RsaSecurityKey(rsa)
         {
             KeyId = signingKey.KeyId
         };
 
-        var credentials = new SigningCredentials(rsaSecurityKey, SecurityAlgorithms.HmacSha512);
-        List<Claim> claims =
-        [
-            new(JwtRegisteredClaimNames.Sub, userId.ToString()),
-            new(JwtRegisteredClaimNames.Jti, Guid.CreateVersion7().ToString()),
-            new(ClaimTypes.NameIdentifier, userId.ToString()),
-            new(ClaimTypes.GivenName, user.FirstName),
-            new(ClaimTypes.Surname, user.LastName),
-            new(ClaimTypes.Email, user.Email)
-        ];
+        var credentials = new SigningCredentials(rsaSecurityKey, SecurityAlgorithms.RsaSha512);
+        var claims = BuildClaims(args);
 
-        var userRoles = user.Roles.Select(x => x.Role).ToList();
-        var userPermissions = userRoles.SelectMany(x => x!.RolePermissions).Select(x => x.Permission);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(claims),
+            Issuer = _jwtOptions.Issuer,
+            Audience = _jwtOptions.Audience,
+            Expires = DateTimeOffset.Now.AddMinutes(_jwtOptions.ExpirationMinutes).DateTime,
+            SigningCredentials = credentials
+        };
 
-        claims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole!.ToString())));
-        claims.AddRange(userPermissions.Select(permission =>
-            new Claim(CustomClaimTypes.Permission, permission!.ToString())));
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var token = tokenHandler.CreateToken(tokenDescriptor);
 
-        var token = new JwtSecurityToken(issuer: _jwtOptions.Issuer,
-            audience: _jwtOptions.Audience,
-            claims: claims,
-            expires: DateTimeOffset.Now.AddMinutes(_jwtOptions.ExpirationMinutes).DateTime,
-            signingCredentials: credentials);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return tokenHandler.WriteToken(token);
     }
 
-    public ClaimsPrincipal? ValidateToken(string token)
+    public async Task<ClaimsPrincipal?> ValidateTokenAsync(string token, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+            var kid = jwtToken.Header.Kid;
+            if (string.IsNullOrEmpty(kid))
+                return null;
+
+            var signingKey = await signingKeyRepository.GetByKeyIdAsync(kid, cancellationToken);
+            if (signingKey is null)
+                return null;
+
+            var rsa = RSA.Create();
+            rsa.ImportFromPem(signingKey.PublicKey);
+
+            var validatorParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = _jwtOptions.Issuer,
+                ValidAudience = _jwtOptions.Audience,
+                IssuerSigningKey = new RsaSecurityKey(rsa) { KeyId = signingKey.KeyId },
+                ClockSkew = TimeSpan.Zero
+            };
+
+            var validationResult = await tokenHandler.ValidateTokenAsync(token, validatorParameters);
+            return !validationResult.IsValid
+                ? null
+                : new ClaimsPrincipal(validationResult.ClaimsIdentity);
+        }
+        catch (Exception e)
+        {
+            LogMessage(e.Message);
+            return null;
+        }
     }
+
+    [LoggerMessage(LogLevel.Error, "{Message}")]
+    partial void LogMessage(string message);
 }
