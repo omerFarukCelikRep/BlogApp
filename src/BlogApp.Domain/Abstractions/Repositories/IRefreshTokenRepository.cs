@@ -6,5 +6,6 @@ public interface IRefreshTokenRepository : IAsyncInsertableRepository<RefreshTok
     IAsyncUpdateableRepository<RefreshToken, int>
 {
     Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken cancellationToken = default);
-    Task RevokeAllAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task RevokeAsync(string token, string? revokedIp = null, CancellationToken cancellationToken = default);
+    Task RevokeAllAsync(Guid userId, string? revokedIp = null, CancellationToken cancellationToken = default);
 }

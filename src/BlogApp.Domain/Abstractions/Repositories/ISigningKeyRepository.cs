@@ -5,4 +5,5 @@ namespace BlogApp.Domain.Abstractions.Repositories;
 public interface ISigningKeyRepository : IAsyncFindableRepository<SigningKey, int>,
     IAsyncUpdateableRepository<SigningKey, int>, IAsyncInsertableRepository<SigningKey, int>
 {
+    Task<SigningKey?> GetByKeyIdAsync(string kid, CancellationToken cancellationToken = default);
 }
