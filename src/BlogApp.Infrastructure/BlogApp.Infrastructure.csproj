@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\BlogApp.Infrastructure.Caching\BlogApp.Infrastructure.Caching.csproj" />
         <ProjectReference Include="..\BlogApp.Infrastructure.EFCore\BlogApp.Infrastructure.EFCore.csproj"/>
         <ProjectReference Include="..\BlogApp.Infrastructure.Security\BlogApp.Infrastructure.Security.csproj"/>
     </ItemGroup>

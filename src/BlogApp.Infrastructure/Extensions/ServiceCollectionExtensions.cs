@@ -1,3 +1,4 @@
+using BlogApp.Infrastructure.Caching.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BlogApp.Infrastructure.EFCore.Extensions;
@@ -13,7 +14,8 @@ public static class ServiceCollectionExtensions
         {
             services.AddHttpContextAccessor()
                 .AddEFCoreServices(configuration)
-                .AddSecurityServices(configuration);
+                .AddSecurityServices()
+                .AddCachingServices(configuration);
 
             return services;
         }
