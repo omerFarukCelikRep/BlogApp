@@ -2,7 +2,7 @@ using BlogApp.Core.Security.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace BlogApp.Infrastructure.Security.Setups;
+namespace BlogApp.Infrastructure.Security.Options;
 
 public sealed class JwtOptionsSetup(IConfiguration configuration)
     : IConfigureOptions<JwtOptions>

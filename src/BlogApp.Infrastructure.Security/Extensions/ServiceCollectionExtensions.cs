@@ -1,6 +1,6 @@
 using BlogApp.Core.Security.Abstractions;
+using BlogApp.Infrastructure.Security.Options;
 using BlogApp.Infrastructure.Security.Providers;
-using BlogApp.Infrastructure.Security.Setups;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
-        public IServiceCollection AddSecurityServices(IConfiguration configuration)
+        public IServiceCollection AddSecurityServices()
         {
             services.AddAuthentication();
 
