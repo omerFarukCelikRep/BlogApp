@@ -1,6 +1,7 @@
+using BlogApp.Core.Localization;
+
 namespace BlogApp.Core.Validations.Abstractions;
 
-public interface IValidationMessageLocalizer
+public interface IValidationMessageLocalizer : IMessageLocalizer
 {
-    string Get(string key, string defaultMessage, IReadOnlyDictionary<string, string>? args = null);
 }

@@ -55,6 +55,19 @@ public static class ValidationRuleExtensions
                 message ?? Rules.GetDefaultErrorMessage(Rules.Equal, args), Rules.Equal, args);
         }
 
+        public ValidationRule<T, TProperty> Equal(Func<T, TProperty> predicate, string? message = null)
+        {
+            var expected = new ValidationRule<T, TProperty>(rule.PropertyName, predicate);
+            
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.Expected, expected?.ToString() ?? string.Empty }
+            };
+            return rule.Must(value => value?.Equals(expected) is true,
+                message ?? Rules.GetDefaultErrorMessage(Rules.Equal, args), Rules.Equal, args);
+        }
+
         public ValidationRule<T, TProperty> NotEqual(TProperty expected, string? message = null)
         {
             Dictionary<string, string> args = new()
