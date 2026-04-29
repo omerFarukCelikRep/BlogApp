@@ -15,5 +15,11 @@ public class RegisterCommandValidator : Validator<RegisterCommand>
         RuleFor(nameof(RegisterCommand.Password), x => x.Password)
             .NotNull()
             .NotEmpty();
+
+        RuleFor(nameof(RegisterCommand.ConfirmedPassword), x => x.ConfirmedPassword)
+            .NotNull()
+            .NotEmpty()
+            .Equal(x => x.ConfirmedPassword)
+            .Equal(""); //TODO:Password control
     }
 }

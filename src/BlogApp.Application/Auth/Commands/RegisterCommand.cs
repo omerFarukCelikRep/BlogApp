@@ -2,6 +2,14 @@ using BlogApp.Domain.Models.Auth;
 
 namespace BlogApp.Application.Auth.Commands;
 
-public class RegisterCommand : RegisterArgs, IRequest<Result>
+public record RegisterCommand(
+    string FirstName,
+    string LastName,
+    string Email,
+    string Username,
+    string Password,
+    string ConfirmedPassword)
+    : RegisterArgs(FirstName, LastName, Email, Username, Password),
+        IRequest<Result>
 {
 }

@@ -1,4 +1,5 @@
 using System.Reflection;
+using BlogApp.Core.Logging.Behaviors;
 using BlogApp.Core.Mediator.Behaviors;
 using BlogApp.Core.Mediator.Extensions;
 using BlogApp.Core.Security.Behaviors;
