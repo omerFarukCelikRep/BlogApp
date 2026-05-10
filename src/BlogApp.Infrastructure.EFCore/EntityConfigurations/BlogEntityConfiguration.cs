@@ -28,9 +28,6 @@ public class BlogEntityConfiguration : SoftDeletableEntityConfiguration<Blog>
         builder.HasOne(x => x.Author)
             .WithMany(x => x.Blogs)
             .HasForeignKey(x => x.AuthorId);
-        builder.HasMany(x => x.BlogCategories)
-            .WithOne(x => x.Blog)
-            .IsRequired(false);
         builder.HasMany(x => x.BlogTags)
             .WithOne(x => x.Blog)
             .IsRequired(false);

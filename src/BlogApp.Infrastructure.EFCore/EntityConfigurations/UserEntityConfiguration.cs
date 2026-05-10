@@ -52,15 +52,19 @@ public class UserEntityConfiguration : SoftDeletableEntityConfiguration<User, Gu
 
         builder.HasMany(x => x.UserRoles)
             .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId)
             .IsRequired(false);
         builder.HasMany(x => x.Likes)
             .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId)
             .IsRequired(false);
         builder.HasMany(x => x.RefreshTokens)
             .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId)
             .IsRequired(false);
         builder.HasMany(x => x.Comments)
             .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId)
             .IsRequired(false);
     }
 }

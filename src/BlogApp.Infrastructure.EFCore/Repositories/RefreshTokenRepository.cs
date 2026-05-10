@@ -8,6 +8,9 @@ public class RefreshTokenRepository(BlogAppDbContext context)
 {
     public async Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken cancellationToken = default)
     {
+        if (cancellationToken.IsCancellationRequested)
+            return await Task.FromCanceled<RefreshToken?>(cancellationToken);
+        
         return await GetAsync(rt => rt.Token == token, true, cancellationToken);
     }
 
@@ -35,7 +38,5 @@ public class RefreshTokenRepository(BlogAppDbContext context)
                 x.SetProperty(a => a.RevokedIp, revokedIp);
                 x.SetProperty(a => a.RevokedAt, DateTimeOffset.Now);
             }, cancellationToken);
-
-        await SaveChangesAsync(cancellationToken);
     }
 }

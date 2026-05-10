@@ -21,6 +21,7 @@ public class CommentEntityConfiguration : BaseEntityConfiguration<Comment>
 
         builder.HasOne(x => x.Parent)
             .WithMany(x => x.Replies)
+            .HasForeignKey(x => x.ParentId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
 

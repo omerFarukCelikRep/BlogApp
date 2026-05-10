@@ -25,7 +25,7 @@ public class RoleEntityConfiguration : BaseEntityConfiguration<Role>
             Id = i + 1,
             Name = role,
             CreatedBy = nameof(BlogApp),
-            CreatedDate = DateTime.Now,
+            CreatedDate = new DateTime(2026,1,1),
             Status = Status.Added
         }));
     }

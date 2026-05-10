@@ -14,21 +14,20 @@ public static class ServiceCollectionExtensions
     {
         private IServiceCollection AddDbContext(IConfiguration configuration)
         {
-            services.AddSingleton<QueryTimingInterceptor>();
-            services.AddSingleton<SaveAuditableChangesInterceptor>();
-            services.AddSingleton<SqlLoggingInterceptor>();
-
-            services.AddDbContextPool<BlogAppDbContext>((serviceProvider, options) =>
-            {
-                options.UseNpgsql(configuration.GetConnectionString("Default"),
-                        builder =>
-                        {
-                            builder.MigrationsAssembly(typeof(BlogAppDbContext).Assembly.FullName);
-                            builder.EnableRetryOnFailure();
-                        })
-                    .AddInterceptors(serviceProvider)
-                    .UseLazyLoadingProxies();
-            });
+            services.AddSingleton<QueryTimingInterceptor>()
+                .AddSingleton<SqlLoggingInterceptor>()
+                .AddTransient<SaveAuditableChangesInterceptor>()
+                .AddDbContextPool<BlogAppDbContext>((serviceProvider, options) =>
+                {
+                    options.UseNpgsql(configuration.GetConnectionString("Default"),
+                            builder =>
+                            {
+                                builder.MigrationsAssembly(typeof(BlogAppDbContext).Assembly.FullName);
+                                builder.EnableRetryOnFailure();
+                            })
+                        .AddInterceptors(serviceProvider)
+                        .UseLazyLoadingProxies();
+                });
 
             return services;
         }

@@ -28,7 +28,7 @@ public class RefreshTokenEntityConfiguration : BaseEntityConfiguration<RefreshTo
         builder.Property(x => x.ReplacedByToken)
             .IsRequired(false);
         builder.Property(x => x.CreatedIp)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.HasOne(x => x.User)
             .WithMany(x => x.RefreshTokens)
