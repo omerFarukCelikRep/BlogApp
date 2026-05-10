@@ -2,7 +2,7 @@ using BlogApp.Core.Mediator.Abstractions;
 
 namespace BlogApp.Core.Mediator.Behaviors;
 
-public class RequestHandlerPreProcesserBehavior<TRequest, TResponse>(IEnumerable<IRequestPreProcessor<TRequest>> processors)
+public class RequestHandlerPreProcessorBehavior<TRequest, TResponse>(IEnumerable<IRequestPreProcessor<TRequest>> processors)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
