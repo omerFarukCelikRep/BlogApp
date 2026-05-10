@@ -9,10 +9,10 @@ using Microsoft.Extensions.Logging;
 
 namespace BlogApp.Core.Security.Behaviors;
 
-public sealed class AuthorizeBehavior<TRequest, TResponse>(
+public sealed class AuthorizationBehavior<TRequest, TResponse>(
     IDomainPrincipal principal,
     IAuthorizationManager authorizationManager,
-    ILogger<AuthorizeBehavior<TRequest, TResponse>> logger)
+    ILogger<AuthorizationBehavior<TRequest, TResponse>> logger)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
     where TResponse : Result
