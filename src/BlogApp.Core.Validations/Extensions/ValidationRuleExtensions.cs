@@ -1,3 +1,4 @@
+using System.Data;
 using System.Text.RegularExpressions;
 using Rules = BlogApp.Core.Validations.Utils.Constants.Rules;
 using Fields = BlogApp.Core.Validations.Utils.Constants.Fields;
@@ -7,7 +8,6 @@ namespace BlogApp.Core.Validations.Extensions;
 
 public static class ValidationRuleExtensions
 {
-    //TODO:Resource magic string
     extension<T, TProperty>(ValidationRule<T, TProperty> rule)
     {
         public ValidationRule<T, TProperty> WithMessage(string errorCode,
@@ -58,13 +58,25 @@ public static class ValidationRuleExtensions
         public ValidationRule<T, TProperty> Equal(Func<T, TProperty> predicate, string? message = null)
         {
             var expected = new ValidationRule<T, TProperty>(rule.PropertyName, predicate);
-            
+
             Dictionary<string, string> args = new()
             {
                 { Fields.PropertyName, rule.PropertyName },
                 { Fields.Expected, expected?.ToString() ?? string.Empty }
             };
             return rule.Must(value => value?.Equals(expected) is true,
+                message ?? Rules.GetDefaultErrorMessage(Rules.Equal, args), Rules.Equal, args);
+        }
+
+        public ValidationRule<T, TProperty> EqualTo(Func<T, TProperty> propertyFunc, string propertyName,
+            string? message = null)
+        {
+            Dictionary<string, string> args = new()
+            {
+                { Fields.PropertyName, rule.PropertyName },
+                { Fields.Expected, propertyName },
+            };
+            return rule.Must((value, instance) => Equals(value, propertyFunc(instance)),
                 message ?? Rules.GetDefaultErrorMessage(Rules.Equal, args), Rules.Equal, args);
         }
 

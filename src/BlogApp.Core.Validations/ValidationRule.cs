@@ -11,6 +11,12 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
         string? ErrorCode,
         IReadOnlyDictionary<string, string>? Args);
 
+    private record CrossPropertySyncRule(
+        Func<TProperty, T, bool> Predicate,
+        string Message,
+        string? ErrorCode,
+        IReadOnlyDictionary<string, string>? Args);
+
     private record AsyncRule(
         Func<TProperty, CancellationToken, Task<bool>> Predicate,
         string Message,
@@ -18,6 +24,7 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
         IReadOnlyDictionary<string, string>? Args);
 
     private readonly List<SyncRule> _rules = [];
+    private readonly List<CrossPropertySyncRule> _crossPropertyRules = [];
     private readonly List<AsyncRule> _asyncRules = [];
 
     private Func<T, bool>? _ruleCondition;
@@ -42,6 +49,8 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
     {
         if (_rules is { Count: > 0 })
             _rules[^1] = _rules[^1] with { ErrorCode = errorCode, Args = args };
+        else if(_crossPropertyRules is { Count: > 0 })
+            _crossPropertyRules[^1] =  _crossPropertyRules[^1] with { ErrorCode = errorCode, Args = args };
         else if (_asyncRules is { Count: > 0 })
             _asyncRules[^1] = _asyncRules[^1] with { ErrorCode = errorCode, Args = args };
         else
@@ -70,6 +79,12 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
                 validationErrors.Add(new(PropertyName, syncRule.Message, syncRule.ErrorCode, syncRule.Args));
         }
 
+        foreach (var rule in _crossPropertyRules)
+        {
+            if (!rule.Predicate(value, instance))
+                validationErrors.Add(new(PropertyName, rule.Message, rule.ErrorCode, rule.Args));
+        }
+
         if (validationErrors.Count == 0)
         {
             foreach (var asyncRule in _asyncRules)
@@ -86,6 +101,13 @@ public class ValidationRule<T, TProperty>(string propertyName, Func<T, TProperty
         string? errorCode = null, IReadOnlyDictionary<string, string>? args = null)
     {
         _rules.Add(new SyncRule(condition, message, errorCode, args));
+        return this;
+    }
+
+    public ValidationRule<T, TProperty> Must(Func<TProperty, T, bool> condition, string message,
+        string? errorCode = null, IReadOnlyDictionary<string, string>? args = null)
+    {
+        _crossPropertyRules.Add(new CrossPropertySyncRule(condition, message, errorCode, args));
         return this;
     }
 
