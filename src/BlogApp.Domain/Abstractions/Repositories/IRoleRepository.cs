@@ -6,4 +6,6 @@ public interface IRoleRepository : IAsyncQueryableRepository<Role, int>, IAsyncF
 {
     Task<Role?> GetByNameAsync(Core.Security.Enums.Role role, bool tracking = true,
         CancellationToken cancellationToken = default);
+    Task<IEnumerable<Role>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Permission>> GetUserPermissionsAsync(Guid userId, CancellationToken cancellationToken = default);
 }
