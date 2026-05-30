@@ -4,5 +4,6 @@ public class KeyRotationOptions
 {
     public const string SectionName = "KeyRotation";
 
-    public TimeSpan Period { get; set; }
+    public TimeSpan Period { get; init; }
+    public int OverlapDays { get; init; }
 }

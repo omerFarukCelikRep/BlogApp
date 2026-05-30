@@ -1,7 +1,7 @@
-using BlogApp.Domain.Options;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace BlogApp.Api.Options;
+namespace BlogApp.Domain.Options;
 
 public sealed class KeyRotationOptionsSetup(IConfiguration configuration) : IConfigureOptions<KeyRotationOptions>
 {

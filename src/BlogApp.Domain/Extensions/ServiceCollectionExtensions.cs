@@ -1,4 +1,5 @@
 using BlogApp.Domain.Abstractions.Services;
+using BlogApp.Domain.Options;
 using BlogApp.Domain.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,11 +9,20 @@ public static class ServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
+        private IServiceCollection AddOptions()
+        {
+            services.ConfigureOptions<KeyRotationOptionsSetup>();
+            services.ConfigureOptions<LoginOptionsSetup>();
+
+            return services;
+        }
+
         private IServiceCollection AddServices()
         {
-            services.AddScoped<IAuthenticationService, AuthenticationService>();
-            services.AddScoped<IRefreshTokenService, RefreshTokenService>();
-            services.AddScoped<ISigningKeyService, SigningKeyService>();
+            services.AddOptions()
+                .AddScoped<IAuthenticationService, AuthenticationService>()
+                .AddScoped<IRefreshTokenService, RefreshTokenService>()
+                .AddScoped<ISigningKeyService, SigningKeyService>();
             return services;
         }
 
