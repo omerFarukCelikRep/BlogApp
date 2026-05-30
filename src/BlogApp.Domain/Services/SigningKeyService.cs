@@ -37,4 +37,15 @@ public class SigningKeyService(ISigningKeyRepository signingKeyRepository, IOpti
             await signingKeyRepository.SaveChangesAsync(cancellationToken);
         }
     }
+
+    public Task<SigningKey?> GetByKeyIdAsync(string kid, CancellationToken cancellationToken = default)
+    {
+        return signingKeyRepository.GetByKeyIdAsync(kid, cancellationToken);
+    }
+
+    public async Task<SigningKey> GetActiveKey(CancellationToken cancellationToken = default)
+    {
+        return await signingKeyRepository.GetAsync(x => x.IsActive, false, cancellationToken)
+               ?? throw new UnauthorizedAccessException();
+    }
 }
