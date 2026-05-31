@@ -1,5 +1,6 @@
 using BlogApp.Api.Endpoints.Auth.Requests;
 using BlogApp.Api.Endpoints.Shared.Responses;
+using BlogApp.Api.Extensions;
 using BlogApp.Application.Auth.Commands;
 using BlogApp.Core.Mediator.Abstractions;
 using BlogApp.Core.Results;
@@ -14,7 +15,7 @@ public static class RefreshTokenEndpoint
     {
         public RouteHandlerBuilder RefreshTokenEndpoints()
         {
-            return builder.Map("/refresh-token",
+            return builder.MapPost("/refresh-token",
                 async (RefreshTokenRequest request, CancellationToken cancellationToken,
                     [FromServices] IMediator mediator) =>
                 {
@@ -23,8 +24,11 @@ public static class RefreshTokenEndpoint
                         await mediator.Send<RefreshTokenCommand, Result<RefreshTokenResult>>(command,
                             cancellationToken);
 
-                    return new Response(result);
-                });
+                    return result.ToResponse();
+                })
+                .RequireAuthorization()
+                .WithName("RefreshToken")
+                .WithTags("Auth");
         }
     }
 }

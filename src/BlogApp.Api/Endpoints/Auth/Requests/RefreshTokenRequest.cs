@@ -6,8 +6,5 @@ public class RefreshTokenRequest
 {
     public string Token { get; set; } = string.Empty;
 
-    public static explicit operator RefreshTokenCommand(RefreshTokenRequest request) => new()
-    {
-        Token = request.Token
-    };
+    public static explicit operator RefreshTokenCommand(RefreshTokenRequest request) => new(request.Token);
 }

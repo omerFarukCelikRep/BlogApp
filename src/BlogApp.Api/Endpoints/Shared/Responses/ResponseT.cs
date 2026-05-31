@@ -1,47 +1,46 @@
 using System.Net.Mime;
 using System.Reflection;
 using System.Text.Json;
+using BlogApp.Api.Helpers;
 using BlogApp.Core.Results;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.Extensions.Options;
 
 namespace BlogApp.Api.Endpoints.Shared.Responses;
 
-public sealed class Response<TResult> : IResult, IEndpointMetadataProvider, IStatusCodeHttpResult, IValueHttpResult,
+public sealed class Response<TResult>(Result<TResult> result) : IResult, IEndpointMetadataProvider,
+    IStatusCodeHttpResult, IValueHttpResult,
     IValueHttpResult<TResult>
 {
-    internal Response(Result<TResult> result)
-    {
-        Value = result.Data;
-        StatusCode = result.StatusCode;
-    }
-
-    public TResult? Value { get; }
+    public TResult? Value { get; } = result.Data;
 
     object? IValueHttpResult.Value => Value;
-    public int StatusCode { get; }
+    public int StatusCode { get; } = result.StatusCode;
 
     int? IStatusCodeHttpResult.StatusCode => StatusCode;
-
-    private static JsonSerializerOptions ResolveJsonOptions(HttpContext httpContext)
-    {
-        return httpContext.RequestServices.GetService<IOptions<JsonSerializerOptions>>()?.Value ??
-               new JsonSerializerOptions();
-    }
 
     public Task ExecuteAsync(HttpContext httpContext)
     {
         ArgumentNullException.ThrowIfNull(httpContext);
 
         var logger = httpContext.RequestServices.GetRequiredService<ILogger<Response<TResult>>>();
-        logger.Log(LogLevel.Information, message: "Setting Http status code {StatusCode}", StatusCode);
+        var logLevel = StatusCode >= 500 ? LogLevel.Error
+            : StatusCode >= 400 ? LogLevel.Warning
+            : LogLevel.Information;
+
+        logger.Log(logLevel, "Setting Http status code {StatusCode}", StatusCode);
 
         httpContext.Response.StatusCode = StatusCode;
 
-        var jsonSerializerOptions = ResolveJsonOptions(httpContext);
+        var jsonSerializerOptions = ResponseHelpers.ResolveJsonSerializerOptions(httpContext);
 
         httpContext.Response.ContentType = $"{MediaTypeNames.Application.Json}; charset=utf-8";
-        return httpContext.Response.WriteAsJsonAsync(Value, jsonSerializerOptions);
+
+        object? responseBody = Value is not null
+            ? Value
+            : new { result.IsSuccess, result.Message, result.Error };
+
+        return httpContext.Response.WriteAsJsonAsync(responseBody, jsonSerializerOptions);
     }
 
     public static void PopulateMetadata(MethodInfo method, EndpointBuilder builder)
@@ -49,7 +48,13 @@ public sealed class Response<TResult> : IResult, IEndpointMetadataProvider, ISta
         ArgumentNullException.ThrowIfNull(method);
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Metadata.Add(new ProducesResponseTypeMetadata(StatusCodes.Status200OK, typeof(TResult),
-            [MediaTypeNames.Application.Json]));
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(
+            StatusCodes.Status200OK, typeof(Result<TResult>), [MediaTypeNames.Application.Json]));
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(
+            StatusCodes.Status400BadRequest, typeof(Result), [MediaTypeNames.Application.Json]));
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(
+            StatusCodes.Status401Unauthorized, typeof(Result), [MediaTypeNames.Application.Json]));
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(
+            StatusCodes.Status500InternalServerError, typeof(Result), [MediaTypeNames.Application.Json]));
     }
 }

@@ -1,4 +1,4 @@
-using BlogApp.Application.SingingKeys.Commands;
+using BlogApp.Application.SigningKeys.Commands;
 using BlogApp.Core.Mediator.Abstractions;
 using BlogApp.Domain.Options;
 using Microsoft.Extensions.Options;
