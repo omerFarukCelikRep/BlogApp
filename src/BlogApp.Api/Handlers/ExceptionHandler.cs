@@ -1,3 +1,5 @@
+using BlogApp.Core.Logging.Contexts;
+using BlogApp.Core.Security.Exceptions;
 using BlogApp.Core.Validations.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +19,11 @@ public sealed class ExceptionHandler(ILogger<ExceptionHandler> logger, IProblemD
 
         var (statusCode, message) = exception switch
         {
+            UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "Unauthorized"),
+            ForbiddenAccessException => (StatusCodes.Status403Forbidden, "Access Denied"),
             KeyNotFoundException => (StatusCodes.Status404NotFound, "Resource Not Found"),
-            ArgumentException => (StatusCodes.Status400BadRequest, "Invalid Request"),
-            ValidationException validationException => (StatusCodes.Status400BadRequest,
-                string.Join(',',
-                    validationException.PropertyExceptions.Select(x => $"{x.PropertyName} : {x.ErrorMessage}"))),
+            ArgumentException => (StatusCodes.Status400BadRequest, "Validation Failed"),
+            ValidationException => (StatusCodes.Status400BadRequest, "Invalid Request"),
             _ => (StatusCodes.Status500InternalServerError, "Internal Server Error"),
         };
         var problemDetails = new ProblemDetails
@@ -34,10 +36,16 @@ public sealed class ExceptionHandler(ILogger<ExceptionHandler> logger, IProblemD
             Extensions =
             {
                 ["traceId"] = httpContext.TraceIdentifier,
+                ["correlationId"] = CorrelationContext.CurrentId,
                 ["timeStamp"] = DateTimeOffset.UtcNow
             }
         };
 
+        if (exception is ValidationException validationException)
+            problemDetails.Extensions["errors"] =
+                validationException.PropertyExceptions.Select(x => new { x.PropertyName, x.ErrorMessage });
+
+        httpContext.Response.StatusCode = statusCode;
         await problemDetailsService.WriteAsync(new()
         {
             HttpContext = httpContext,
