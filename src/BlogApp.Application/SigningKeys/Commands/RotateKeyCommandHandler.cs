@@ -1,6 +1,6 @@
 using BlogApp.Domain.Abstractions.Services;
 
-namespace BlogApp.Application.SingingKeys.Commands;
+namespace BlogApp.Application.SigningKeys.Commands;
 
 public class RotateKeyCommandHandler(ISigningKeyService signingKeyService) : IRequestHandler<RotateKeyCommand>
 {
