@@ -1,0 +1,7 @@
+{
+  "LoginFailed": "Giriş işlemi başarısız!",
+  "AccountLocked": "Hesabınız 15 dk boyunca kilitlenmiştir!",
+  "InvalidCredentials": "Hatalı giriş bilgileri!",
+  "EmailAlreadyExist": "Eposta adresi kullanılmaktadır!",
+  "RoleNotFound": "Rol bulunamadı!"
+}

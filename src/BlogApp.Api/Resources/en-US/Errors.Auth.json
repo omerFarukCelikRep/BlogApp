@@ -1,0 +1,7 @@
+{
+  "LoginFailed": "Login Failed!",
+  "AccountLocked": "Your account locked for 15 mins.",
+  "InvalidCredentials": "Invalid Credentials!",
+  "EmailAlreadyExist": "Email already in use!",
+  "RoleNotFound": "Role Not Found!"
+}
