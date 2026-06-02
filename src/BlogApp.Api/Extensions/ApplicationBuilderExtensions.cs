@@ -15,5 +15,10 @@ public static class ApplicationBuilderExtensions
         {
             return app.UseMiddleware<CorrelationMiddleware>();
         }
+
+        public IApplicationBuilder UseLocalization()
+        {
+            return app.UseRequestLocalization();
+        }
     }
 }

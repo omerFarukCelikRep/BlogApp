@@ -1,0 +1,12 @@
+{
+  "Cache": {
+    "Provider": "Hybrid",
+    "Expiration": "00:05:00",
+    "Redis": {
+      "ConnectionString": "localhost:6379",
+      "Password": null,
+      "Database": 0,
+      "InstanceName": "BlogApp"
+    }
+  }
+}

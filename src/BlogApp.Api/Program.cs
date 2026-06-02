@@ -6,6 +6,8 @@ using BlogApp.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddSettingFiles();
+
 builder.Host.UseSerilog();
 
 builder.Services
@@ -16,13 +18,17 @@ builder.Services
 
 var app = builder.Build();
 
+app.UseCustomExceptionHandler();
+
 app.UseHttpsRedirection();
+
+app.UseCorrelation();
 
 app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseCustomExceptionHandler();
+app.UseRequestLocalization();
 
 app.MapEndpoints();
 

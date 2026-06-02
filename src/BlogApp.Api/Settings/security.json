@@ -1,0 +1,16 @@
+{
+  "Login": {
+    "FailLimit": 5
+  },
+  "Jwt": {
+    "Issuer": "blogapp",
+    "Audience": "blogapp-client",
+    "Key": "super-secret-key-minimum-32-chars",
+    "ExpirationMinutes": 60,
+    "RefreshTokenExpirationDays": 7
+  },
+  "KeyRotation": {
+    "Period": "7.00:00:00",
+    "OverlapDays": 2
+  }
+}

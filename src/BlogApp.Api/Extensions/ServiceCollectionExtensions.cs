@@ -4,8 +4,12 @@ using BlogApp.Api.BackgroundServices;
 using BlogApp.Api.Handlers;
 using BlogApp.Api.Localization;
 using BlogApp.Api.Options;
+using BlogApp.Core.Localization;
 using BlogApp.Core.Validations.Abstractions;
+using BlogApp.Domain.Options;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 
 namespace BlogApp.Api.Extensions;
 
@@ -60,20 +64,30 @@ public static class ServiceCollectionExtensions
             services.AddLocalization(options => options.ResourcesPath = "Resources")
                 .AddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>(sp =>
                 {
-                    var logger = sp.GetService<ILogger>();
+                    var logger = sp.GetService<ILogger<JsonStringLocalizerFactory>>();
                     return new(logger!);
                 })
-                .AddScoped<IValidationMessageLocalizer, ValidationMessageLocalizer>();
+                .AddScoped<IValidationMessageLocalizer, ValidationMessageLocalizer>()
+                .AddScoped<IErrorMessageLocalizer, ErrorMessageLocalizer>();
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                List<CultureInfo> supportedCultures = [new("tr"), new("en")]; //TODO:appsettings
-                options.DefaultRequestCulture = new("tr"); //TODO:appsettings
+                var cultureOptions = services.BuildServiceProvider().GetRequiredService<IOptions<CultureOptions>>()
+                    .Value;
+
+                var supportedCultures = cultureOptions.Supported.Select(x => new CultureInfo(x)).ToList();
+
+                options.DefaultRequestCulture = new RequestCulture(cultureOptions.Default);
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
             });
 
             return services;
+        }
+
+        private IServiceCollection AddCors()
+        {
+            return services; //TODO: appsettings'den gelecek
         }
 
         public IServiceCollection AddApiServices()
@@ -85,7 +99,8 @@ public static class ServiceCollectionExtensions
                 .AddHostedServices()
                 .AddApiVersioning()
                 .AddCustomProblemDetails()
-                .AddLocalization();
+                .AddLocalization()
+                .AddCors();
         }
     }
 }
