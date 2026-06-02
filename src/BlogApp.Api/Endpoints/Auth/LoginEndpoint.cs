@@ -1,5 +1,4 @@
 using BlogApp.Api.Endpoints.Auth.Requests;
-using BlogApp.Api.Endpoints.Shared.Responses;
 using BlogApp.Api.Extensions;
 using BlogApp.Application.Auth.Commands;
 using BlogApp.Core.Mediator.Abstractions;

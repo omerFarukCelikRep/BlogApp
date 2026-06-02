@@ -1,5 +1,4 @@
 using Asp.Versioning;
-using Asp.Versioning.Builder;
 using BlogApp.Api.Endpoints.Auth;
 
 namespace BlogApp.Api.Endpoints;

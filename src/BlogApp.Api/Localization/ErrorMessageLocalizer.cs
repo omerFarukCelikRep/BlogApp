@@ -1,21 +1,20 @@
 using System.Reflection;
 using BlogApp.Api.Resources;
-using BlogApp.Core.Validations.Abstractions;
-using BlogApp.Core.Validations.Utils;
+using BlogApp.Core.Localization;
 using BlogApp.Domain.Constants;
 using Microsoft.Extensions.Localization;
 
 namespace BlogApp.Api.Localization;
 
-public class ValidationMessageLocalizer(IStringLocalizerFactory localizerFactory) : IValidationMessageLocalizer
+public class ErrorMessageLocalizer(IStringLocalizerFactory localizerFactory) : IErrorMessageLocalizer
 {
-    private readonly IStringLocalizer _localizer = localizerFactory.Create(Constants.ResourceName,
+    private readonly IStringLocalizer _localizer = localizerFactory.Create(Errors.ResourceName,
         new AssemblyName(typeof(Shared).Assembly.FullName!).Name!);
 
     public string Get(string key, string? defaultMessage = null, IReadOnlyDictionary<string, string>? args = null)
     {
         if (string.IsNullOrWhiteSpace(key))
-            return defaultMessage ?? Errors.MessageNotFound;
+            return Errors.MessageNotFound;
 
         var localizedString = _localizer[key];
         if (!localizedString.ResourceNotFound && args is not null)
