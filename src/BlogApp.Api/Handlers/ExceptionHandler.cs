@@ -37,7 +37,7 @@ public sealed class ExceptionHandler(ILogger<ExceptionHandler> logger, IProblemD
             {
                 ["traceId"] = httpContext.TraceIdentifier,
                 ["correlationId"] = CorrelationContext.CurrentId,
-                ["timeStamp"] = DateTimeOffset.UtcNow
+                ["timeStamp"] = DateTime.UtcNow
             }
         };
 

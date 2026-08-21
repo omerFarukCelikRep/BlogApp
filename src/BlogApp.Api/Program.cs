@@ -22,6 +22,8 @@ app.UseCustomExceptionHandler();
 
 app.UseHttpsRedirection();
 
+app.UseTimeZone();
+
 app.UseCorrelation();
 
 app.UseAuthentication();

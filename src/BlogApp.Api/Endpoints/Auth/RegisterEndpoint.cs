@@ -1,5 +1,4 @@
 using BlogApp.Api.Endpoints.Auth.Requests;
-using BlogApp.Api.Endpoints.Shared.Responses;
 using BlogApp.Api.Extensions;
 using BlogApp.Application.Auth.Commands;
 using BlogApp.Core.Mediator.Abstractions;
@@ -12,9 +11,9 @@ public static class RegisterEndpoint
 {
     extension(RouteGroupBuilder builder)
     {
-        public RouteHandlerBuilder RegisterEndpoints()
+        public RouteGroupBuilder RegisterEndpoints()
         {
-            return builder.MapPost("/register",
+            builder.MapPost("/register",
                     async ([FromBody] RegisterRequest request, CancellationToken cancellationToken,
                         [FromServices] IMediator mediator) =>
                     {
@@ -26,6 +25,8 @@ public static class RegisterEndpoint
                 .AllowAnonymous()
                 .WithName("Register")
                 .WithTags("Auth");
+
+            return builder;
         }
     }
 }

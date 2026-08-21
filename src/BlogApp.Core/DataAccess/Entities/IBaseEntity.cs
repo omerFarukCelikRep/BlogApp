@@ -6,7 +6,7 @@ public interface IBaseEntity
 {
     Status Status { get; set; }
     string CreatedBy { get; set; }
-    DateTime CreatedDate { get; set; }
+    DateTimeOffset CreatedDate { get; set; }
     string? ModifiedBy { get; set; }
-    DateTime? ModifiedDate { get; set; }
+    DateTimeOffset? ModifiedDate { get; set; }
 }

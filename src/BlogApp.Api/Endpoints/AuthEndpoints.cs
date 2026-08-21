@@ -13,10 +13,10 @@ public static class AuthEndpoints
             .Build();
 
         var authGroup = app.MapGroup("api/v{version:apiVersion}/auth")
-            .WithApiVersionSet(apiVersionSet);
-        authGroup.RegisterEndpoints();
-        authGroup.LoginEndpoints();
-        authGroup.RefreshTokenEndpoints();
+            .WithApiVersionSet(apiVersionSet)
+            .RegisterEndpoints()
+            .LoginEndpoints()
+            .RefreshTokenEndpoints();
 
         return authGroup;
     }

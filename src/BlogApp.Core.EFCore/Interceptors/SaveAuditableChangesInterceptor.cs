@@ -33,7 +33,7 @@ public class SaveAuditableChangesInterceptor() : SaveChangesInterceptor
 
         entry.State = EntityState.Modified;
         entry.Property(nameof(ISoftDeletableEntity.DeletedBy)).CurrentValue = user;
-        entry.Property(nameof(ISoftDeletableEntity.DeletedDate)).CurrentValue = DateTime.Now;
+        entry.Property(nameof(ISoftDeletableEntity.DeletedDate)).CurrentValue = DateTime.UtcNow;
         entry.Property(x => x.Status).CurrentValue = Status.Deleted;
     }
 
@@ -43,7 +43,7 @@ public class SaveAuditableChangesInterceptor() : SaveChangesInterceptor
             return;
 
         entry.Property(x => x.CreatedBy).CurrentValue = user;
-        entry.Property(x => x.CreatedDate).CurrentValue = DateTime.Now;
+        entry.Property(x => x.CreatedDate).CurrentValue = DateTime.UtcNow;
         entry.Property(x => x.Status).CurrentValue = Status.Added;
     }
 
@@ -53,7 +53,7 @@ public class SaveAuditableChangesInterceptor() : SaveChangesInterceptor
             return;
 
         entry.Property(x => x.ModifiedBy).CurrentValue = user;
-        entry.Property(x => x.ModifiedDate).CurrentValue = DateTime.Now;
+        entry.Property(x => x.ModifiedDate).CurrentValue = DateTime.UtcNow;
         entry.Property(x => x.Status).CurrentValue = Status.Modified;
     }
 

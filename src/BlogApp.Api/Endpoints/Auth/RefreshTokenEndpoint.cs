@@ -13,9 +13,9 @@ public static class RefreshTokenEndpoint
 {
     extension(RouteGroupBuilder builder)
     {
-        public RouteHandlerBuilder RefreshTokenEndpoints()
+        public RouteGroupBuilder RefreshTokenEndpoints()
         {
-            return builder.MapPost("/refresh-token",
+            builder.MapPost("/refresh-token",
                 async (RefreshTokenRequest request, CancellationToken cancellationToken,
                     [FromServices] IMediator mediator) =>
                 {
@@ -29,6 +29,8 @@ public static class RefreshTokenEndpoint
                 .RequireAuthorization()
                 .WithName("RefreshToken")
                 .WithTags("Auth");
+
+            return builder;
         }
     }
 }

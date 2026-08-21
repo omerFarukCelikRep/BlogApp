@@ -20,5 +20,10 @@ public static class ApplicationBuilderExtensions
         {
             return app.UseRequestLocalization();
         }
+
+        public IApplicationBuilder UseTimeZone()
+        {
+            return app.UseMiddleware<TimeZoneMiddleware>();
+        }
     }
 }

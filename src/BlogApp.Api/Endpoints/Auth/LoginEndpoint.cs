@@ -12,10 +12,10 @@ public static class LoginEndpoint
 {
     extension(RouteGroupBuilder builder)
     {
-        public RouteHandlerBuilder LoginEndpoints()
+        public RouteGroupBuilder LoginEndpoints()
         {
-            return builder.MapPost("login",
-                    async (LoginRequest request, CancellationToken cancellationToken,
+            builder.MapPost("/login",
+                    async ([FromBody] LoginRequest request, CancellationToken cancellationToken,
                         [FromServices] IMediator mediator) =>
                     {
                         var command = (LoginCommand)request;
@@ -26,6 +26,8 @@ public static class LoginEndpoint
                 .AllowAnonymous()
                 .WithName("Login")
                 .WithTags("Auth");
+
+            return builder;
         }
     }
 }
