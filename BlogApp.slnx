@@ -18,4 +18,8 @@
     <Project Path="src/BlogApp.Infrastructure.Security/BlogApp.Infrastructure.Security.csproj" />
     <Project Path="src/BlogApp.Infrastructure/BlogApp.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/BlogApp.IntegrationTests/BlogApp.IntegrationTests.csproj" />
+    <Project Path="tests/BlogApp.UnitTests/BlogApp.UnitTests.csproj" />
+  </Folder>
 </Solution>
