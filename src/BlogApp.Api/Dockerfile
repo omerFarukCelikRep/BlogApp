@@ -9,17 +9,19 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/BlogApp.Api/BlogApp.Api.csproj", "src/BlogApp.Api/"]
 COPY ["src/BlogApp.Application/BlogApp.Application.csproj", "src/BlogApp.Application/"]
-COPY ["src/BlogApp.Core.Mediator/BlogApp.Core.Mediator.csproj", "src/BlogApp.Core.Mediator/"]
-COPY ["src/BlogApp.Core.Validations/BlogApp.Core.Validations.csproj", "src/BlogApp.Core.Validations/"]
-COPY ["src/BlogApp.Core.Caching/BlogApp.Core.Caching.csproj", "src/BlogApp.Core.Caching/"]
-COPY ["src/BlogApp.Core.Security/BlogApp.Core.Security.csproj", "src/BlogApp.Core.Security/"]
 COPY ["src/BlogApp.Core/BlogApp.Core.csproj", "src/BlogApp.Core/"]
-COPY ["src/BlogApp.Domain/BlogApp.Domain.csproj", "src/BlogApp.Domain/"]
-COPY ["src/BlogApp.Core.Logging/BlogApp.Core.Logging.csproj", "src/BlogApp.Core.Logging/"]
-COPY ["src/BlogApp.Infrastructure/BlogApp.Infrastructure.csproj", "src/BlogApp.Infrastructure/"]
+COPY ["src/BlogApp.Core.Caching/BlogApp.Core.Caching.csproj", "src/BlogApp.Core.Caching/"]
 COPY ["src/BlogApp.Core.EFCore/BlogApp.Core.EFCore.csproj", "src/BlogApp.Core.EFCore/"]
-COPY ["src/BlogApp.Infrastructure.Security/BlogApp.Infrastructure.Security.csproj", "src/BlogApp.Infrastructure.Security/"]
+COPY ["src/BlogApp.Core.Logging/BlogApp.Core.Logging.csproj", "src/BlogApp.Core.Logging/"]
+COPY ["src/BlogApp.Core.Mediator/BlogApp.Core.Mediator.csproj", "src/BlogApp.Core.Mediator/"]
+COPY ["src/BlogApp.Core.Security/BlogApp.Core.Security.csproj", "src/BlogApp.Core.Security/"]
+COPY ["src/BlogApp.Core.Validations/BlogApp.Core.Validations.csproj", "src/BlogApp.Core.Validations/"]
+COPY ["src/BlogApp.Domain/BlogApp.Domain.csproj", "src/BlogApp.Domain/"] 
+COPY ["src/BlogApp.Infrastructure/BlogApp.Infrastructure.csproj", "src/BlogApp.Infrastructure/"]
+COPY ["src/BlogApp.Infrastructure.Caching/BlogApp.Infrastructure.Caching.csproj", "src/BlogApp.Infrastructure.Caching/"]
 COPY ["src/BlogApp.Infrastructure.EFCore/BlogApp.Infrastructure.EFCore.csproj", "src/BlogApp.Infrastructure.EFCore/"]
+COPY ["src/BlogApp.Infrastructure.Security/BlogApp.Infrastructure.Security.csproj", "src/BlogApp.Infrastructure.Security/"]
+COPY Directory.Packages.props .
 RUN dotnet restore "src/BlogApp.Api/BlogApp.Api.csproj"
 COPY . .
 WORKDIR "/src/src/BlogApp.Api"

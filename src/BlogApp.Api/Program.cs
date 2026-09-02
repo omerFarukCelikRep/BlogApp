@@ -18,6 +18,8 @@ builder.Services
 
 var app = builder.Build();
 
+app.UseSerilog();
+
 app.UseCustomExceptionHandler();
 
 app.UseHttpsRedirection();

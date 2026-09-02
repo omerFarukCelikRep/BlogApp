@@ -5,6 +5,7 @@ using BlogApp.Api.Handlers;
 using BlogApp.Api.Localization;
 using BlogApp.Api.Options;
 using BlogApp.Core.Localization;
+using BlogApp.Core.Logging.Extensions;
 using BlogApp.Core.Validations.Abstractions;
 using BlogApp.Domain.Options;
 using Microsoft.AspNetCore.Localization;
@@ -65,22 +66,12 @@ public static class ServiceCollectionExtensions
                 .AddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>(sp =>
                 {
                     var logger = sp.GetService<ILogger<JsonStringLocalizerFactory>>();
-                    return new(logger!);
+                    return new JsonStringLocalizerFactory(logger!);
                 })
                 .AddScoped<IValidationMessageLocalizer, ValidationMessageLocalizer>()
                 .AddScoped<IErrorMessageLocalizer, ErrorMessageLocalizer>();
 
-            services.Configure<RequestLocalizationOptions>(options =>
-            {
-                var cultureOptions = services.BuildServiceProvider().GetRequiredService<IOptions<CultureOptions>>()
-                    .Value;
-
-                var supportedCultures = cultureOptions.Supported.Select(x => new CultureInfo(x)).ToList();
-
-                options.DefaultRequestCulture = new RequestCulture(cultureOptions.Default);
-                options.SupportedCultures = supportedCultures;
-                options.SupportedUICultures = supportedCultures;
-            });
+            services.ConfigureOptions<RequestLocalizationOptionsSetup>();
 
             return services;
         }
@@ -90,12 +81,20 @@ public static class ServiceCollectionExtensions
             return services; //TODO: appsettings'den gelecek
         }
 
+        private IServiceCollection AddLogging()
+        {
+            services.AddSerilogOptions();
+
+            return services;
+        }
+
         public IServiceCollection AddApiServices()
         {
             return services
                 .AddHttpContextAccessor()
                 .AddExceptionHandler()
                 .AddAppOptions()
+                .AddLogging()
                 .AddHostedServices()
                 .AddApiVersioning()
                 .AddCustomProblemDetails()

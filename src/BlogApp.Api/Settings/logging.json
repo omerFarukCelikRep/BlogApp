@@ -54,9 +54,10 @@
       "Formatter": "Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact",
       "OutputTemplate": "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}"
     },
-    "Elastic": {
+    "ElasticSearch": {
       "Enabled": false,
       "Urls": [
+        "http://elasticsearch:9200",
         "http://localhost:9200"
       ]
     }

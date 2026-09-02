@@ -47,13 +47,13 @@ public static class HostBuilderExtensions
                         outputTemplate: fileOptions.OutputTemplate,
                         rollOnFileSizeLimit: fileOptions.RollOnFileSizeLimit);
                 })
-                .WriteTo.Conditional(_ => options.Elastic is { Enabled: true, Urls.Length: > 0 }, opts =>
-                {
-                    var elasticOptions = options.Elastic;
-                    var uris = elasticOptions!.Urls.Select(uri => new Uri(uri)).ToList();
-                    opts.Elasticsearch(uris,
-                        opt => ConfigureElasticsearchSink(opt, logEventLevel));
-                });
+            .WriteTo.Conditional(_ => options.ElasticSearch is { Enabled: true, Urls.Length: > 0 }, opts =>
+            {
+                var elasticOptions = options.ElasticSearch;
+                var uris = elasticOptions!.Urls.Select(uri => new Uri(uri)).ToList();
+                opts.Elasticsearch(uris,
+                    opt => ConfigureElasticsearchSink(opt, logEventLevel));
+            });
         });
 
         return hostBuilder;

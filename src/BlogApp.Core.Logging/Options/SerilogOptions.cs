@@ -21,5 +21,5 @@ public class SerilogOptions
     /// <summary>
     /// Represents the Serilog-related elastic log configuration settings.
     /// </summary>
-    public SerilogElasticOptions? Elastic { get; set; }
+    public SerilogElasticOptions? ElasticSearch { get; set; }
 }
