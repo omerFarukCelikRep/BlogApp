@@ -6,9 +6,13 @@ public static class WebApplicationExtensions
 {
     extension(WebApplication app)
     {
-        public RouteGroupBuilder MapEndpoints()
+        public WebApplication MapEndpoints()
         {
-            return app.RegisterAuthEndpoints();
+            app.RegisterAuthEndpoints();
+            app.RegisterBlogEndpoints();
+            app.RegisterCategoryEndpoints();
+
+            return app;
         }
     }
 }

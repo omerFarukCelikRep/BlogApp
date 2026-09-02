@@ -12,7 +12,7 @@ public static class LoginEndpoint
 {
     extension(RouteGroupBuilder builder)
     {
-        public RouteGroupBuilder LoginEndpoints()
+        public RouteGroupBuilder LoginEndpoint()
         {
             builder.MapPost("/login",
                     async ([FromBody] LoginRequest request, CancellationToken cancellationToken,
@@ -24,6 +24,7 @@ public static class LoginEndpoint
                         return result.ToResponse();
                     })
                 .AllowAnonymous()
+                .Produces<Result<LoginResult>>()
                 .WithName("Login")
                 .WithTags("Auth");
 

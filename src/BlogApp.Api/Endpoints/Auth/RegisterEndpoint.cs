@@ -11,7 +11,7 @@ public static class RegisterEndpoint
 {
     extension(RouteGroupBuilder builder)
     {
-        public RouteGroupBuilder RegisterEndpoints()
+        public RouteGroupBuilder RegisterEndpoint()
         {
             builder.MapPost("/register",
                     async ([FromBody] RegisterRequest request, CancellationToken cancellationToken,
@@ -23,6 +23,8 @@ public static class RegisterEndpoint
                         return result.ToResponse();
                     })
                 .AllowAnonymous()
+                .Produces<Result>()
+                .Produces<Result>(StatusCodes.Status400BadRequest)
                 .WithName("Register")
                 .WithTags("Auth");
 

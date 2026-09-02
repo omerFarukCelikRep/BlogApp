@@ -1,5 +1,4 @@
 using BlogApp.Api.Endpoints.Auth.Requests;
-using BlogApp.Api.Endpoints.Shared.Responses;
 using BlogApp.Api.Extensions;
 using BlogApp.Application.Auth.Commands;
 using BlogApp.Core.Mediator.Abstractions;
@@ -13,20 +12,22 @@ public static class RefreshTokenEndpoint
 {
     extension(RouteGroupBuilder builder)
     {
-        public RouteGroupBuilder RefreshTokenEndpoints()
+        public RouteGroupBuilder RefreshTokenEndpoint()
         {
             builder.MapPost("/refresh-token",
-                async (RefreshTokenRequest request, CancellationToken cancellationToken,
-                    [FromServices] IMediator mediator) =>
-                {
-                    var command = (RefreshTokenCommand)request;
-                    var result =
-                        await mediator.Send<RefreshTokenCommand, Result<RefreshTokenResult>>(command,
-                            cancellationToken);
+                    async (RefreshTokenRequest request, CancellationToken cancellationToken,
+                        [FromServices] IMediator mediator) =>
+                    {
+                        var command = (RefreshTokenCommand)request;
+                        var result =
+                            await mediator.Send<RefreshTokenCommand, Result<RefreshTokenResult>>(command,
+                                cancellationToken);
 
-                    return result.ToResponse();
-                })
+                        return result.ToResponse();
+                    })
                 .RequireAuthorization()
+                .Produces<Result<RefreshTokenResult>>()
+                .Produces<Result<RefreshTokenResult>>(StatusCodes.Status401Unauthorized)
                 .WithName("RefreshToken")
                 .WithTags("Auth");
 

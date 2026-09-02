@@ -9,16 +9,13 @@
 
     <ItemGroup>
         <PackageReference Include="Asp.Versioning.Mvc"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\BlogApp.Application\BlogApp.Application.csproj"/>
         <ProjectReference Include="..\BlogApp.Core.Logging\BlogApp.Core.Logging.csproj"/>
         <ProjectReference Include="..\BlogApp.Infrastructure\BlogApp.Infrastructure.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Endpoints\Auth\Responses\"/>
     </ItemGroup>
 
     <ItemGroup>
