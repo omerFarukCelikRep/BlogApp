@@ -34,7 +34,7 @@ public class RefreshTokenProvider(
         {
             Token = hashedToken,
             UserId = userId,
-            ExpiresAt = DateTimeOffset.Now.AddDays(_jwtOptions.RefreshTokenExpirationDays),
+            ExpiresAt = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationDays),
             IsRevoked = false,
             IsUsed = false,
             CreatedIp = ip

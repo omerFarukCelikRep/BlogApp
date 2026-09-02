@@ -6,7 +6,7 @@ public sealed record PaginatedResult<T>(
     int PageSize,
     int TotalCount,
     string Message = "")
-    : Result<IEnumerable<T>>(Data, true, Message, 200, Results.Error.None)
+    : Result<IEnumerable<T>>(true, Message, 200, Data, Results.Error.None)
 {
     public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
 }

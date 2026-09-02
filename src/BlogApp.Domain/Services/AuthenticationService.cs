@@ -27,7 +27,7 @@ public class AuthenticationService(
 
     public async Task<Result<LoginResult>> LoginAsync(LoginArgs args, CancellationToken cancellationToken = default)
     {
-        var user = await userRepository.GetAsync(x => x.Email.Equals(args.Email, StringComparison.OrdinalIgnoreCase),
+        var user = await userRepository.GetAsync(x => x.Email.Equals(args.Email),
             tracking: true, cancellationToken);
         if (user is null)
             return Result<LoginResult>.Failed(401, Errors.Auth.LoginFailed);
@@ -40,7 +40,7 @@ public class AuthenticationService(
         {
             user.AccessFailedCount++;
             if (user.AccessFailedCount >= _loginOptions.FailLimit)
-                user.LockoutEnd = DateTimeOffset.Now.AddMinutes(_loginOptions.FailLimit);
+                user.LockoutEnd = DateTime.UtcNow.AddMinutes(_loginOptions.FailLimit);
 
             await userRepository.SaveChangesAsync(cancellationToken);
             return Result<LoginResult>.Failed(401, Errors.Auth.InvalidCredentials);
@@ -56,16 +56,16 @@ public class AuthenticationService(
             LastName = user.LastName,
             Email = user.Email,
             Username = user.Username,
-            Roles = [..user.UserRoles.Select(x => x.Role!.Name)],
+            Roles = [.. user.UserRoles.Select(x => x.Role!.Name)],
             Permissions =
-                [..user.UserRoles.SelectMany(x => x.Role!.RolePermissions.Select(p => p.Permission!.ToString()))]
+                [.. user.UserRoles.SelectMany(x => x.Role!.RolePermissions.Select(p => p.Permission!.ToString()))]
         };
         var token = await jwtProvider.GenerateTokenAsync(tokenArgs, cancellationToken);
         var refreshToken = await refreshTokenProvider.GenerateAsync(user.Id, cancellationToken);
 
         await userRepository.SaveChangesAsync(cancellationToken);
-        LoginResult result = new(token, refreshToken, DateTimeOffset.Now.AddMinutes(_jwtOptions.ExpirationMinutes));
-        return Result<LoginResult>.Success(result);
+        LoginResult result = new(token, refreshToken, DateTime.Now.AddMinutes(_jwtOptions.ExpirationMinutes));
+        return Result<LoginResult>.Success(data: result);
     }
 
     public async Task<Result> RegisterAsync(RegisterArgs args, CancellationToken cancellationToken = default)
@@ -74,13 +74,13 @@ public class AuthenticationService(
             await userRepository.AnyAsync(x => x.Email.ToLower().Equals(args.Email.ToLower()),
                 cancellationToken);
         if (userExist)
-            return Result.Failed(Errors.Auth.EmailAlreadyExist, 400);
+            return Result.Failed(400, Errors.Auth.EmailAlreadyExists);
 
         var role = await roleRepository.GetAsync(
             x => x.Name.Equals(nameof(Role.Author)), tracking: false,
             cancellationToken);
         if (role is null)
-            return Result.Failed(Errors.Role.NotFound, 400);
+            return Result.Failed(400, Error.Create(Errors.Role.NotFound));
 
         var hashedPassword = PasswordHasher.HashPassword(args.Password);
         User user = new()
@@ -101,6 +101,6 @@ public class AuthenticationService(
         await userRepository.AddAsync(user, cancellationToken);
         await userRepository.SaveChangesAsync(cancellationToken);
 
-        return Result.Success();
+        return Result.Success(201);
     }
 }

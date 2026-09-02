@@ -21,7 +21,7 @@ public class RefreshTokenRepository(BlogAppDbContext context)
             return;
 
         refreshToken.IsRevoked = true;
-        refreshToken.RevokedAt = DateTimeOffset.Now;
+        refreshToken.RevokedAt = DateTime.UtcNow;
         refreshToken.RevokedIp = revokedIp;
 
         await UpdateAsync(refreshToken, cancellationToken);
@@ -36,7 +36,7 @@ public class RefreshTokenRepository(BlogAppDbContext context)
             {
                 x.SetProperty(a => a.IsRevoked, true);
                 x.SetProperty(a => a.RevokedIp, revokedIp);
-                x.SetProperty(a => a.RevokedAt, DateTimeOffset.Now);
+                x.SetProperty(a => a.RevokedAt, DateTime.UtcNow);
             }, cancellationToken);
     }
 }

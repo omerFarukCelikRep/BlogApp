@@ -28,15 +28,15 @@ public sealed class RoleManager(IRoleRepository roleRepository, IUserRepository 
     {
         var user = await userRepository.GetByIdAsync(userId, true, cancellationToken);
         if (user is null)
-            return Result.Failed(Errors.User.NotFound, 404);
+            return Result.Failed(404, Errors.User.NotFound);
 
         var roleFromDb = await roleRepository.GetAsync(x => x.Name == role.ToString(), true, cancellationToken);
         if (roleFromDb is null)
-            return Result.Failed(Errors.Role.NotFound, 404);
+            return Result.Failed(404, Errors.Role.NotFound);
 
         var alreadyAssigned = user.UserRoles.Any(x => x.RoleId == roleFromDb.Id);
         if (alreadyAssigned)
-            return Result.Failed(Errors.Role.AlreadyAssigned, 400);
+            return Result.Failed(400, Errors.Role.AlreadyAssigned);
 
         user.UserRoles.Add(new()
         {
@@ -53,15 +53,15 @@ public sealed class RoleManager(IRoleRepository roleRepository, IUserRepository 
     {
         var user = await userRepository.GetByIdAsync(userId, true, cancellationToken);
         if (user is null)
-            return Result.Failed(Errors.User.NotFound, 404);
+            return Result.Failed(404, Errors.User.NotFound);
 
         var roleFromDb = await roleRepository.GetAsync(x => string.Equals(x.Name, role), true, cancellationToken);
         if (roleFromDb is null)
-            return Result.Failed(Errors.Role.NotFound, 404);
+            return Result.Failed(404, Errors.Role.NotFound);
 
         var userRole = user.UserRoles.FirstOrDefault(x => x.RoleId == roleFromDb.Id);
         if (userRole is null)
-            return Result.Failed(Errors.Role.NotAssigned, 400);
+            return Result.Failed(400, Errors.Role.NotAssigned);
 
         user.UserRoles.Remove(userRole);
         await userRepository.UpdateAsync(user, cancellationToken);

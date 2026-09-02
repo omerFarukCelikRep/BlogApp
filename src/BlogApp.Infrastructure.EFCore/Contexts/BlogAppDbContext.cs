@@ -2,8 +2,12 @@ using System.Reflection;
 
 namespace BlogApp.Infrastructure.EFCore.Contexts;
 
-public class BlogAppDbContext(DbContextOptions<BlogAppDbContext> options) : DbContext(options)
+public class BlogAppDbContext : DbContext
 {
+    public BlogAppDbContext(DbContextOptions<BlogAppDbContext> options) : base(options)
+    {
+    }
+
     public virtual DbSet<Blog> Blogs { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Role> Roles { get; set; }
@@ -23,16 +27,18 @@ public class BlogAppDbContext(DbContextOptions<BlogAppDbContext> options) : DbCo
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        
+
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             foreach (var property in entityType.GetProperties())
             {
                 if (property.ClrType == typeof(DateTime) ||
-                    property.ClrType == typeof(DateTime?) ||
-                    property.ClrType == typeof(DateTimeOffset)||
-                    property.ClrType == typeof(DateTimeOffset?)) 
-                    property.SetColumnType("timestamp without time zone");
+                    property.ClrType == typeof(DateTime?))
+                    property.SetColumnType("timestamp with time zone");
+
+                if (property.ClrType == typeof(DateTimeOffset) ||
+                    property.ClrType == typeof(DateTimeOffset?))
+                    property.SetColumnType("timestamp with time zone");
             }
         }
     }

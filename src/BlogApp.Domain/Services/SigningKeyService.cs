@@ -30,7 +30,7 @@ public class SigningKeyService(ISigningKeyRepository signingKeyRepository, IOpti
                 PrivateKey = privateKey,
                 PublicKey = publicKey,
                 IsActive = true,
-                ExpireDate = DateTime.Now.Add(_keyRotationOptions.Period)
+                ExpireDate = DateTime.UtcNow.Add(_keyRotationOptions.Period)
             };
 
             await signingKeyRepository.AddAsync(newKey, cancellationToken);

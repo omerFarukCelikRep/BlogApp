@@ -1,29 +1,26 @@
 namespace BlogApp.Core.Results;
 
-public record Result(bool IsSuccess, string Message, int StatusCode, Error Error)
+public record Result(bool IsSuccess, string Message, int StatusCode, Error? Error = null)
 {
-    public static Result Success(string message = "", int statusCode = 200) =>
+    public static Result Success(int statusCode = 200,string message = "") =>
         new(true, message, statusCode, Error.None);
 
-    public static Result Failed(string message, int statusCode) =>
+    public static Result Failed(int statusCode, string message) =>
         new(false, message, statusCode, new Error(string.Empty, message));
 
     public static Result Failed(int statusCode, Error error) =>
         new(false, error.ErrorMessage, statusCode, error);
 }
 
-public record Result<T>(T? Data, bool IsSuccess, string Message, int StatusCode, Error Error)
+public record Result<T>(bool IsSuccess, string Message, int StatusCode, T? Data = default, Error? Error = null)
     : Result(IsSuccess, Message, StatusCode, Error)
 {
-    public static Result<T> Success(T? data, string message = "", int statusCode = 200) =>
-        new(data, true, string.Empty, statusCode, Error.None);
+    public static Result<T> Success(int statusCode = 200, string message = "", T? data = default) =>
+        new(true, message, statusCode, data);
 
-    public static Result<T> Failed(T? data, string message, int statusCode) =>
-        new(data, false, message, statusCode, new Error(string.Empty, message));
+    public static Result<T> Failed(int statusCode, string message, T? data = default) =>
+        new(false, message, statusCode, data, new Error(string.Empty, message));
 
-    public static Result<T> Failed(T? data, int statusCode, Error error) =>
-        new(data, false, error.ErrorMessage, statusCode, error);
-
-    public static Result<T> Failed(int statusCode, string errorCode) =>
-        new(default, false, errorCode, statusCode, new Error(errorCode, errorCode));
+    public static Result<T> Failed(int statusCode, Error error,T? data = default) =>
+        new(false, error.ErrorMessage, statusCode, data, error);
 }

@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
             services.AddSingleton<QueryTimingInterceptor>()
                 .AddSingleton<SqlLoggingInterceptor>()
                 .AddTransient<SaveAuditableChangesInterceptor>()
-                .AddDbContextPool<BlogAppDbContext>((serviceProvider, options) =>
+                .AddDbContext<BlogAppDbContext>((serviceProvider, options) =>
                 {
                     options.UseNpgsql(configuration.GetConnectionString("Default"),
                             builder =>

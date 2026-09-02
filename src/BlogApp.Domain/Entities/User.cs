@@ -12,7 +12,7 @@ public class User : SoftDeletableEntity<Guid>
     public string? Bio { get; set; }
     public string? ProfilePicture { get; set; }
     public bool TwoFactorEnabled { get; set; }
-    public DateTimeOffset? LockoutEnd { get; set; }
+    public DateTime? LockoutEnd { get; set; }
     public int AccessFailedCount { get; set; }
 
     public virtual ICollection<Blog> Blogs { get; set; } = new HashSet<Blog>();
@@ -21,7 +21,7 @@ public class User : SoftDeletableEntity<Guid>
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new HashSet<RefreshToken>();
     public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
     
-    public bool IsLockedOut() => LockoutEnd.HasValue &&  LockoutEnd.Value <= DateTimeOffset.Now;
+    public bool IsLockedOut() => LockoutEnd.HasValue &&  LockoutEnd.Value <= DateTime.UtcNow;
     
     public bool IsEmailConfirmed() => EmailConfirmed;
     

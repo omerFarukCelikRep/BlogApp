@@ -5,19 +5,24 @@ namespace BlogApp.Api.Endpoints;
 
 public static class AuthEndpoints
 {
-    public static RouteGroupBuilder RegisterAuthEndpoints(this WebApplication app)
+    extension(WebApplication app)
     {
-        var apiVersionSet = app.NewApiVersionSet()
-            .HasApiVersion(new ApiVersion(1, 0))
-            .ReportApiVersions()
-            .Build();
+        public RouteGroupBuilder RegisterAuthEndpoints()
+        {
+            var apiVersionSet = app.NewApiVersionSet()
+                .HasApiVersion(new ApiVersion(1, 0))
+                .ReportApiVersions()
+                .Build();
 
-        var authGroup = app.MapGroup("api/v{version:apiVersion}/auth")
-            .WithApiVersionSet(apiVersionSet)
-            .RegisterEndpoints()
-            .LoginEndpoints()
-            .RefreshTokenEndpoints();
+            var authGroup = app.MapGroup("api/v{version:apiVersion}/auth")
+                .WithApiVersionSet(apiVersionSet)
+                .WithTags("Auth")
+                .RegisterEndpoint()
+                .LoginEndpoint()
+                .LogoutEndpoint()
+                .RefreshTokenEndpoint();
 
-        return authGroup;
+            return authGroup;
+        }
     }
 }

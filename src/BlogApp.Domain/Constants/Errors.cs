@@ -10,7 +10,8 @@ public static class Errors
         public const string LoginFailed = "LoginFailed";
         public const string AccountLocked = "AccountLocked";
         public const string InvalidCredentials = "InvalidCredentials";
-        public const string EmailAlreadyExist = "EmailAlreadyExist";
+        public const string EmailAlreadyExists = "EmailAlreadyExist";
+        public const string RefreshTokenFailed = "RefreshTokenFailed";
     }
 
     public struct User

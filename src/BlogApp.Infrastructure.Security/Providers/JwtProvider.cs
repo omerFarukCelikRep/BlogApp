@@ -29,12 +29,12 @@ public partial class JwtProvider(
             new(ClaimTypes.GivenName, args.FirstName),
             new(ClaimTypes.Surname, args.LastName),
             new(ClaimTypes.Email, args.Email),
-            new(ClaimTypes.Name, args.Username)
-        ];
+            new(ClaimTypes.Name, args.Username),
+            .. args.Roles.Select(userRole => new Claim(ClaimTypes.Role, userRole.ToString())),
+            .. args.Permissions.Select(permission =>
+                new Claim(CustomClaimTypes.Permissions, permission.ToString()))
 
-        claims.AddRange(args.Roles.Select(userRole => new Claim(ClaimTypes.Role, userRole!.ToString())));
-        claims.AddRange(args.Permissions.Select(permission =>
-            new Claim(CustomClaimTypes.Permissions, permission!.ToString())));
+        ];
 
         return claims;
     }
@@ -45,7 +45,8 @@ public partial class JwtProvider(
                          ?? throw new UnauthorizedAccessException();
 
         var rsa = RSA.Create();
-        rsa.ImportFromPem(signingKey.PrivateKey);
+        var privateKey = Convert.FromBase64String(signingKey.PrivateKey);
+        rsa.ImportRSAPrivateKey(privateKey,  out _);
 
         var rsaSecurityKey = new RsaSecurityKey(rsa)
         {
@@ -60,7 +61,7 @@ public partial class JwtProvider(
             Subject = new ClaimsIdentity(claims),
             Issuer = _jwtOptions.Issuer,
             Audience = _jwtOptions.Audience,
-            Expires = DateTimeOffset.Now.AddMinutes(_jwtOptions.ExpirationMinutes).DateTime,
+            Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpirationMinutes),
             SigningCredentials = credentials
         };
 

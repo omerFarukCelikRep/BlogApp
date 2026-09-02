@@ -8,7 +8,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using System.Security.Cryptography;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,7 +15,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace BlogApp.Infrastructure.Security.Options;
 
-public class JwtBearerOptionsSetup(IOptions<JwtOptions> options, ISigningKeyService signingKeyService)
+public class JwtBearerOptionsSetup(IOptions<JwtOptions> options, IServiceProvider serviceProvider)
     : IPostConfigureOptions<JwtBearerOptions>
 {
     private readonly JwtOptions _options = options.Value;
@@ -98,6 +97,9 @@ public class JwtBearerOptionsSetup(IOptions<JwtOptions> options, ISigningKeyServ
             {
                 if (string.IsNullOrEmpty(kid))
                     return [];
+
+                var scope = serviceProvider.CreateScope();
+                var signingKeyService = scope.ServiceProvider.GetRequiredService<ISigningKeyService>();
 
                 var signingKey = signingKeyService.GetByKeyIdAsync(kid, CancellationToken.None)
                     .GetAwaiter()

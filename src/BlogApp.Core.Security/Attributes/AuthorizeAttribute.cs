@@ -10,5 +10,5 @@ public sealed class AuthorizeAttribute : Attribute
     public bool RequireAll { get; init; } = false;
 
     public AuthorizeAttribute(Role role) => Role = role;
-    public AuthorizeAttribute(params List<string> permissions) => Permissions = permissions;
+    public AuthorizeAttribute(params string[] permissions) => Permissions = permissions;
 }
