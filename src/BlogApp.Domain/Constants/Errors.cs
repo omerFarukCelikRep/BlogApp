@@ -25,4 +25,20 @@ public static class Errors
         public const string AlreadyAssigned = "RoleAlreadyAssigned";
         public const string NotAssigned = "RoleNotAssigned";
     }
+    
+    public struct Category
+    {
+        public const string  NotFound = "CategoryNotFound";
+    }
+    
+    public struct Tag
+    {
+        public  const string NotFound = "TagNotFound";
+    }
+    
+    public struct Blog
+    {
+        public  const string NotFound = "BlogNotFound";
+        public const string UnauthorizeUser = "BlogUnauthorizeUser";
+    }
 }

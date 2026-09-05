@@ -13,4 +13,6 @@ public interface IRefreshTokenService
 
     Task<ClaimsIdentity?> GetClaimsFromRefreshTokenAsync(string refreshToken,
         CancellationToken cancellationToken = default);
+
+    Task<Result> RevokeAllAsync(CancellationToken cancellationToken = default);
 }

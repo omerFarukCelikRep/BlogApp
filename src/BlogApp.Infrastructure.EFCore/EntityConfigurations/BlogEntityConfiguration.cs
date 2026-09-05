@@ -18,12 +18,20 @@ public class BlogEntityConfiguration : SoftDeletableEntityConfiguration<Blog>
             .IsRequired();
         builder.Property(x => x.Content)
             .IsRequired();
+        builder.Property(x => x.Slug)
+            .IsRequired();
         builder.Property(x => x.Thumbnail)
             .IsRequired(false);
         builder.Property(x => x.ReadingTimeInMinutes)
             .IsRequired();
         builder.Property(x => x.PostStatus)
             .HasConversion<string>();
+        builder.Property(x => x.ReadCount)
+            .HasDefaultValue(0);
+        builder.Property(x => x.PublishDate);
+            
+        builder.HasIndex(x => x.Slug)
+            .IsUnique();
 
         builder.HasOne(x => x.Author)
             .WithMany(x => x.Blogs)

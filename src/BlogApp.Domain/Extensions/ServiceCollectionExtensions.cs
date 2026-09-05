@@ -22,7 +22,8 @@ public static class ServiceCollectionExtensions
             services.AddOptions()
                 .AddScoped<IAuthenticationService, AuthenticationService>()
                 .AddScoped<IRefreshTokenService, RefreshTokenService>()
-                .AddScoped<ISigningKeyService, SigningKeyService>();
+                .AddScoped<ISigningKeyService, SigningKeyService>()
+                .AddScoped<IBlogService, BlogService>();
             return services;
         }
 
