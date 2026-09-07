@@ -1,0 +1,16 @@
+{
+  "Telemetry": {
+    "Enabled": true,
+    "ServiceName": "BlogApp",
+    "ServiceVersion": "1.0.0",
+    "Environment": "Development",
+    "Jaeger": {
+      "Enabled": true,
+      "Endpoint": "http://localhost:4317"
+    },
+    "Prometheus": {
+      "Enabled": true,
+      "Path": "/metrics"
+    }
+  }
+}

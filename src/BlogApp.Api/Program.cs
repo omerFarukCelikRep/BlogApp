@@ -14,7 +14,7 @@ builder.Services
     .AddDomainServices()
     .AddInfrastructureServices(builder.Configuration)
     .AddApplicationServices()
-    .AddApiServices();
+    .AddApiServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -33,6 +33,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseRequestLocalization();
+
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.MapEndpoints();
 

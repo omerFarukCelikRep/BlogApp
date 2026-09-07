@@ -6,6 +6,7 @@ using BlogApp.Api.Localization;
 using BlogApp.Api.Options;
 using BlogApp.Core.Localization;
 using BlogApp.Core.Logging.Extensions;
+using BlogApp.Core.Telemetry.Extensions;
 using BlogApp.Core.Validations.Abstractions;
 using BlogApp.Domain.Options;
 using Microsoft.AspNetCore.Localization;
@@ -88,7 +89,7 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
-        public IServiceCollection AddApiServices()
+        public IServiceCollection AddApiServices(IConfiguration configuration)
         {
             return services
                 .AddHttpContextAccessor()
@@ -99,7 +100,8 @@ public static class ServiceCollectionExtensions
                 .AddApiVersioning()
                 .AddCustomProblemDetails()
                 .AddLocalization()
-                .AddCors();
+                .AddCors()
+                .AddTelemetry(configuration);
         }
     }
 }

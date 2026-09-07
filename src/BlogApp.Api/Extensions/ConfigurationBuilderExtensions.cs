@@ -10,8 +10,9 @@ public static class ConfigurationBuilderExtensions
                 .AddJsonFile("Settings/culture.json", false, true)
                 .AddJsonFile("Settings/database.json", false, true)
                 .AddJsonFile("Settings/logging.json", false, true)
-                .AddJsonFile("Settings/security.json", false, true);
-            
+                .AddJsonFile("Settings/security.json", false, true)
+                .AddJsonFile("Settings/telemetry.json", false, true);
+
             return builder;
         }
     }
