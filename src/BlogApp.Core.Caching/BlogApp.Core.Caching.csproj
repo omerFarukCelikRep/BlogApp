@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\BlogApp.Core.Mediator\BlogApp.Core.Mediator.csproj"/>
+        <ProjectReference Include="..\BlogApp.Core.Telemetry\BlogApp.Core.Telemetry.csproj" />
     </ItemGroup>
 
     <ItemGroup>
