@@ -10,6 +10,7 @@
     <Project Path="src/BlogApp.Core.Logging/BlogApp.Core.Logging.csproj" />
     <Project Path="src/BlogApp.Core.Mediator/BlogApp.Core.Mediator.csproj" />
     <Project Path="src/BlogApp.Core.Security/BlogApp.Core.Security.csproj" />
+    <Project Path="src/BlogApp.Core.Telemetry/BlogApp.Core.Telemetry.csproj" />
     <Project Path="src/BlogApp.Core.Validations/BlogApp.Core.Validations.csproj" />
     <Project Path="src/BlogApp.Core/BlogApp.Core.csproj" />
     <Project Path="src/BlogApp.Domain/BlogApp.Domain.csproj" />

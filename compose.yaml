@@ -96,11 +96,37 @@
       retries: 10
     networks:
       - app-network
+    
+  jaeger:
+    container_name: jaeger
+    image: jeagertracing/jaeger
+    restart: unless-stopped
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - app-network
+    
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheusdata:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - app-network
 
 volumes:
   dbdata:
   redisdata:
   esdata:
+  prometheusdata:
 
 networks:
   app-network:
