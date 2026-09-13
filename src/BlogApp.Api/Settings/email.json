@@ -1,0 +1,12 @@
+{
+  "Email": {
+    "Host": "smtp.gmail.com",
+    "Port": 587,
+    "EnableSsl": true,
+    "Username": "your-email@gmail.com",
+    "Password": "your-app-password",
+    "FromName": "devlog",
+    "FromAddress": "noreply@devlog.app",
+    "BaseUrl": "http://localhost:5173"
+  }
+}

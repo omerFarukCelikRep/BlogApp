@@ -10,6 +10,7 @@
     <ProjectReference Include="..\BlogApp.Core.Caching\BlogApp.Core.Caching.csproj" />
     <ProjectReference Include="..\BlogApp.Core.Logging\BlogApp.Core.Logging.csproj" />
     <ProjectReference Include="..\BlogApp.Core.Mediator\BlogApp.Core.Mediator.csproj" />
+    <ProjectReference Include="..\BlogApp.Core.Search\BlogApp.Core.Search.csproj" />
     <ProjectReference Include="..\BlogApp.Core.Validations\BlogApp.Core.Validations.csproj" />
     <ProjectReference Include="..\BlogApp.Domain\BlogApp.Domain.csproj" />
   </ItemGroup>
