@@ -1,5 +1,6 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Localization.Routing;
 using Microsoft.Extensions.Options;
 
 namespace BlogApp.Api.Options;
@@ -16,5 +17,12 @@ public class RequestLocalizationOptionsSetup(IOptions<CultureOptions> cultureOpt
         options.DefaultRequestCulture = new RequestCulture(opts.Default);
         options.SupportedCultures = supportedCultures;
         options.SupportedUICultures = supportedCultures;
+        options.RequestCultureProviders =
+        [
+            new RouteDataRequestCultureProvider(),
+            new QueryStringRequestCultureProvider(),
+            new CookieRequestCultureProvider(),
+            new AcceptLanguageHeaderRequestCultureProvider()
+        ];
     }
 }

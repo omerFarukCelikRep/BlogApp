@@ -32,7 +32,7 @@ public class ValidationBehavior<TRequest, TResponse>(
 
         var localized = errors.Select(x => x with
         {
-            ErrorMessage = localizer.Get(x.ErrorCode ?? string.Empty, x.ErrorMessage, x.Args)
+            ErrorMessage = localizer.Localize(x.ErrorCode ?? string.Empty, x.ErrorMessage, x.Args)
         }).ToList();
         logger.LogError("Validation failed for {RequestName}: {Errors}", typeof(TRequest).FullName,
             string.Join(", ", localized));

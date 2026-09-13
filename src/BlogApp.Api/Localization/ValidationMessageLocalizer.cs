@@ -9,15 +9,15 @@ namespace BlogApp.Api.Localization;
 
 public class ValidationMessageLocalizer(IStringLocalizerFactory localizerFactory) : IValidationMessageLocalizer
 {
-    private readonly IStringLocalizer _localizer = localizerFactory.Create(Constants.ResourceName,
-        new AssemblyName(typeof(Shared).Assembly.FullName!).Name!);
+    private readonly IStringLocalizer _localizer = localizerFactory.Create("Validations", string.Empty);
 
-    public string Get(string key, string? defaultMessage = null, IReadOnlyDictionary<string, string>? args = null)
+    public string Localize(string errorCode, string? defaultMessage = null,
+        IReadOnlyDictionary<string, string>? args = null)
     {
-        if (string.IsNullOrWhiteSpace(key))
+        if (string.IsNullOrWhiteSpace(errorCode))
             return defaultMessage ?? Errors.MessageNotFound;
 
-        var localizedString = _localizer[key];
+        var localizedString = _localizer[errorCode];
         if (!localizedString.ResourceNotFound && args is not null)
             return args.Aggregate(localizedString.Value,
                 (currentMessage, arg) => currentMessage.Replace($"{{{arg.Key}}}", arg.Value));

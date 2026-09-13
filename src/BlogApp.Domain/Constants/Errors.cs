@@ -7,38 +7,46 @@ public static class Errors
 
     public struct Auth
     {
-        public const string LoginFailed = "LoginFailed";
-        public const string AccountLocked = "AccountLocked";
-        public const string InvalidCredentials = "InvalidCredentials";
-        public const string EmailAlreadyExists = "EmailAlreadyExist";
-        public const string RefreshTokenFailed = "RefreshTokenFailed";
+        public const string LoginFailed = "Auth.LoginFailed";
+        public const string AccountLocked = "Auth.AccountLocked";
+        public const string InvalidCredentials = "Auth.InvalidCredentials";
+        public const string EmailAlreadyExists = "Auth.EmailAlreadyExist";
+        public const string RefreshTokenFailed = "Auth.RefreshTokenFailed";
     }
 
     public struct User
     {
-        public const string NotFound = "UserNotFound";
+        public const string NotFound = "User.NotFound";
     }
 
     public struct Role
     {
-        public const string NotFound = "RoleNotFound";
-        public const string AlreadyAssigned = "RoleAlreadyAssigned";
-        public const string NotAssigned = "RoleNotAssigned";
+        public const string NotFound = "Role.NotFound";
+        public const string AlreadyAssigned = "Role.AlreadyAssigned";
+        public const string NotAssigned = "Role.NotAssigned";
     }
-    
+
     public struct Category
     {
-        public const string  NotFound = "CategoryNotFound";
+        public const string NotFound = "Category.NotFound";
     }
-    
+
     public struct Tag
     {
-        public  const string NotFound = "TagNotFound";
+        public const string NotFound = "Tag.NotFound";
     }
-    
+
     public struct Blog
     {
-        public  const string NotFound = "BlogNotFound";
-        public const string UnauthorizeUser = "BlogUnauthorizeUser";
+        public const string NotFound = "Blog.NotFound";
+        public const string UnauthorizeUser = "Blog.UnauthorizeUser";
+        public const string NotPublished = "Blog.NotPublished";
+    }
+
+    public struct Comment
+    {
+        public const string NotFound = "Comment.NotFound";
+        public const string NestedReplyNotAllowed = "Comment.NestedReplyNotAllowed";
+        public const string NotAuthor = "Comment.NotAuthor";
     }
 }

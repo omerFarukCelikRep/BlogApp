@@ -2,5 +2,5 @@ namespace BlogApp.Core.Localization;
 
 public interface IMessageLocalizer
 {
-    string Get(string key, string? defaultMessage = null, IReadOnlyDictionary<string, string>? args = null);
+    string Localize(string errorCode, string? defaultMessage = null, IReadOnlyDictionary<string, string>? args = null);
 }

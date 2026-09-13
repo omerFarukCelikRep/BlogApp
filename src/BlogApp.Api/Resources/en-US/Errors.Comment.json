@@ -1,0 +1,7 @@
+{
+  "Comment.NotFound": "Comment not found.",
+  "Comment.NotAuthor": "You are not the author of this comment.",
+  "Comment.BlogNotPublished": "You cannot comment on an unpublished blog post.",
+  "Comment.ParentNotFound": "The parent comment could not be found.",
+  "Comment.NestedReplyNotAllowed": "Replies to replies are not allowed."
+}

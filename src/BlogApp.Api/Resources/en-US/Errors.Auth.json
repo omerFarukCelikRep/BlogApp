@@ -1,7 +1,12 @@
 {
-  "LoginFailed": "Login Failed!",
-  "AccountLocked": "Your account locked for 15 mins.",
-  "InvalidCredentials": "Invalid Credentials!",
-  "EmailAlreadyExist": "Email already in use!",
-  "RoleNotFound": "Role Not Found!"
+  "Auth.LoginFailed": "Login Failed!",
+  "Auth.AccountLocked": "Your account has been locked. Please try again later.",
+  "Auth.InvalidCredentials": "Invalid email or password.",
+  "Auth.EmailAlreadyExists": "An account with this email already exists.",
+  "Auth.RoleNotFound": "Role Not Found!",
+  "Auth.DefaultRoleNotFound": "Default role could not be assigned. Please contact support.",
+  "Auth.InvalidRefreshToken": "Invalid or expired refresh token.",
+  "Auth.RefreshTokenExpired": "Your session has expired. Please sign in again.",
+  "Auth.RefreshTokenRevoked": "Your session has been revoked. Please sign in again.",
+  "Auth.RefreshTokenUsed": "This refresh token has already been used."
 }

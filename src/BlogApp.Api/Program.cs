@@ -24,6 +24,8 @@ app.UseCustomExceptionHandler();
 
 app.UseHttpsRedirection();
 
+app.UseLocalization();
+
 app.UseTimeZone();
 
 app.UseCorrelation();
@@ -31,8 +33,6 @@ app.UseCorrelation();
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-app.UseRequestLocalization();
 
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
 

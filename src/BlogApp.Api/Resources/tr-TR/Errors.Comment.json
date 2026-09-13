@@ -1,0 +1,7 @@
+{
+  "Comment.NotFound": "Yorum bulunamadı.",
+  "Comment.NotAuthor": "Bu yorumun yazarı değilsiniz.",
+  "Comment.BlogNotPublished": "Yayında olmayan bir blog yazısına yorum yapamazsınız.",
+  "Comment.ParentNotFound": "Üst yorum bulunamadı.",
+  "Comment.NestedReplyNotAllowed": "Yanıtlara yanıt yapılamaz."
+}

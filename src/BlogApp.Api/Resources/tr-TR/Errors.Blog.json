@@ -1,0 +1,9 @@
+{
+  "Blog.NotFound": "Blog yazısı bulunamadı.",
+  "Blog.TagNotFound": "Bir veya daha fazla etiket bulunamadı.",
+  "Blog.CategoryNotFound": "Bir veya daha fazla kategori bulunamadı.",
+  "Blog.NotAuthor": "Bu blog yazısının yazarı değilsiniz.",
+  "Blog.AlreadyPublished": "Bu blog yazısı zaten yayında.",
+  "Blog.AlreadyArchived": "Bu blog yazısı zaten arşivlendi.",
+  "Blog.SlugAlreadyExists": "Bu başlıkla zaten bir blog yazısı mevcut."
+}

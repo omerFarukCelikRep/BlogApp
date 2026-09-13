@@ -1,0 +1,9 @@
+{
+  "Blog.NotFound": "Blog post not found.",
+  "Blog.TagNotFound": "One or more tags could not be found.",
+  "Blog.CategoryNotFound": "One or more categories could not be found.",
+  "Blog.NotAuthor": "You are not the author of this blog post.",
+  "Blog.AlreadyPublished": "This blog post is already published.",
+  "Blog.AlreadyArchived": "This blog post is already archived.",
+  "Blog.SlugAlreadyExists": "A blog post with this title already exists."
+}

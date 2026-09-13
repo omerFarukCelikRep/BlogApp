@@ -1,7 +1,13 @@
 {
-  "LoginFailed": "Giriş işlemi başarısız!",
-  "AccountLocked": "Hesabınız 15 dk boyunca kilitlenmiştir!",
-  "InvalidCredentials": "Hatalı giriş bilgileri!",
-  "EmailAlreadyExist": "Eposta adresi kullanılmaktadır!",
-  "RoleNotFound": "Rol bulunamadı!"
+  "Auth.LoginFailed": "Giriş işlemi başarısız!",
+  "Auth.EmailAlreadyExist": "Eposta adresi kullanılmaktadır!",
+  "Auth.RoleNotFound": "Rol bulunamadı!",
+  "Auth.InvalidCredentials": "Geçersiz e-posta veya şifre.",
+  "Auth.AccountLocked": "Hesabınız kilitlendi. Lütfen daha sonra tekrar deneyin.",
+  "Auth.EmailAlreadyExists": "Bu e-posta adresiyle zaten bir hesap mevcut.",
+  "Auth.DefaultRoleNotFound": "Varsayılan rol atanamadı. Lütfen destek ile iletişime geçin.",
+  "Auth.InvalidRefreshToken": "Geçersiz veya süresi dolmuş yenileme jetonu.",
+  "Auth.RefreshTokenExpired": "Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın.",
+  "Auth.RefreshTokenRevoked": "Oturumunuz iptal edildi. Lütfen tekrar giriş yapın.",
+  "Auth.RefreshTokenUsed": "Bu yenileme jetonu zaten kullanılmış."
 }
