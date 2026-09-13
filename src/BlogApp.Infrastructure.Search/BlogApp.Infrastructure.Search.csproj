@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Elastic.Clients.Elasticsearch"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\BlogApp.Core.Search\BlogApp.Core.Search.csproj"/>
+        <ProjectReference Include="..\BlogApp.Infrastructure.EFCore\BlogApp.Infrastructure.EFCore.csproj"/>
+    </ItemGroup>
+
+</Project>
