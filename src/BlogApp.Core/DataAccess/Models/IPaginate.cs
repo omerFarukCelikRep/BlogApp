@@ -1,6 +1,6 @@
 namespace BlogApp.Core.DataAccess.Models;
 
-public interface IPaginate<TModel>
+public interface IPaginate<out TModel>
 {
     int Index { get; }
     int Size { get; }

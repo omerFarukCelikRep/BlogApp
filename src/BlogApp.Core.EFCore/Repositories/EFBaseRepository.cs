@@ -117,7 +117,7 @@ public class EFBaseRepository<TEntity, TId>(DbContext context)
         return await GetAll(tracking).Where(expression).ToPaginateAsync(index, size, cancellationToken);
     }
 
-    public async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> expression, bool tracking = true,
+    public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> expression, bool tracking = true,
         CancellationToken cancellationToken = default)
     {
         return await GetAll(tracking).FirstOrDefaultAsync(expression, cancellationToken);

@@ -19,12 +19,12 @@ public class Paginate<TModel> : IPaginate<TModel>
         }
         else
         {
-            var enumerable = source as TModel[] ?? source.ToArray();
+            var enumerable = source as TModel[] ?? [.. source];
             Index = index;
             Size = size;
             Count = enumerable.Length;
             Pages = (int)Math.Ceiling(Count / (double)Size);
-            Items = enumerable.Take((Index * Size)..Size).ToList();
+            Items = [.. enumerable.Take((Index * Size)..Size)];
         }
     }
 
@@ -40,6 +40,4 @@ public class Paginate<TModel> : IPaginate<TModel>
     public IReadOnlyCollection<TModel> Items { get; init; }
     public bool HasPrevious => Index * Size > 0;
     public bool HasNext => Index < Pages;
-
-    public PaginatedResult<TModel> ToPagedResult() => new PaginatedResult<TModel>(Items, Index, Size, Count);
 }
