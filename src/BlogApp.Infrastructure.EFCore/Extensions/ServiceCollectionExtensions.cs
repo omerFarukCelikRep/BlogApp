@@ -43,7 +43,8 @@ public static class ServiceCollectionExtensions
                 .AddScoped<IRoleRepository, RoleRepository>()
                 .AddScoped<ITagRepository, TagRepository>()
                 .AddScoped<IUserRepository, UserRepository>()
-                .AddScoped<ISigningKeyRepository, SigningKeyRepository>();
+                .AddScoped<ISigningKeyRepository, SigningKeyRepository>()
+                .AddScoped<IEmailConfirmationRepository, EmailConfirmationRepository>();
 
             return services;
         }

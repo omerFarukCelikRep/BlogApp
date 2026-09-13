@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Options"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\BlogApp.Core.Email\BlogApp.Core.Email.csproj"/>
+        <ProjectReference Include="..\BlogApp.Core\BlogApp.Core.csproj" />
+        <ProjectReference Include="..\BlogApp.Domain\BlogApp.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Templates\ConfirmationEmail.html" />
+    </ItemGroup>
+
+</Project>

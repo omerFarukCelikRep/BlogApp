@@ -22,6 +22,7 @@ public class BlogAppDbContext : DbContext
     public virtual DbSet<RolePermission> RolePermissions { get; set; }
     public virtual DbSet<BlogCategory> BlogCategories { get; set; }
     public virtual DbSet<BlogTag> BlogTags { get; set; }
+    public virtual DbSet<EmailConfirmation> EmailConfirmations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

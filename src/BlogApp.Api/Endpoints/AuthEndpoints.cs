@@ -20,7 +20,10 @@ public static class AuthEndpoints
                 .RegisterEndpoint()
                 .LoginEndpoint()
                 .LogoutEndpoint()
-                .RefreshTokenEndpoint();
+                .RefreshTokenEndpoint()
+                .SendConfirmationEndpoint()
+                .ConfirmEmailEndpoint()
+                .ConfirmEmailWithOtpEndpoint();
 
             return authGroup;
         }

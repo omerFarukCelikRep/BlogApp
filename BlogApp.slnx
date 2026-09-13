@@ -7,6 +7,7 @@
     <Project Path="src/BlogApp.Application/BlogApp.Application.csproj" />
     <Project Path="src/BlogApp.Core.Caching/BlogApp.Core.Caching.csproj" />
     <Project Path="src/BlogApp.Core.EFCore/BlogApp.Core.EFCore.csproj" />
+    <Project Path="src/BlogApp.Core.Email/BlogApp.Core.Email.csproj" />
     <Project Path="src/BlogApp.Core.Logging/BlogApp.Core.Logging.csproj" />
     <Project Path="src/BlogApp.Core.Mediator/BlogApp.Core.Mediator.csproj" />
     <Project Path="src/BlogApp.Core.Search/BlogApp.Core.Search.csproj" />
@@ -17,6 +18,7 @@
     <Project Path="src/BlogApp.Domain/BlogApp.Domain.csproj" />
     <Project Path="src/BlogApp.Infrastructure.Caching/BlogApp.Infrastructure.Caching.csproj" />
     <Project Path="src/BlogApp.Infrastructure.EFCore/BlogApp.Infrastructure.EFCore.csproj" />
+    <Project Path="src/BlogApp.Infrastructure.Email/BlogApp.Infrastructure.Email.csproj" />
     <Project Path="src/BlogApp.Infrastructure.Search/BlogApp.Infrastructure.Search.csproj" />
     <Project Path="src/BlogApp.Infrastructure.Security/BlogApp.Infrastructure.Security.csproj" />
     <Project Path="src/BlogApp.Infrastructure/BlogApp.Infrastructure.csproj" />
