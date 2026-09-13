@@ -4,6 +4,7 @@ using BlogApp.Core.Logging.Behaviors;
 using BlogApp.Core.Mediator.Behaviors;
 using BlogApp.Core.Mediator.Extensions;
 using BlogApp.Core.Security.Behaviors;
+using BlogApp.Core.Telemetry.Behaviours;
 using BlogApp.Core.Validations.Behaviors;
 using BlogApp.Core.Validations.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ public static class ServiceCollectionExtensions
                 .AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
                 .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestHandlerPreProcessorBehavior<,>))
                 .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestHandlerPostProcessorBehavior<,>))
+                .AddTransient(typeof(IPipelineBehavior<,>), typeof(TelemetryBehaviour<,>))
                 .AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehavior<,>))
                 .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>))
                 .AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
