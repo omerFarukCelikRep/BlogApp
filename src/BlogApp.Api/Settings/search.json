@@ -1,0 +1,14 @@
+{
+  "Search": {
+    "Provider": "Elasticsearch",
+    "MinQueryLength": 2,
+    "MaxResults": 50,
+    "HighlightEnabled": true,
+    "Elasticsearch": {
+      "Uri": "http://localhost:9200",
+      "IndexName": "blogapp",
+      "Username": "",
+      "Password": ""
+    }
+  }
+}

@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\BlogApp.Core.Email\BlogApp.Core.Email.csproj" />
         <ProjectReference Include="..\BlogApp.Core.Security\BlogApp.Core.Security.csproj"/>
         <ProjectReference Include="..\BlogApp.Core\BlogApp.Core.csproj"/>
     </ItemGroup>
