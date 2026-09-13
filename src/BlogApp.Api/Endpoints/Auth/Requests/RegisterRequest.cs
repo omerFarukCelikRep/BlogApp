@@ -1,12 +1,13 @@
 using BlogApp.Application.Auth.Commands;
+using BlogApp.Core.Security.Attributes;
 
 namespace BlogApp.Api.Endpoints.Auth.Requests;
 
 public record RegisterRequest(
-    string FirstName,
-    string LastName,
-    string Email,
-    string Username,
+    [Sanitize]string FirstName,
+    [Sanitize]string LastName,
+    [Sanitize]string Email,
+    [Sanitize]string Username,
     string Password,
     string ConfirmedPassword)
 {

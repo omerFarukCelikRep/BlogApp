@@ -12,5 +12,60 @@
   "KeyRotation": {
     "Period": "7.00:00:00",
     "OverlapDays": 2
+  },
+  "Xss": {
+    "StripHtmlByDefault": true,
+    "AllowedTags": [
+      "p",
+      "br",
+      "strong",
+      "b",
+      "em",
+      "i",
+      "u",
+      "s",
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "ul",
+      "ol",
+      "li",
+      "a",
+      "img",
+      "code",
+      "pre",
+      "blockquote",
+      "table",
+      "thead",
+      "tbody",
+      "tr",
+      "th",
+      "td",
+      "div",
+      "span",
+      "hr"
+    ],
+    "AllowedAttributes": [
+      "href",
+      "src",
+      "alt",
+      "title",
+      "class",
+      "id",
+      "target",
+      "rel",
+      "width",
+      "height",
+      "colspan",
+      "rowspan"
+    ],
+    "AllowedSchemes": [
+      "http",
+      "https",
+      "mailto"
+    ]
   }
 }

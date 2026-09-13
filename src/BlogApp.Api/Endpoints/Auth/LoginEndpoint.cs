@@ -1,5 +1,6 @@
 using BlogApp.Api.Endpoints.Auth.Requests;
 using BlogApp.Api.Extensions;
+using BlogApp.Api.Filters;
 using BlogApp.Application.Auth.Commands;
 using BlogApp.Core.Mediator.Abstractions;
 using BlogApp.Core.Results;
@@ -26,7 +27,7 @@ public static class LoginEndpoint
                 .AllowAnonymous()
                 .Produces<Result<LoginResult>>()
                 .WithName("Login")
-                .WithTags("Auth");
+                .AddEndpointFilter<XssProtectionEndpointFilter>();
 
             return builder;
         }

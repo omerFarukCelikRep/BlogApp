@@ -1,8 +1,8 @@
 using BlogApp.Core.Security.Abstractions;
+using BlogApp.Core.Security.Sanitizers;
 using BlogApp.Infrastructure.Security.Options;
 using BlogApp.Infrastructure.Security.Providers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlogApp.Infrastructure.Security.Extensions;
@@ -29,9 +29,16 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
+        private IServiceCollection AddXssProtection()
+        {
+            return services.AddScoped<IXssSanitizer, XssSanitizer>()
+                .ConfigureOptions<XssOptionsSetup>();
+        }
+
         public IServiceCollection AddSecurityServices()
         {
-            services.AddAuthentication();
+            services.AddAuthentication()
+                .AddXssProtection();
 
             return services;
         }

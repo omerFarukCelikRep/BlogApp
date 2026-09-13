@@ -12,7 +12,7 @@ public class RegisterEndpointTests(BlogAppFactory factory) :IClassFixture<Databa
     private const string RegisterEndpoint = "api/v1/auth/register";
     
     private readonly HttpClient _client = factory.CreateClient();
-    private readonly DatabaseFixture _db = new(factory);
+    private readonly DatabaseFixture _database = new(factory);
 
     [Fact]
     public async Task Register_ValidRequest_Returns201()
