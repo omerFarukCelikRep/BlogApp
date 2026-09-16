@@ -7,4 +7,5 @@ public interface ICommentService
 {
     Task<Result<List<CommentResult>>> GetByBlogAsync(GetBlogCommentsArgs args,
         CancellationToken cancellationToken = default);
-}
+
+    Task<Result<CommentResult>> CreateAsync(CreateCommentArgs args, CancellationToken cancellationToken = default);

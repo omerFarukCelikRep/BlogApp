@@ -47,4 +47,52 @@ public class CommentService(
 
         return Result<List<CommentResult>>.Success(data: topLevel);
     }
+
+    public async Task<Result<CommentResult>> CreateAsync(CreateCommentArgs args,
+        CancellationToken cancellationToken = default)
+    {
+        var blog = await blogRepository.GetByIdAsync(args.BlogId, false, cancellationToken);
+        if (blog is null)
+            return Result<CommentResult>.Failed(404, Error.Create(Errors.Blog.NotFound));
+
+        if (!blog.IsPublished())
+            return Result<CommentResult>.Failed(400, Error.Create(Errors.Blog.NotPublished));
+
+        if (args.ParentId.HasValue)
+        {
+            var parent = await commentRepository.GetByIdAsync(args.ParentId.Value, false, cancellationToken);
+            if (parent is null)
+                return Result<CommentResult>.Failed(404, Error.Create(Errors.Comment.NotFound));
+
+            if (parent.ParentId.HasValue)
+                return Result<CommentResult>.Failed(400, Error.Create(Errors.Comment.NestedReplyNotAllowed));
+        }
+
+        var comment = new Comment
+        {
+            BlogId = blog.Id,
+            Content = args.Content,
+            UserId = domainPrincipal.UserId,
+            ParentId = args.ParentId
+        };
+
+        await commentRepository.AddAsync(comment, cancellationToken);
+        await commentRepository.SaveChangesAsync(cancellationToken);
+
+        telemetryService.RecordBlogComment(args.BlogId);
+
+        return Result<CommentResult>.Success(data: new(
+            Id: comment.Id,
+            Content: comment.Content,
+            IsEdited: false,
+            CreatedDate: comment.CreatedDate.DateTime,
+            Author: new(
+                Id: domainPrincipal.UserId,
+                FullName: domainPrincipal.FullName,
+                Username: domainPrincipal.Username!,
+                ProfilePicture: null),
+            ParentId: comment.ParentId,
+            Replies: []
+        ));
+    }
 }

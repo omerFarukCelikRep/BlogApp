@@ -15,7 +15,8 @@ public static class CommentEndpoints
         var commentGroup = app.MapGroup("api/v{version:apiVersion}/comments")
             .WithApiVersionSet(apiVersionSet)
             .WithTags("Comments")
-            .GetAllByBlogEndpoint();
+            .GetAllByBlogEndpoint()
+            .CreateEndpoint();
 
         return commentGroup;
     }
