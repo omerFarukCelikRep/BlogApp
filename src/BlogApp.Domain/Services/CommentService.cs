@@ -95,4 +95,21 @@ public class CommentService(
             Replies: []
         ));
     }
+
+    public async Task<Result> DeleteAsync(DeleteCommentArgs args, CancellationToken cancellationToken = default)
+    {
+        var comment = await commentRepository.GetByIdAsync(args.Id, cancellationToken: cancellationToken);
+        if (comment is null)
+            return Result.Failed(404, Error.Create(Errors.Comment.NotFound));
+
+        if (domainPrincipal.Roles.All(x => x != Role.Admin))
+            if (comment.UserId != domainPrincipal.UserId && !domainPrincipal.HasPermission(Permission.Comment.Moderate))
+                return Result.Failed(403, Error.Create(Errors.Comment.NotAuthor));
+
+
+        await commentRepository.DeleteAsync(comment, cancellationToken);
+        await commentRepository.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
 }

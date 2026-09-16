@@ -9,3 +9,5 @@ public interface ICommentService
         CancellationToken cancellationToken = default);
 
     Task<Result<CommentResult>> CreateAsync(CreateCommentArgs args, CancellationToken cancellationToken = default);
+    Task<Result> DeleteAsync(DeleteCommentArgs args, CancellationToken cancellationToken = default);
+}

@@ -16,7 +16,8 @@ public static class CommentEndpoints
             .WithApiVersionSet(apiVersionSet)
             .WithTags("Comments")
             .GetAllByBlogEndpoint()
-            .CreateEndpoint();
+            .CreateEndpoint()
+            .DeleteEndpoint();
 
         return commentGroup;
     }
