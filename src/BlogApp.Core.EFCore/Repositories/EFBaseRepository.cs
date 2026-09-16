@@ -12,7 +12,7 @@ public class EFBaseRepository<TEntity, TId>(DbContext context)
     : IAsyncPaginateRepository<TEntity, TId>, IAsyncFindableRepository<TEntity, TId>,
         IAsyncOrderableRepository<TEntity, TId>, IAsyncQueryableRepository<TEntity, TId>,
         IAsyncInsertableRepository<TEntity, TId>, IAsyncUpdateableRepository<TEntity, TId>,
-        IAsyncDeletableRepository<TEntity, TId>, IAsyncRepository
+        IAsyncDeletableRepository<TEntity, TId>, IAsyncCountableRepository<TEntity, TId>, IAsyncRepository
     where TEntity : BaseEntity<TId>
     where TId : struct
 {
@@ -105,14 +105,14 @@ public class EFBaseRepository<TEntity, TId>(DbContext context)
         await DisposeTransactionAsync();
     }
 
-    public async Task<IPaginate<TEntity>> GetAllAsPaginateAsync(int index = 0, int size = 10, bool tracking = true,
+    public async Task<IPaginate<TEntity>> GetAllAsPaginateAsync(int index = 1, int size = 10, bool tracking = true,
         CancellationToken cancellationToken = default)
     {
         return await GetAll(tracking).ToPaginateAsync(index, size, cancellationToken);
     }
 
     public async Task<IPaginate<TEntity>> GetAllAsPaginateAsync(Expression<Func<TEntity, bool>> expression,
-        int index = 0, int size = 10, bool tracking = true, CancellationToken cancellationToken = default)
+        int index = 1, int size = 10, bool tracking = true, CancellationToken cancellationToken = default)
     {
         return await GetAll(tracking).Where(expression).ToPaginateAsync(index, size, cancellationToken);
     }
@@ -203,5 +203,22 @@ public class EFBaseRepository<TEntity, TId>(DbContext context)
         bool tracking = true, CancellationToken cancellationToken = default)
     {
         return await GetAll(tracking).Where(expression).ToListAsync(cancellationToken);
+    }
+
+    public async Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        return await _table.CountAsync(cancellationToken);
+    }
+
+    public async Task<int> CountAsync(Expression<Func<TEntity, bool>> expression,
+        CancellationToken cancellationToken = default)
+    {
+        return await _table.CountAsync(expression, cancellationToken);
+    }
+
+    public async Task<decimal> SumAsync(Expression<Func<TEntity, decimal>> selector,
+        CancellationToken cancellationToken = default)
+    {
+        return await _table.SumAsync(selector, cancellationToken);
     }
 }

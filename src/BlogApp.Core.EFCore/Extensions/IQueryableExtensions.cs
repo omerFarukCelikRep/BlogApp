@@ -45,7 +45,7 @@ public static class IQueryableExtensions
             return new Paginate<T>(await itemsTask, index, size, await countTask);
         }
 
-        public IPaginate<T> ToPaginate(int index = 0, int size = 10)
+        public IPaginate<T> ToPaginate(int index = 1, int size = 10)
         {
             ArgumentNullException.ThrowIfNull(query);
             EnsureInRange(index, size);
