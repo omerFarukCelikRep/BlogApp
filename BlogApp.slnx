@@ -12,6 +12,7 @@
     <Project Path="src/BlogApp.Core.Mediator/BlogApp.Core.Mediator.csproj" />
     <Project Path="src/BlogApp.Core.Search/BlogApp.Core.Search.csproj" />
     <Project Path="src/BlogApp.Core.Security/BlogApp.Core.Security.csproj" />
+    <Project Path="src/BlogApp.Core.Sms/BlogApp.Core.Sms.csproj" />
     <Project Path="src/BlogApp.Core.Telemetry/BlogApp.Core.Telemetry.csproj" />
     <Project Path="src/BlogApp.Core.Validations/BlogApp.Core.Validations.csproj" />
     <Project Path="src/BlogApp.Core/BlogApp.Core.csproj" />
@@ -21,6 +22,7 @@
     <Project Path="src/BlogApp.Infrastructure.Email/BlogApp.Infrastructure.Email.csproj" />
     <Project Path="src/BlogApp.Infrastructure.Search/BlogApp.Infrastructure.Search.csproj" />
     <Project Path="src/BlogApp.Infrastructure.Security/BlogApp.Infrastructure.Security.csproj" />
+    <Project Path="src/BlogApp.Infrastructure.Sms/BlogApp.Infrastructure.Sms.csproj" />
     <Project Path="src/BlogApp.Infrastructure/BlogApp.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">

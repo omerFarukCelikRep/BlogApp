@@ -23,6 +23,7 @@ public class BlogAppDbContext : DbContext
     public virtual DbSet<BlogCategory> BlogCategories { get; set; }
     public virtual DbSet<BlogTag> BlogTags { get; set; }
     public virtual DbSet<EmailConfirmation> EmailConfirmations { get; set; }
+    public virtual DbSet<TwoFactorCode> TwoFactorCodes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
