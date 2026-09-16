@@ -13,7 +13,8 @@ public static class ConfigurationBuilderExtensions
                 .AddJsonFile("Settings/security.json", false, true)
                 .AddJsonFile("Settings/telemetry.json", false, true)
                 .AddJsonFile("Settings/search.json", false, true)
-                .AddJsonFile("Settings/email.json", false, true);
+                .AddJsonFile("Settings/email.json", false, true)
+                .AddJsonFile("Settings/sms.json", false, true);
 
             return builder;
         }

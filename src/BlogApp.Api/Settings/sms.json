@@ -1,0 +1,8 @@
+{
+  "Sms": {
+    "Provider":    "Twilio",
+    "AccountSid":  "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "AuthToken":   "auth-token",
+    "FromNumber":  "+15550000000"
+  }
+}
