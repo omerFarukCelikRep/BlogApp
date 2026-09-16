@@ -17,6 +17,8 @@ public static class Errors
     public struct User
     {
         public const string NotFound = "User.NotFound";
+        public const string EmailAlreadyConfirmed = "User.EmailAlreadyConfirmed";
+        public const string PhoneNumberNotFound = "User.PhoneNumberNotFound";
     }
 
     public struct Role
@@ -34,6 +36,7 @@ public static class Errors
     public struct Tag
     {
         public const string NotFound = "Tag.NotFound";
+        public const string AlreadyExists = "Tag.AlreadyExists";
     }
 
     public struct Blog

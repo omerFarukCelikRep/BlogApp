@@ -10,7 +10,7 @@ public class Comment : BaseEntity
     public Guid UserId { get; set; }
     public virtual User? User { get; set; }
 
-    public int ParentId { get; set; }
+    public int? ParentId { get; set; }
     public virtual Comment? Parent { get; set; }
 
     public virtual ICollection<Comment> Replies { get; set; } = new HashSet<Comment>();

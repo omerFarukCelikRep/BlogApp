@@ -11,7 +11,7 @@ public static class WebApplicationExtensions
             app.RegisterAuthEndpoints();
             app.RegisterBlogEndpoints();
             app.RegisterCategoryEndpoints();
-            app.RegisterSearchEndpoints();
+            app.RegisterCommentEndpoints();
 
             return app;
         }
