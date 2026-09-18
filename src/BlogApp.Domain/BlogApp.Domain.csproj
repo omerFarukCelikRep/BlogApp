@@ -17,6 +17,7 @@
     <ItemGroup>
         <ProjectReference Include="..\BlogApp.Core.Email\BlogApp.Core.Email.csproj" />
         <ProjectReference Include="..\BlogApp.Core.Security\BlogApp.Core.Security.csproj"/>
+        <ProjectReference Include="..\BlogApp.Core.Sms\BlogApp.Core.Sms.csproj" />
         <ProjectReference Include="..\BlogApp.Core.Telemetry\BlogApp.Core.Telemetry.csproj" />
         <ProjectReference Include="..\BlogApp.Core\BlogApp.Core.csproj"/>
     </ItemGroup>

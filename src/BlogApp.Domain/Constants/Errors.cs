@@ -52,4 +52,22 @@ public static class Errors
         public const string NestedReplyNotAllowed = "Comment.NestedReplyNotAllowed";
         public const string NotAuthor = "Comment.NotAuthor";
     }
+
+    public struct EmailConfirmation
+    {
+        public const string InvalidConfirmationToken = "EmailConfirmation.InvalidConfirmationToken";
+    }
+
+    public struct TwoFactorCode
+    {
+        public const string InvalidScope = "TwoFactorCode.InvalidScope";
+        public const string InvalidCode = "TwoFactorCode.InvalidCode";
+        public const string NotEnabled = "TwoFactorCode.NotEnabled";
+    }
+
+    public struct PasswordResetToken
+    {
+        public const string InvalidToken = "PasswordResetToken.InvalidToken";
+        public const string InvalidOtpCode = "PasswordResetToken.InvalidOtpCode";
+    }
 }

@@ -13,14 +13,16 @@ public class DomainPrincipal(IHttpContextAccessor contextAccessor) : IDomainPrin
         contextAccessor.HttpContext?.User ?? Thread.CurrentPrincipal as ClaimsPrincipal;
 
     public Guid UserId => Guid.TryParse(_principal?.FindFirstValue(ClaimTypes.NameIdentifier), out var id)
-        ? id 
+        ? id
         : Guid.Empty;
+
     public string? Username => GetClaim<string>(ClaimTypes.Name);
     public string FirstName => GetClaim<string>(ClaimTypes.GivenName)!;
     public string LastName => GetClaim<string>(ClaimTypes.Surname)!;
     public string FullName => $"{FirstName} {LastName}";
     public string? Email => GetClaim<string>(ClaimTypes.Email)!;
     public bool IsAuthenticated => _principal?.Identity?.IsAuthenticated ?? false;
+    public string Scope => GetClaim<string>(CustomClaimTypes.Scope)!;
     public IReadOnlyList<Role> Roles => GetClaims<Role>(CustomClaimTypes.Roles);
     public IReadOnlyList<string> Permissions => GetClaims(CustomClaimTypes.Permissions);
 
@@ -47,7 +49,7 @@ public class DomainPrincipal(IHttpContextAccessor contextAccessor) : IDomainPrin
         var claims = _principal?.FindAll(claimType);
         if (_principal?.Identity?.IsAuthenticated is not true || claims is null)
             return [];
-        
+
         var converter = TypeDescriptor.GetConverter(typeof(T));
         return claims.Select(x => x.Value)
             .Select(x => (T?)converter.ConvertFrom(x))

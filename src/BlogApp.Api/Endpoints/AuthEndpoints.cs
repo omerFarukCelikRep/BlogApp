@@ -23,7 +23,13 @@ public static class AuthEndpoints
                 .RefreshTokenEndpoint()
                 .SendConfirmationEndpoint()
                 .ConfirmEmailEndpoint()
-                .ConfirmEmailWithOtpEndpoint();
+                .ConfirmEmailWithOtpEndpoint()
+                .Verify2FAEndpoint()
+                .Resend2FAEndpoint()
+                .SendEnable2FAEndpoint()
+                .ConfirmEnable2FAEndpoint()
+                .SendDisable2FAEndpoint()
+                .ConfirmDisable2FAEndpoint();
 
             return authGroup;
         }

@@ -30,10 +30,12 @@ public partial class JwtProvider(
             new(ClaimTypes.Surname, args.LastName),
             new(ClaimTypes.Email, args.Email),
             new(ClaimTypes.Name, args.Username),
+            new(CustomClaimTypes.EmailConfirmed, args.EmailConfirmed.ToString()),
+            new(CustomClaimTypes.TwoFactorEnabled, args.TwoFactorEnabled.ToString()),
+            new(CustomClaimTypes.Scope, args.Scope),
             .. args.Roles.Select(userRole => new Claim(ClaimTypes.Role, userRole.ToString())),
             .. args.Permissions.Select(permission =>
                 new Claim(CustomClaimTypes.Permissions, permission.ToString()))
-
         ];
 
         return claims;
@@ -46,7 +48,7 @@ public partial class JwtProvider(
 
         var rsa = RSA.Create();
         var privateKey = Convert.FromBase64String(signingKey.PrivateKey);
-        rsa.ImportRSAPrivateKey(privateKey,  out _);
+        rsa.ImportRSAPrivateKey(privateKey, out _);
 
         var rsaSecurityKey = new RsaSecurityKey(rsa)
         {
