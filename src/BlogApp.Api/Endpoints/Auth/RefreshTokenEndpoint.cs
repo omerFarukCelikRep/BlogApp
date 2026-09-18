@@ -28,8 +28,7 @@ public static class RefreshTokenEndpoint
                 .RequireAuthorization()
                 .Produces<Result<RefreshTokenResult>>()
                 .Produces<Result<RefreshTokenResult>>(StatusCodes.Status401Unauthorized)
-                .WithName("RefreshToken")
-                .WithTags("Auth");
+                .WithName("RefreshToken");
 
             return builder;
         }

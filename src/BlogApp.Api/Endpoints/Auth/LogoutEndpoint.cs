@@ -23,8 +23,7 @@ public static class LogoutEndpoint
                 .RequireAuthorization()
                 .Produces<Result>()
                 .Produces<Result>(StatusCodes.Status401Unauthorized)
-                .WithName("Logout")
-                .WithTags("Auth");
+                .WithName("Logout");
 
             return builder;
         }

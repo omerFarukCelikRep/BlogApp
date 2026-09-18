@@ -18,7 +18,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Templates\ConfirmationEmail.html" />
+        <EmbeddedResource Include="Templates\EmailConfirmationEmail.html" />
+        <EmbeddedResource Include="Templates\PasswordResetEmail.html" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Enums\" />
     </ItemGroup>
 
 </Project>

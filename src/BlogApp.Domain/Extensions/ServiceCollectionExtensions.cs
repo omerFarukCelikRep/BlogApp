@@ -24,7 +24,10 @@ public static class ServiceCollectionExtensions
                 .AddScoped<IRefreshTokenService, RefreshTokenService>()
                 .AddScoped<ISigningKeyService, SigningKeyService>()
                 .AddScoped<IBlogService, BlogService>()
-                .AddScoped<ICommentService, CommentService>();
+                .AddScoped<ICommentService, CommentService>()
+                .AddScoped<IAuthorService, AuthorService>()
+                .AddScoped<IEmailConfirmationService, EmailConfirmationService>()
+                .AddScoped<IPasswordResetService,PasswordResetService>();
             return services;
         }
 

@@ -79,7 +79,14 @@ public class EmailConfirmationService(
         await emailConfirmationRepository.SaveChangesAsync(cancellationToken);
 
         var confirmUrl = $"{_options.BaseUrl}/confirm-email?token={rawToken}";
-        var html = emailTemplateService.Build(user.FirstName, confirmUrl, otpCode);
+        var emailArgs = new Dictionary<string, string>()
+        {
+            ["FIRST_NAME"] = user.FirstName,
+            ["CONFIRM_URL"] = confirmUrl,
+            ["OTP_CODE"]=otpCode,
+            ["EXPIRY_MINUTES"] = "30"
+        };
+        var html = emailTemplateService.Build(emailArgs,nameof(EmailTemplates.EmailConfirmation));
         const string subject = "Confirm your email — DevLog";
 
         await emailService.SendAsync(new EmailMessage(

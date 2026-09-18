@@ -24,6 +24,7 @@ public class BlogAppDbContext : DbContext
     public virtual DbSet<BlogTag> BlogTags { get; set; }
     public virtual DbSet<EmailConfirmation> EmailConfirmations { get; set; }
     public virtual DbSet<TwoFactorCode> TwoFactorCodes { get; set; }
+    public virtual DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

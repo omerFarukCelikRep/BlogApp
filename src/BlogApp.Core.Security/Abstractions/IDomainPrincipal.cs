@@ -10,6 +10,7 @@ public interface IDomainPrincipal
     public string? Username { get; }
     public string? Email { get; }
     bool IsAuthenticated { get; }
+    public string? Scope { get; }
     IReadOnlyList<Role> Roles { get; }
     IReadOnlyList<string> Permissions { get; }
 

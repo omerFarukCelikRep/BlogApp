@@ -2,6 +2,7 @@ using System.Security.Claims;
 using BlogApp.Core.Results;
 using BlogApp.Core.Security.Abstractions;
 using BlogApp.Core.Security.Options;
+using BlogApp.Core.Telemetry.Abstractions;
 using BlogApp.Domain.Abstractions.Repositories;
 using BlogApp.Domain.Abstractions.Services;
 using BlogApp.Domain.Constants;
@@ -15,6 +16,7 @@ public class RefreshTokenService(
     IUserRepository userRepository,
     IJwtProvider jwtProvider,
     IRefreshTokenProvider refreshTokenProvider,
+    ITelemetryService telemetryService,
     IDomainPrincipal domainPrincipal,
     IOptions<JwtOptions> jwtOptions)
     : IRefreshTokenService
@@ -41,12 +43,17 @@ public class RefreshTokenService(
             LastName = user.LastName,
             Email = user.Email,
             Username = user.Username,
-            Roles = [..user.UserRoles.Select(x => x.Role!.Name)],
+            EmailConfirmed = user.EmailConfirmed,
+            TwoFactorEnabled = user.TwoFactorEnabled,
+            Roles = [.. user.UserRoles.Select(x => x.Role!.Name)],
             Permissions =
-                [..user.UserRoles.SelectMany(x => x.Role!.RolePermissions.Select(p => p.Permission!.ToString()))]
+                [.. user.UserRoles.SelectMany(x => x.Role!.RolePermissions.Select(p => p.Permission!.ToString()))]
         }, cancellationToken);
 
-        var result = new RefreshTokenResult(newJwtToken, newRefreshToken,DateTime.UtcNow.AddDays(jwtOptions.Value.RefreshTokenExpirationDays));
+        telemetryService.RecordTokenRefresh();
+
+        var result = new RefreshTokenResult(newJwtToken, newRefreshToken,
+            DateTime.UtcNow.AddDays(jwtOptions.Value.RefreshTokenExpirationDays));
         return Result<RefreshTokenResult>.Success(data: result);
     }
 
@@ -75,7 +82,6 @@ public class RefreshTokenService(
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Name, user.Username),
             .. user.UserRoles.Select(x => new Claim(ClaimTypes.Role, x.Role!.ToString()))
-
         ];
 
         return new(claims, nameof(RefreshToken));
@@ -83,7 +89,7 @@ public class RefreshTokenService(
 
     public async Task<Result> RevokeAllAsync(CancellationToken cancellationToken = default)
     {
-        await refreshTokenRepository.RevokeAllAsync(domainPrincipal.UserId, cancellationToken:cancellationToken);
+        await refreshTokenRepository.RevokeAllAsync(domainPrincipal.UserId, cancellationToken: cancellationToken);
         return Result.Success();
     }
 }

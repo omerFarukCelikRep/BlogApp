@@ -29,7 +29,10 @@ public static class AuthEndpoints
                 .SendEnable2FAEndpoint()
                 .ConfirmEnable2FAEndpoint()
                 .SendDisable2FAEndpoint()
-                .ConfirmDisable2FAEndpoint();
+                .ConfirmDisable2FAEndpoint()
+                .ForgotPasswordEndpoint()
+                .ResetPasswordEndpoint()
+                .ResetPasswordWithOtpEndpoint();
 
             return authGroup;
         }
