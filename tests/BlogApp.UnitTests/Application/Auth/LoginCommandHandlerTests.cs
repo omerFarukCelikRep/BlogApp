@@ -1,4 +1,5 @@
 using BlogApp.Application.Auth.Commands;
+using BlogApp.Core.Mediator.Abstractions;
 using BlogApp.Core.Results;
 using BlogApp.Domain.Abstractions.Services;
 using BlogApp.Domain.Constants;
@@ -13,12 +14,14 @@ namespace BlogApp.UnitTests.Application.Auth;
 public class LoginCommandHandlerTests
 {
     private readonly IAuthenticationService _authenticationService;
+    private readonly IMediator _mediator;
     private readonly LoginCommandHandler _handler;
 
     public LoginCommandHandlerTests()
     {
         _authenticationService = Substitute.For<IAuthenticationService>();
-        _handler = new LoginCommandHandler(_authenticationService);
+        _mediator = Substitute.For<IMediator>();
+        _handler = new LoginCommandHandler(_authenticationService, _mediator);
     }
 
     [Fact]
@@ -29,11 +32,11 @@ public class LoginCommandHandlerTests
         var loginResult = new LoginResult(
             Token: "eyJ..",
             RefreshToken: "refresh-token-123",
-            ExpiresAt: DateTimeOffset.UtcNow.AddHours(1));
+            ExpireDate: DateTimeOffset.UtcNow.AddHours(1));
 
         _authenticationService.LoginAsync(command, Arg.Any<CancellationToken>())
             .Returns(Result<LoginResult>.Success(data: loginResult));
-        
+
         var result = await _handler.Handle(command, CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();

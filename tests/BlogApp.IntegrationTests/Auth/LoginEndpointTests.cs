@@ -33,7 +33,7 @@ public class LoginEndpointTests(BlogAppFactory factory) : IClassFixture<Database
         result.Should().NotBeNull();
         result.Token.Should().NotBeNullOrEmpty();
         result.RefreshToken.Should().NotBeNullOrEmpty();
-        result.ExpiresAt.Should().BeAfter(DateTimeOffset.UtcNow);
+        result.ExpireDate.Should().BeAfter(DateTimeOffset.UtcNow);
     }
 
     [Fact]

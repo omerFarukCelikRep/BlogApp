@@ -1,7 +1,7 @@
 using BlogApp.Application.Auth.Commands;
 using FluentAssertions;
 
-namespace BlogApp.UnitTests.Core.Validations;
+namespace BlogApp.UnitTests.Core.Validations.Auth;
 
 public class RefreshTokenCommandValidatorTests
 {

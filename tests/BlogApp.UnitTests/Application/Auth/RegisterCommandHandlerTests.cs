@@ -1,4 +1,5 @@
 using BlogApp.Application.Auth.Commands;
+using BlogApp.Core.Mediator.Abstractions;
 using BlogApp.Core.Results;
 using BlogApp.Domain.Abstractions.Services;
 using BlogApp.Domain.Constants;
@@ -16,7 +17,8 @@ public class RegisterCommandHandlerTests
     public RegisterCommandHandlerTests()
     {
         _authenticationService = Substitute.For<IAuthenticationService>();
-        _handler = new RegisterCommandHandler(_authenticationService);
+        var mediator = Substitute.For<IMediator>();
+        _handler = new RegisterCommandHandler(_authenticationService, mediator);
     }
 
     private static RegisterCommand ValidCommand() => new(
