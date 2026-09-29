@@ -1,3 +1,5 @@
+using BlogApp.Core.DataAccess.Enums;
+
 namespace BlogApp.Domain.Entities;
 
 public class User : SoftDeletableEntity<Guid>
@@ -11,7 +13,12 @@ public class User : SoftDeletableEntity<Guid>
     public required string Password { get; set; }
     public string? Bio { get; set; }
     public string? ProfilePicture { get; set; }
+    public string? WebSiteUrl { get; set; }
+    public string? TwitterHandle { get; set; }
+    public string? GithubHandle { get; set; }
     public bool TwoFactorEnabled { get; set; }
+    public string? PhoneNumber { get; set; }
+    public bool PhoneConfirmed { get; set; }
     public DateTime? LockoutEnd { get; set; }
     public int AccessFailedCount { get; set; }
 
@@ -20,14 +27,33 @@ public class User : SoftDeletableEntity<Guid>
     public virtual ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new HashSet<RefreshToken>();
     public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
-    
-    public bool IsLockedOut() => LockoutEnd.HasValue &&  LockoutEnd.Value <= DateTime.UtcNow;
-    
+
+    public bool IsLockedOut() => LockoutEnd.HasValue && LockoutEnd.Value <= DateTime.UtcNow;
+
     public bool IsEmailConfirmed() => EmailConfirmed;
-    
+
     public bool ConfirmEmail() => EmailConfirmed = true;
-    
-    public void EnableTwoFactorAuthentication() => TwoFactorEnabled = true;
-    
+
+    public void EnableTwoFactorAuthentication(string phone)
+    {
+        TwoFactorEnabled = true;
+        PhoneNumber = phone;
+        PhoneConfirmed = true;
+    }
+
     public void DisableTwoFactorAuthentication() => TwoFactorEnabled = false;
+
+    public void ChangeBanStatus(bool ban)
+    {
+        if (ban)
+        {
+            if (Status is not (Status.Banned or Status.Deleted))
+                Status = Status.Banned;
+        }
+        else
+        {
+            if (Status is Status.Banned)
+                Status = Status.Modified;
+        }
+    }
 }

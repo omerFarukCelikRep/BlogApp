@@ -13,6 +13,7 @@ public static class WebApplicationExtensions
             app.RegisterCategoryEndpoints();
             app.RegisterCommentEndpoints();
             app.RegisterTagEndpoints();
+            app.RegisterAuthorEndpoints();
 
             return app;
         }

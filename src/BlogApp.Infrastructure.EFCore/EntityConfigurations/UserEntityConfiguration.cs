@@ -43,6 +43,12 @@ public class UserEntityConfiguration : SoftDeletableEntityConfiguration<User, Gu
             .IsRequired(false);
         builder.Property(x => x.ProfilePicture)
             .IsRequired(false);
+        builder.Property(x => x.WebSiteUrl)
+            .IsRequired(false);
+        builder.Property(x => x.TwitterHandle)
+            .IsRequired(false);
+        builder.Property(x => x.GithubHandle)
+            .IsRequired(false);
         builder.Property(x => x.TwoFactorEnabled)
             .HasDefaultValue(false);
         builder.Property(x => x.LockoutEnd)
