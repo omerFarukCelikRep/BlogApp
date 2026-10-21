@@ -1,3 +1,4 @@
+using BlogApp.Core.DataAccess.Models;
 using BlogApp.Core.Results;
 using BlogApp.Domain.Models.Blogs;
 
@@ -9,5 +10,8 @@ public interface IBlogService
         CancellationToken cancellationToken = default);
 
     Task<Result<List<BlogSummaryResult>>> GetRandomAsync(RandomBlogArgs args,
+        CancellationToken cancellationToken = default);
+
+    Task<Result<CreateBlogResult>> CreateAsync(CreateBlogArgs args,
         CancellationToken cancellationToken = default);
 }
