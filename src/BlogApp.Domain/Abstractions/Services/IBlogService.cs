@@ -14,4 +14,6 @@ public interface IBlogService
 
     Task<Result<CreateBlogResult>> CreateAsync(CreateBlogArgs args,
         CancellationToken cancellationToken = default);
+
+    Task<Result<BlogDetailsResult>> GetByIdAsync(GetBlogByIdArgs args, CancellationToken cancellationToken = default);
 }

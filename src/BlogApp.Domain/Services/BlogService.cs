@@ -96,4 +96,20 @@ public class BlogService(
 
         return Result<CreateBlogResult>.Success(data: (CreateBlogResult)blog);
     }
+
+    public async Task<Result<BlogDetailsResult>> GetByIdAsync(GetBlogByIdArgs args,
+        CancellationToken cancellationToken = default)
+    {
+        var blog = await blogRepository.GetDetailsAsync(args.Id, cancellationToken);
+        if (blog is null)
+            return Result<BlogDetailsResult>.Failed(404, Error.Create(Errors.Blog.NotFound));
+
+        if (blog.PostStatus != PostStatus.Published && blog.Author!.Id != domainPrincipal.UserId)
+            return Result<BlogDetailsResult>.Failed(403, Error.Create(Errors.Blog.UnauthorizeUser));
+
+        var isLiked = domainPrincipal.IsAuthenticated && blog.Likes.Any(x => x.UserId == domainPrincipal.UserId);
+
+        var result = (BlogDetailsResult)blog with { IsLiked = isLiked };
+        return Result<BlogDetailsResult>.Success(data: result);
+    }
 }
