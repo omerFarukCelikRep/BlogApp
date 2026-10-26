@@ -17,7 +17,8 @@ public static class CommentEndpoints
             .WithTags("Comments")
             .GetAllByBlogEndpoint()
             .CreateEndpoint()
-            .DeleteEndpoint();
+            .DeleteEndpoint()
+            .GetAllForAdminEndpoint();
 
         return commentGroup;
     }

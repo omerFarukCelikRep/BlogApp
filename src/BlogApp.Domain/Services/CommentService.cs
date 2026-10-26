@@ -112,4 +112,12 @@ public class CommentService(
 
         return Result.Success();
     }
+
+    public async Task<PaginatedResult<CommentResult>> GetAllForAdminAsync(GetAllCommentsForAdminArgs args,
+        CancellationToken cancellationToken = default)
+    {
+        var comments = await commentRepository.GetAllAsync(args, cancellationToken);
+        var data = comments.Items.Select(x => (CommentResult)x);
+        return PaginatedResult<CommentResult>.Success(data: data, comments.Index, comments.Size, comments.Pages);
+    }
 }

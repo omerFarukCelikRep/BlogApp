@@ -10,4 +10,7 @@ public interface ICommentService
 
     Task<Result<CommentResult>> CreateAsync(CreateCommentArgs args, CancellationToken cancellationToken = default);
     Task<Result> DeleteAsync(DeleteCommentArgs args, CancellationToken cancellationToken = default);
+
+    Task<PaginatedResult<CommentResult>> GetAllForAdminAsync(GetAllCommentsForAdminArgs args,
+        CancellationToken cancellationToken = default);
 }

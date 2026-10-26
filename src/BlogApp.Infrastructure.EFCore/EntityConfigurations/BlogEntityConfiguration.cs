@@ -17,6 +17,7 @@ public class BlogEntityConfiguration : SoftDeletableEntityConfiguration<Blog>
             .HasMaxLength(512)
             .IsRequired();
         builder.Property(x => x.Content)
+            .HasColumnType("json")
             .IsRequired();
         builder.Property(x => x.Slug)
             .IsRequired();

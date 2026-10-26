@@ -10,4 +10,7 @@ public interface ICommentRepository : IAsyncCountableRepository<Comment, int>, I
     IAsyncRepository
 {
     Task<List<Comment>> GetBlogCommentsAsync(int blogId, CancellationToken cancellationToken = default);
+
+    Task<IPaginate<Comment>> GetAllAsync(GetAllCommentsForAdminArgs args,
+        CancellationToken cancellationToken = default);
 }

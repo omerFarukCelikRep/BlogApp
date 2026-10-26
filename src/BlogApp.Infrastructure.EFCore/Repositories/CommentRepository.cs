@@ -17,4 +17,15 @@ public class CommentRepository(BlogAppDbContext context) : EFBaseRepository<Comm
             .OrderBy(x => x.CreatedDate)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IPaginate<Comment>> GetAllAsync(GetAllCommentsForAdminArgs args,
+        CancellationToken cancellationToken = default)
+    {
+        return await GetAll(false)
+            .Where(x => x.Status != Status.Deleted)
+            .Include(x => x.User)
+            .Include(x => x.Replies)
+            .ThenInclude(x => x.User)
+            .ToPaginateAsync(args.Page!.Value, args.PageSize!.Value, cancellationToken);
+    }
 }

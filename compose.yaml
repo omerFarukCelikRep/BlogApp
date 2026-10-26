@@ -30,6 +30,22 @@
     networks:
       - app-network
   
+  blogapp.admin:
+    container_name: blogapp.admin
+    build:
+      context: .
+      dockerfile: blogapp-admin/Dockerfile
+    image: blogapp.admin
+    ports:
+      - "5174:5174"
+    environment:
+      - VITE_API_URL=https://blogapp.api:5180
+    depends_on:
+      blogapp.api:
+        condition: service_started
+    networks:
+      - app-network
+  
   db:
     container_name: postgres
     image: postgres:18.4-alpine
@@ -96,7 +112,7 @@
       retries: 10
     networks:
       - app-network
-    
+  
   jaeger:
     container_name: jaeger
     image: jeagertracing/jaeger
@@ -109,7 +125,7 @@
       - "4318:4318"
     networks:
       - app-network
-    
+  
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest

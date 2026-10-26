@@ -2,7 +2,9 @@ using BlogApp.Application.Blogs.Queries;
 
 namespace BlogApp.Api.Endpoints.Blogs.Requests;
 
-public record RandomBlogRequest(int? Count, List<string>? Categories)
+public record RandomBlogRequest(
+    int? Count, 
+    List<int>? Categories)
 {
     public static explicit operator GetRandomBlogsQuery(RandomBlogRequest request)
     {

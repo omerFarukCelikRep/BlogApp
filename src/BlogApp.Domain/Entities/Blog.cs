@@ -1,3 +1,5 @@
+using BlogApp.Domain.Utils;
+
 namespace BlogApp.Domain.Entities;
 
 public class Blog : SoftDeletableEntity
@@ -7,7 +9,7 @@ public class Blog : SoftDeletableEntity
     public string? Thumbnail { get; set; }
     public int ReadingTimeInMinutes { get; set; }
     public PostStatus PostStatus { get; set; }
-    public int ReadCount { get; private set; }
+    public int ReadCount { get; set; }
     public required string Slug { get; set; }
     public DateTime? PublishDate { get; set; }
 
@@ -19,7 +21,13 @@ public class Blog : SoftDeletableEntity
     public virtual ICollection<Like> Likes { get; set; } = new HashSet<Like>();
     public virtual ICollection<BlogTag> BlogTags { get; set; } = new HashSet<BlogTag>();
 
-    private static int CalculateReadingTime(string content) => Math.Max(1, content.Split(' ').Length / 200);
+    private static int CalculateReadingTime(string content)
+    {
+        var plainText = BlogHelper.GetPlainTextFromJsonContent(content);
+        var wordCount = plainText.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
+
+        return Math.Max(1, wordCount / 200);
+    }
 
     public bool IsPublished() => PostStatus == PostStatus.Published;
     public bool IsDraft() => PostStatus == PostStatus.Draft;
@@ -30,12 +38,11 @@ public class Blog : SoftDeletableEntity
     public void Archive() => PostStatus = PostStatus.Archived;
     public void Unpublish() => PostStatus = PostStatus.Draft;
 
-    public void UpdateContent(string title, string content, string slug, string? thumbnail = null)
+    public void UpdateContent(string title, string content, string? thumbnail = null)
     {
         Title = title;
         Content = content;
         Thumbnail = thumbnail;
-        Slug = slug;
         ReadingTimeInMinutes = CalculateReadingTime(content);
     }
 

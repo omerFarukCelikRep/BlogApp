@@ -15,7 +15,11 @@ public static class TagEndpoints
         var tagGroup = app.MapGroup("api/v{version:apiVersion}/tags")
             .WithApiVersionSet(apiVersionSet)
             .WithTags("Tags")
-            .TopTagsEndpoint();
+            .TopTagsEndpoint()
+            .GetBySlugEndpoint()
+            .GetAllForAdminEndpoint()
+            .CreateEndpoint()
+            .DeleteEndpoint();
 
         return tagGroup;
     }

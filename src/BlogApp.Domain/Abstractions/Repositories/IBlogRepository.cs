@@ -14,4 +14,13 @@ public interface IBlogRepository : IAsyncDeletableRepository<Blog, int>, IAsyncQ
     Task<List<Blog>> GetTopReadAsync(int count, CancellationToken cancellationToken = default);
     Task<List<Blog>> GetRandomAsync(RandomBlogArgs args, CancellationToken cancellationToken = default);
     Task<Blog?> GetDetailsAsync(int id, CancellationToken cancellationToken = default);
+    Task<IPaginate<Blog>> GetAllByTagAsync(GetBlogByTagArgs args, CancellationToken cancellationToken = default);
+
+    Task<IPaginate<Blog>> GetAllByCategoryAsync(GetBlogByCategoryArgs args,
+        CancellationToken cancellationToken = default);
+
+    Task<IPaginate<Blog>> GetAllByAuthorAsync(GetBlogByAuthorArgs args, CancellationToken cancellationToken = default);
+    Task<List<Blog>> GetRecentAsync(int count, CancellationToken cancellationToken = default);
+    Task<List<DailyCountResult>> GetDailyCountAsync(DateTime from, CancellationToken cancellationToken = default);
+    Task<IPaginate<Blog>> GetAllAsync(GetAllForAdminsArgs args, CancellationToken cancellationToken = default);
 }

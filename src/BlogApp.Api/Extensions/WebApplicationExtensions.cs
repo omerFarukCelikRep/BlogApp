@@ -8,12 +8,14 @@ public static class WebApplicationExtensions
     {
         public WebApplication MapEndpoints()
         {
+            app.RegisterAdminEndpoints();
             app.RegisterAuthEndpoints();
+            app.RegisterAuthorEndpoints();
             app.RegisterBlogEndpoints();
             app.RegisterCategoryEndpoints();
             app.RegisterCommentEndpoints();
+            app.RegisterSearchEndpoints();
             app.RegisterTagEndpoints();
-            app.RegisterAuthorEndpoints();
 
             return app;
         }

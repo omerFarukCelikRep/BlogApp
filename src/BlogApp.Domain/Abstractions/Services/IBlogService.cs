@@ -1,4 +1,3 @@
-using BlogApp.Core.DataAccess.Models;
 using BlogApp.Core.Results;
 using BlogApp.Domain.Models.Blogs;
 
@@ -16,4 +15,25 @@ public interface IBlogService
         CancellationToken cancellationToken = default);
 
     Task<Result<BlogDetailsResult>> GetByIdAsync(GetBlogByIdArgs args, CancellationToken cancellationToken = default);
+    Task<Result> IncrementReadCountAsync(IncrementReadCountArgs args, CancellationToken cancellationToken = default);
+    Task<Result<ToggleLikeResult>> ToggleLikeAsync(ToggleLikeArgs args, CancellationToken cancellationToken = default);
+
+    Task<Result<BlogForUpdateResult>> GetForUpdateAsync(GetBlogByIdArgs args,
+        CancellationToken cancellationToken = default);
+
+    Task<Result<BlogDetailsResult>> UpdateAsync(UpdateBlogArgs args, CancellationToken cancellationToken = default);
+
+    Task<PaginatedResult<BlogSummaryResult>> GetAllByTagAsync(GetBlogByTagArgs args,
+        CancellationToken cancellationToken = default);
+
+    Task<PaginatedResult<BlogSummaryResult>> GetAllByCategoryAsync(GetBlogByCategoryArgs args,
+        CancellationToken cancellationToken = default);
+
+    Task<PaginatedResult<BlogSummaryResult>> GetAllByAuthorAsync(GetBlogByAuthorArgs args,
+        CancellationToken cancellationToken = default);
+
+    Task<PaginatedResult<AdminBlogSummaryResult>> GetAllForAdminAsync(GetAllForAdminsArgs args,
+        CancellationToken cancellationToken = default);
+
+    Task<Result> DeleteForAdminAsync(DeleteBlogForAdminArgs args, CancellationToken cancellationToken = default);
 }
